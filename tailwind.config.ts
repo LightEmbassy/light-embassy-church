@@ -18,6 +18,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'inter': ['Inter', 'sans-serif'],
+				'playfair': ['Playfair Display', 'serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -26,11 +30,18 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					light: 'hsl(var(--primary-light))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					foreground: 'hsl(var(--secondary-foreground))',
+					dark: 'hsl(var(--secondary-dark))'
+				},
+				'sacred-gold': {
+					DEFAULT: 'hsl(var(--sacred-gold))',
+					foreground: 'hsl(var(--sacred-gold-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -62,6 +73,20 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
+			},
+			backgroundImage: {
+				'gradient-spiritual': 'var(--gradient-spiritual)',
+				'gradient-divine': 'var(--gradient-divine)',
+				'gradient-peace': 'var(--gradient-peace)',
+			},
+			boxShadow: {
+				'divine': 'var(--shadow-divine)',
+				'gentle': 'var(--shadow-gentle)',
+				'gold': 'var(--shadow-gold)',
+			},
+			transitionTimingFunction: {
+				'divine': 'var(--transition-divine)',
+				'gentle': 'var(--transition-gentle)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
