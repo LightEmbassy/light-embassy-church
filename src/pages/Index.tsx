@@ -3,6 +3,7 @@ import { Navigation as TopNavigation } from "@/components/layout/Navigation"
 import { Navigation } from "@/components/ui/navigation"
 import Home from "./Home"
 import Watch from "./Watch"
+import Learn from "./Learn"
 import Prayers from "./Prayers"
 import Messages from "./Messages"
 import Podcast from "./Podcast"
@@ -17,14 +18,7 @@ const Index = () => {
       case 'watch':
         return <Watch />
       case 'learn':
-        return (
-          <div className="min-h-screen bg-background pb-20 pt-16">
-            <div className="text-center p-8">
-              <h1 className="font-playfair text-3xl font-bold mb-4 text-primary">Learn</h1>
-              <p className="text-muted-foreground">Bible studies and teaching materials coming soon!</p>
-            </div>
-          </div>
-        )
+        return <Learn />
       case 'prayers':
         return <Prayers />
       case 'podcast':

@@ -48,6 +48,42 @@ export type Database = {
         }
         Relationships: []
       }
+      favorite_verses: {
+        Row: {
+          book: string
+          chapter: number
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          verse: number
+          verse_reference: string
+          verse_text: string
+        }
+        Insert: {
+          book: string
+          chapter: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          verse: number
+          verse_reference: string
+          verse_text: string
+        }
+        Update: {
+          book?: string
+          chapter?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          verse?: number
+          verse_reference?: string
+          verse_text?: string
+        }
+        Relationships: []
+      }
       "LE APP": {
         Row: {
           created_at: string
