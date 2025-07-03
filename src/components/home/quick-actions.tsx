@@ -6,43 +6,43 @@ export function QuickActions() {
   const actions = [
     {
       icon: Play,
-      title: "Live Service",
-      description: "Join our worship",
+      title: "Watch",
+      description: "Pure word of God's grace",
       color: "bg-gradient-spiritual",
       textColor: "text-white"
     },
     {
       icon: BookOpen,
-      title: "Daily Word",
-      description: "Today's devotion",
+      title: "Read",
+      description: "Dig deeper into God's Word",
       color: "bg-gradient-divine",
       textColor: "text-primary"
     },
     {
       icon: Heart,
       title: "Prayer Request",
-      description: "Share your heart",
+      description: "Request prayer for yourself or others",
       color: "bg-accent",
-      textColor: "text-primary"
-    },
-    {
-      icon: Calendar,
-      title: "Events",
-      description: "Upcoming services",
-      color: "bg-gradient-peace",
       textColor: "text-primary"
     },
     {
       icon: Users,
       title: "Connect",
-      description: "Find community",
+      description: "How to connect with us & others",
+      color: "bg-gradient-peace",
+      textColor: "text-primary"
+    },
+    {
+      icon: BookOpen,
+      title: "Discover More",
+      description: "A safe place for questions",
       color: "bg-muted",
       textColor: "text-primary"
     },
     {
       icon: Headphones,
       title: "Podcast",
-      description: "Listen & learn",
+      description: "Listen from anywhere!",
       color: "bg-primary-glow",
       textColor: "text-primary"
     }
