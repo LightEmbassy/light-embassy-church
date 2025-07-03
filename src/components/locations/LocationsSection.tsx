@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { InteractiveMap } from "@/components/map/InteractiveMap"
 import { LocationsList } from "@/components/map/LocationsList"
+import { Location } from "@/types/location"
 import { 
   MapPin, 
   Navigation, 
@@ -13,24 +14,6 @@ import {
   Calendar,
   Users
 } from "lucide-react"
-
-interface Location {
-  id: string
-  name: string
-  address: string
-  city: string
-  country: string
-  coordinates: [number, number] // [longitude, latitude]
-  phone?: string
-  services: {
-    name: string
-    day: string
-    time: string
-  }[]
-  description?: string
-  googleMapsUrl?: string
-  distance?: number
-}
 
 export function LocationsSection() {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)

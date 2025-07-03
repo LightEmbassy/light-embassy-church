@@ -2,15 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { useToast } from '@/hooks/use-toast'
-
-interface Location {
-  id: string
-  name: string
-  coordinates: [number, number]
-  address: string
-  city: string
-  country: string
-}
+import { Location } from '@/types/location'
 
 interface InteractiveMapProps {
   locations: Location[]

@@ -2,22 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { MapPin, Navigation, Clock, Phone } from "lucide-react"
-
-interface Location {
-  id: string
-  name: string
-  address: string
-  city: string
-  country: string
-  coordinates: [number, number]
-  phone?: string
-  services: {
-    name: string
-    day: string
-    time: string
-  }[]
-  distance?: number
-}
+import { Location } from "@/types/location"
 
 interface LocationsListProps {
   locations: Location[]
