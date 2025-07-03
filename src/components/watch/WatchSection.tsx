@@ -2,7 +2,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Play, Clock, Users, ExternalLink } from "lucide-react"
+import { ShareDialog } from "@/components/sharing/ShareDialog"
+import { Play, Clock, Users, ExternalLink, Share2 } from "lucide-react"
 
 interface VideoItem {
   id: string
@@ -134,15 +135,28 @@ export function WatchSection() {
           <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
             {video.description}
           </p>
-          <div className="flex items-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Users className="h-3 w-3" />
-              {video.views} views
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                {video.views} views
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />
+                {video.publishedAt}
+              </div>
             </div>
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {video.publishedAt}
-            </div>
+            <ShareDialog
+              content={{
+                title: video.title,
+                text: `Watch this message: ${video.title}\n\n${video.description}`,
+                url: `https://www.youtube.com/watch?v=${video.embedId}`
+              }}
+            >
+              <Button variant="ghost" size="sm">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </ShareDialog>
           </div>
         </div>
       </CardContent>

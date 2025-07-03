@@ -1,7 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Play, Clock, ExternalLink, Headphones } from "lucide-react"
+import { ShareDialog } from "@/components/sharing/ShareDialog"
+import { Play, Clock, ExternalLink, Headphones, Share2 } from "lucide-react"
 
 interface Episode {
   id: string
@@ -53,12 +54,25 @@ export function PodcastSection() {
             <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
               {episode.description}
             </p>
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {episode.duration}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  {episode.duration}
+                </div>
+                <span>{episode.publishedAt}</span>
               </div>
-              <span>{episode.publishedAt}</span>
+              <ShareDialog
+                content={{
+                  title: episode.title,
+                  text: `Listen to this podcast episode: ${episode.title}\n\n${episode.description}`,
+                  url: episode.audioUrl
+                }}
+              >
+                <Button variant="ghost" size="sm">
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </ShareDialog>
             </div>
           </div>
         </div>

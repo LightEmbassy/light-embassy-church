@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Book, ExternalLink, Heart, Plus, Trash2 } from "lucide-react"
+import { Book, ExternalLink, Heart, Plus, Trash2, Share2 } from "lucide-react"
+import { ShareDialog } from "@/components/sharing/ShareDialog"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
@@ -254,14 +255,30 @@ export function BibleSection() {
                             Added {new Date(verse.created_at).toLocaleDateString()}
                           </p>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteVerse(verse.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="flex gap-1 ml-2">
+                          <ShareDialog
+                            content={{
+                              title: `Scripture: ${verse.verse_reference}`,
+                              text: `"${verse.verse_text}" - ${verse.verse_reference}`,
+                              url: "https://www.bible.com/bible"
+                            }}
+                          >
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                            >
+                              <Share2 className="h-4 w-4" />
+                            </Button>
+                          </ShareDialog>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteVerse(verse.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -280,7 +297,20 @@ export function BibleSection() {
         </CardHeader>
         <CardContent>
           <div className="bg-muted/50 p-6 rounded-lg">
-            <Badge variant="outline" className="mb-3">Philippians 4:13</Badge>
+            <div className="flex items-start justify-between mb-3">
+              <Badge variant="outline">Philippians 4:13</Badge>
+              <ShareDialog
+                content={{
+                  title: "Daily Scripture: Philippians 4:13",
+                  text: "\"I can do all things through Christ who strengthens me.\" - Philippians 4:13\n\nRemember that God's strength is made perfect in our weakness. Trust in Him today.",
+                  url: "https://www.bible.com/bible"
+                }}
+              >
+                <Button variant="ghost" size="sm">
+                  <Share2 className="h-4 w-4" />
+                </Button>
+              </ShareDialog>
+            </div>
             <p className="text-lg italic text-foreground mb-4">
               "I can do all things through Christ who strengthens me."
             </p>
