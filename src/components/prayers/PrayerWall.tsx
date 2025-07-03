@@ -5,9 +5,26 @@ import { useToast } from '@/hooks/use-toast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Hand } from 'lucide-react'
+import { Hand, Search, Edit, Trash2, MoreVertical } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 type PrayerCategory = 'healing' | 'finance' | 'family' | 'guidance' | 'thanksgiving' | 'salvation' | 'protection' | 'other'
 
@@ -51,16 +68,56 @@ const categoryColors = {
   other: 'bg-slate-100 text-slate-800'
 }
 
-export function PrayerWall() {
+interface PrayerWallProps {
+  onEdit?: (prayer: PrayerRequest) => void
+}
+
+export function PrayerWall({ onEdit }: PrayerWallProps) {
   const { user } = useAuth()
   const { toast } = useToast()
   const [prayers, setPrayers] = useState<PrayerRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [searchQuery, setSearchQuery] = useState('')
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [prayerToDelete, setPrayerToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPrayers()
-  }, [selectedCategory])
+    setupRealtimeSubscription()
+  }, [selectedCategory, searchQuery])
+
+  const setupRealtimeSubscription = () => {
+    const channel = supabase
+      .channel('prayer-requests-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'prayer_requests'
+        },
+        () => {
+          fetchPrayers()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'prayer_interactions'
+        },
+        () => {
+          fetchPrayers()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }
 
   const fetchPrayers = async () => {
     try {
@@ -77,6 +134,10 @@ export function PrayerWall() {
         query = query.eq('category', selectedCategory as PrayerCategory)
       }
 
+      if (searchQuery.trim()) {
+        query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
+      }
+
       const { data, error } = await query
 
       if (error) throw error
@@ -91,6 +152,36 @@ export function PrayerWall() {
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDeletePrayer = async () => {
+    if (!prayerToDelete || !user) return
+
+    try {
+      const { error } = await supabase
+        .from('prayer_requests')
+        .delete()
+        .eq('id', prayerToDelete)
+        .eq('user_id', user.id)
+
+      if (error) throw error
+
+      toast({
+        title: 'Prayer request deleted',
+        description: 'Your prayer request has been removed.',
+      })
+
+      setPrayerToDelete(null)
+      setDeleteDialogOpen(false)
+      fetchPrayers()
+    } catch (error) {
+      console.error('Error deleting prayer:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to delete prayer request.',
+        variant: 'destructive',
+      })
     }
   }
 
@@ -176,21 +267,35 @@ export function PrayerWall() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <h2 className="text-2xl font-bold">Community Prayer Wall</h2>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {Object.entries(categoryLabels).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Search and Filter Section */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <h2 className="text-2xl font-bold">Community Prayer Wall</h2>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="w-full sm:w-48">
+              <SelectValue placeholder="Filter by category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {Object.entries(categoryLabels).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Search prayer requests..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
       </div>
 
       {prayers.length === 0 ? (
@@ -205,7 +310,7 @@ export function PrayerWall() {
             <Card key={prayer.id}>
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     <CardTitle className="text-lg">{prayer.title}</CardTitle>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <span>
@@ -215,9 +320,36 @@ export function PrayerWall() {
                       <span>{formatDistanceToNow(new Date(prayer.created_at), { addSuffix: true })}</span>
                     </div>
                   </div>
-                  <Badge className={categoryColors[prayer.category as keyof typeof categoryColors]}>
-                    {categoryLabels[prayer.category as keyof typeof categoryLabels]}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge className={categoryColors[prayer.category as keyof typeof categoryColors]}>
+                      {categoryLabels[prayer.category as keyof typeof categoryLabels]}
+                    </Badge>
+                    {user?.id === prayer.user_id && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => onEdit?.(prayer)}>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              setPrayerToDelete(prayer.id)
+                              setDeleteDialogOpen(true)
+                            }}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -254,6 +386,29 @@ export function PrayerWall() {
           ))}
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Prayer Request</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this prayer request? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPrayerToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeletePrayer}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

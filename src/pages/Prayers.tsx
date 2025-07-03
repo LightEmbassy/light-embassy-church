@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PrayerRequestForm } from '@/components/prayers/PrayerRequestForm'
+import { PrayerEditForm } from '@/components/prayers/PrayerEditForm'
 import { PrayerWall } from '@/components/prayers/PrayerWall'
 import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
@@ -11,11 +12,39 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
+interface PrayerRequest {
+  id: string
+  title: string
+  description: string
+  category: string
+  is_anonymous: boolean
+  request_pastoral_counselling: boolean
+  created_at: string
+  user_id: string
+}
+
 export default function Prayers() {
   const [isFormOpen, setIsFormOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [editingPrayer, setEditingPrayer] = useState<PrayerRequest | null>(null)
 
   const handleFormSuccess = () => {
     setIsFormOpen(false)
+  }
+
+  const handleEditSuccess = () => {
+    setIsEditOpen(false)
+    setEditingPrayer(null)
+  }
+
+  const handleEditCancel = () => {
+    setIsEditOpen(false)
+    setEditingPrayer(null)
+  }
+
+  const handleEditPrayer = (prayer: PrayerRequest) => {
+    setEditingPrayer(prayer)
+    setIsEditOpen(true)
   }
 
   return (
@@ -45,7 +74,23 @@ export default function Prayers() {
           </Dialog>
         </div>
 
-        <PrayerWall />
+        <PrayerWall onEdit={handleEditPrayer} />
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Prayer Request</DialogTitle>
+            </DialogHeader>
+            {editingPrayer && (
+              <PrayerEditForm
+                prayerId={editingPrayer.id}
+                onSuccess={handleEditSuccess}
+                onCancel={handleEditCancel}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
