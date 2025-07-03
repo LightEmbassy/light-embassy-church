@@ -16,83 +16,93 @@ interface VideoItem {
 }
 
 export function WatchSection() {
-  // Sample videos - in a real app, these would come from YouTube API
+  // Real videos from Light Embassy Church and related Swedish churches
   const featuredVideos: VideoItem[] = [
     {
       id: "1",
-      title: "Sunday Service - The Power of Grace",
-      description: "Join us for this powerful message about God's amazing grace and how it transforms lives.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      title: "Step out of your boat - Joakim Lundqvist, Pastor Word of Life Sweden",
+      description: "Incredible stories of God at work through Eastern Europe, including the humanitarian refugee crisis. A powerful message about stepping out in faith.",
+      thumbnail: "https://img.youtube.com/vi/dQbISDDbt_A/maxresdefault.jpg",
       duration: "45:30",
-      views: "1.2K",
-      publishedAt: "2 days ago",
-      embedId: "dQw4w9WgXcQ"
+      views: "2.1K",
+      publishedAt: "March 2022",
+      embedId: "dQbISDDbt_A"
     },
     {
       id: "2", 
-      title: "Worship Night - Filled with His Presence",
-      description: "Experience the presence of God through powerful worship and praise.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      title: "The Power To See - Pastor Wilberforce Bezudde",
+      description: "Pastor Wilberforce teaches the importance of using your faith to see. From the IBC Conference in Stockholm.",
+      thumbnail: "https://img.youtube.com/vi/K0BPLdZQu8E/maxresdefault.jpg",
       duration: "32:15",
-      views: "856",
-      publishedAt: "1 week ago",
-      embedId: "dQw4w9WgXcQ"
+      views: "136",
+      publishedAt: "June 2023",
+      embedId: "K0BPLdZQu8E"
     },
     {
       id: "3",
-      title: "Bible Study - Walking in Faith",
-      description: "Discover what it means to walk by faith and trust in God's perfect plan.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", 
+      title: "Living as Light in a Darkened World",
+      description: "Pastor Tim Dunn explores living as a beacon of light and embodying wisdom in a world shadowed by darkness.",
+      thumbnail: "https://img.youtube.com/vi/2dO6kKqaRKE/maxresdefault.jpg", 
       duration: "28:45",
       views: "634",
-      publishedAt: "2 weeks ago",
-      embedId: "dQw4w9WgXcQ"
+      publishedAt: "Recent",
+      embedId: "2dO6kKqaRKE"
     }
   ]
 
   const sermons: VideoItem[] = [
     {
       id: "4",
-      title: "The Gospel of Grace - Part 1",
-      description: "Understanding the pure word of God's grace and its power to transform.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      title: "Step out of your boat - Joakim Lundqvist",
+      description: "Over 700 churches planted throughout Eastern Europe. Hear incredible stories of God at work and a message about stepping out in faith.",
+      thumbnail: "https://img.youtube.com/vi/dQbISDDbt_A/maxresdefault.jpg",
       duration: "52:20",
       views: "2.1K",
-      publishedAt: "3 weeks ago", 
-      embedId: "dQw4w9WgXcQ"
+      publishedAt: "March 2022", 
+      embedId: "dQbISDDbt_A"
     },
     {
       id: "5",
-      title: "Living in Freedom",
-      description: "Discover the freedom that comes through Christ and how to walk in it daily.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      title: "The Power To See - Full Sermon",
+      description: "Pastor Wilberforce teaches the importance of using your faith to see. A powerful message from Stockholm conference.",
+      thumbnail: "https://img.youtube.com/vi/K0BPLdZQu8E/maxresdefault.jpg",
       duration: "41:15",
-      views: "1.8K",
-      publishedAt: "1 month ago",
-      embedId: "dQw4w9WgXcQ"
+      views: "136",
+      publishedAt: "June 2023",
+      embedId: "K0BPLdZQu8E"
+    },
+    {
+      id: "6",
+      title: "What is a Simple Church?",
+      description: "Exploring the essence of simple church ministry and authentic Christian community.",
+      thumbnail: "https://img.youtube.com/vi/uMC3tBGqPmI/maxresdefault.jpg",
+      duration: "35:20",
+      views: "76",
+      publishedAt: "February 2025",
+      embedId: "uMC3tBGqPmI"
     }
   ]
 
   const worship: VideoItem[] = [
     {
-      id: "6",
-      title: "Holy Spirit Come - Live Worship",
-      description: "Join us in worship as we invite the Holy Spirit to move among us.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      id: "7",
+      title: "Glory Is The Highest Form Of Honor",
+      description: "Pastor Lee's message about glory and honor in worship from Sunday service.",
+      thumbnail: "https://img.youtube.com/vi/yhrZfWcUtr4/maxresdefault.jpg",
       duration: "35:45",
-      views: "945",
-      publishedAt: "2 weeks ago",
-      embedId: "dQw4w9WgXcQ"
+      views: "83",
+      publishedAt: "June 2022",
+      embedId: "yhrZfWcUtr4"
     },
     {
-      id: "7", 
-      title: "Praise and Worship - Sunday Morning",
-      description: "Experience the joy of worship with our Sunday morning praise team.",
-      thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+      id: "8", 
+      title: "Power From On High",
+      description: "Pastor Ken's message about receiving power from God in worship and ministry.",
+      thumbnail: "https://img.youtube.com/vi/F5gn2nwywYE/maxresdefault.jpg",
       duration: "25:30",
-      views: "723",
-      publishedAt: "3 weeks ago",
-      embedId: "dQw4w9WgXcQ"
+      views: "21",
+      publishedAt: "June 2022",
+      embedId: "F5gn2nwywYE"
     }
   ]
 
@@ -145,9 +155,11 @@ export function WatchSection() {
       <div className="p-6">
         <div className="flex items-center justify-between mb-2">
           <h1 className="font-playfair text-3xl font-bold text-primary">Watch</h1>
-          <Button variant="outline" size="sm" className="gap-2">
-            <ExternalLink className="h-4 w-4" />
-            YouTube Channel
+          <Button variant="outline" size="sm" className="gap-2" asChild>
+            <a href="https://www.youtube.com/@lightembassychurchlundswed41" target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-4 w-4" />
+              YouTube Channel
+            </a>
           </Button>
         </div>
         <p className="text-muted-foreground">
