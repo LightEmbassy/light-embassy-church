@@ -23,33 +23,33 @@ export function LocationsSection() {
       id: "lund-sweden",
       name: "Light Embassy Church",
       address: "Sunnanväg 18L",
-      city: "Lund",
+      city: "222 26 Lund",
       country: "Sweden",
       coordinates: [13.1936, 55.7047], // Lund, Sweden coordinates
       phone: "+46 72-308 20 19",
       services: [
         {
           name: "Bible Study",
-          day: "Tuesday",
+          day: "Tuesdays",
           time: "6:00 PM - 7:30 PM"
         },
         {
           name: "Online Prayer Connect",
-          day: "Wednesday",
+          day: "Wednesdays",
           time: "5:30 PM - 6:00 PM"
         },
         {
           name: "Prayer Meeting",
-          day: "Friday",
+          day: "Fridays",
           time: "7:00 PM - 8:15 PM"
         },
         {
           name: "Sunday Service",
-          day: "Sunday",
+          day: "Sundays",
           time: "11:00 AM - 1:15 PM"
         }
       ],
-      description: "Join us for powerful times of worship, Bible study, fellowship, and prayer as we come together in Jesus' name.",
+      description: "Light Embassy Church gathers throughout the week at our church in Sweden. Join us for powerful times of worship, Bible study, fellowship, and prayer as we come together in Jesus' name to grow in faith and strengthen one another.",
       googleMapsUrl: "https://maps.google.com/?cid=18091411015424419418"
     }
     // Add more locations as they become available
