@@ -94,18 +94,28 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
 
   const fetchConversation = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: conversationData, error: conversationError } = await supabase
         .from('conversations')
-        .select(`
-          *,
-          profiles:user_id (username),
-          staff_profile:staff_id (username)
-        `)
+        .select('*')
         .eq('id', conversationId)
         .single()
 
-      if (error) throw error
-      setConversation(data as unknown as Conversation)
+      if (conversationError) throw conversationError
+
+      // Get user profiles separately
+      const userIds = [conversationData.user_id, conversationData.staff_id].filter(Boolean)
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', userIds)
+
+      const conversationWithProfiles = {
+        ...conversationData,
+        profiles: profiles?.find(p => p.user_id === conversationData.user_id) || null,
+        staff_profile: profiles?.find(p => p.user_id === conversationData.staff_id) || null
+      }
+
+      setConversation(conversationWithProfiles as unknown as Conversation)
     } catch (error) {
       console.error('Error fetching conversation:', error)
       toast({
@@ -118,17 +128,27 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
 
   const fetchMessages = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: messageData, error: messageError } = await supabase
         .from('messages')
-        .select(`
-          *,
-          profiles:sender_id (username)
-        `)
+        .select('*')
         .eq('conversation_id', conversationId)
         .order('created_at', { ascending: true })
 
-      if (error) throw error
-      setMessages(data as unknown as Message[])
+      if (messageError) throw messageError
+
+      // Get sender profiles separately
+      const senderIds = messageData?.map(m => m.sender_id) || []
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', senderIds)
+
+      const messagesWithProfiles = messageData?.map(message => ({
+        ...message,
+        profiles: profiles?.find(p => p.user_id === message.sender_id) || null
+      })) || []
+
+      setMessages(messagesWithProfiles as unknown as Message[])
     } catch (error) {
       console.error('Error fetching messages:', error)
     } finally {

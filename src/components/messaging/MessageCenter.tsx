@@ -84,11 +84,7 @@ export function MessageCenter() {
     try {
       let query = supabase
         .from('conversations')
-        .select(`
-          *,
-          profiles:user_id (username),
-          staff_profile:staff_id (username)
-        `)
+        .select('*')
         .or(`user_id.eq.${user.id},staff_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false })
 
@@ -100,13 +96,23 @@ export function MessageCenter() {
         query = query.ilike('title', `%${searchQuery}%`)
       }
 
-      const { data, error } = await query
+      const { data: conversationData, error: conversationError } = await query
 
-      if (error) throw error
+      if (conversationError) throw conversationError
+
+      // Get user profiles separately
+      const userIds = conversationData?.map(c => c.user_id).filter(Boolean) || []
+      const staffIds = conversationData?.map(c => c.staff_id).filter(Boolean) || []
+      const allUserIds = [...new Set([...userIds, ...staffIds])]
+
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', allUserIds)
 
       // Get unread message counts for each conversation
       const conversationsWithCounts = await Promise.all(
-        (data || []).map(async (conv) => {
+        (conversationData || []).map(async (conv) => {
           const { count } = await supabase
             .from('message_notifications')
             .select('*', { count: 'exact', head: true })
@@ -116,6 +122,8 @@ export function MessageCenter() {
 
           return {
             ...conv,
+            profiles: profiles?.find(p => p.user_id === conv.user_id) || null,
+            staff_profile: profiles?.find(p => p.user_id === conv.staff_id) || null,
             unread_count: count || 0
           }
         })

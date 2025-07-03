@@ -123,11 +123,7 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
     try {
       let query = supabase
         .from('prayer_requests')
-        .select(`
-          *,
-          profiles:user_id (username),
-          prayer_interactions (id, user_id)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
 
       if (selectedCategory !== 'all') {
@@ -138,11 +134,34 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
         query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
       }
 
-      const { data, error } = await query
+      const { data: prayerData, error: prayerError } = await query
 
-      if (error) throw error
+      if (prayerError) throw prayerError
 
-      setPrayers(data as unknown as PrayerRequest[] || [])
+      // Fetch user profiles and prayer interactions separately
+      const prayerIds = prayerData?.map(p => p.id) || []
+      const userIds = prayerData?.map(p => p.user_id) || []
+
+      // Get profiles
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, username')
+        .in('user_id', userIds)
+
+      // Get prayer interactions
+      const { data: interactions } = await supabase
+        .from('prayer_interactions')
+        .select('id, user_id, prayer_request_id')
+        .in('prayer_request_id', prayerIds)
+
+      // Combine the data
+      const prayersWithData = prayerData?.map(prayer => ({
+        ...prayer,
+        profiles: profiles?.find(p => p.user_id === prayer.user_id) || null,
+        prayer_interactions: interactions?.filter(i => i.prayer_request_id === prayer.id) || []
+      })) || []
+
+      setPrayers(prayersWithData as unknown as PrayerRequest[])
     } catch (error) {
       console.error('Error fetching prayers:', error)
       toast({
