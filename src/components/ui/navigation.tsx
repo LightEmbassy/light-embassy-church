@@ -15,7 +15,7 @@ export function Navigation({ activeTab, onTabChange, className }: NavigationProp
     { id: 'learn', label: 'Learn', icon: BookOpen },
     { id: 'prayers', label: 'Prayers', icon: Heart },
     { id: 'podcast', label: 'Podcast', icon: Headphones },
-    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'locations', label: 'Locations', icon: Church },
   ]
 
   return (

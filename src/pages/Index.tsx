@@ -7,6 +7,7 @@ import Learn from "./Learn"
 import Prayers from "./Prayers"
 import Messages from "./Messages"
 import Podcast from "./Podcast"
+import Locations from "./Locations"
 import Admin from "./Admin"
 
 const Index = () => {
@@ -26,6 +27,8 @@ const Index = () => {
         return <Podcast />
       case 'messages':
         return <Messages />
+      case 'locations':
+        return <Locations />
       case 'admin':
         return <Admin />
       case 'events':
