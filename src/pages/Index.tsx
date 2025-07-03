@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Navigation as TopNavigation } from "@/components/layout/Navigation"
 import { Navigation } from "@/components/ui/navigation"
 import Home from "./Home"
+import Prayers from "./Prayers"
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home")
@@ -28,15 +29,8 @@ const Index = () => {
             </div>
           </div>
         )
-      case 'pray':
-        return (
-          <div className="min-h-screen bg-background pb-20 pt-16">
-            <div className="text-center p-8">
-              <h1 className="font-playfair text-3xl font-bold mb-4 text-primary">Pray</h1>
-              <p className="text-muted-foreground">Prayer requests and spiritual support coming soon!</p>
-            </div>
-          </div>
-        )
+      case 'prayers':
+        return <Prayers />
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">

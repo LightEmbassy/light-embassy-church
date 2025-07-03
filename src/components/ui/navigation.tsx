@@ -13,7 +13,7 @@ export function Navigation({ activeTab, onTabChange, className }: NavigationProp
     { id: 'home', label: 'Home', icon: Home },
     { id: 'watch', label: 'Watch', icon: Play },
     { id: 'learn', label: 'Learn', icon: BookOpen },
-    { id: 'pray', label: 'Pray', icon: Heart },
+    { id: 'prayers', label: 'Prayers', icon: Heart },
     { id: 'events', label: 'Events', icon: Calendar },
   ]
 

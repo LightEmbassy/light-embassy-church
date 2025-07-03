@@ -24,6 +24,74 @@ export type Database = {
         }
         Relationships: []
       }
+      prayer_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          prayer_request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          prayer_request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          prayer_request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prayer_interactions_prayer_request_id_fkey"
+            columns: ["prayer_request_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prayer_requests: {
+        Row: {
+          category: Database["public"]["Enums"]["prayer_category"]
+          created_at: string
+          description: string
+          id: string
+          is_anonymous: boolean
+          request_pastoral_counselling: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["prayer_category"]
+          created_at?: string
+          description: string
+          id?: string
+          is_anonymous?: boolean
+          request_pastoral_counselling?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["prayer_category"]
+          created_at?: string
+          description?: string
+          id?: string
+          is_anonymous?: boolean
+          request_pastoral_counselling?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -145,7 +213,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      prayer_category:
+        | "healing"
+        | "finance"
+        | "family"
+        | "guidance"
+        | "thanksgiving"
+        | "salvation"
+        | "protection"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -260,6 +336,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      prayer_category: [
+        "healing",
+        "finance",
+        "family",
+        "guidance",
+        "thanksgiving",
+        "salvation",
+        "protection",
+        "other",
+      ],
+    },
   },
 } as const
