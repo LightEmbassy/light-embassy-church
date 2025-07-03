@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Play, Heart } from "lucide-react"
-import heroLightEmbassy from "@/assets/hero-light-embassy.jpg"
+import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
 
 export function HeroSection() {
   return (
