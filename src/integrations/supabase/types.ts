@@ -29,6 +29,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           id: string
+          quiz_completed: boolean
           updated_at: string
           user_id: string
           username: string
@@ -37,6 +38,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          quiz_completed?: boolean
           updated_at?: string
           user_id: string
           username: string
@@ -45,11 +47,95 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          quiz_completed?: boolean
           updated_at?: string
           user_id?: string
           username?: string
         }
         Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          correct_answer: number
+          created_at: string
+          id: string
+          options: Json
+          order_number: number
+          question: string
+        }
+        Insert: {
+          correct_answer: number
+          created_at?: string
+          id?: string
+          options: Json
+          order_number: number
+          question: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string
+          id?: string
+          options?: Json
+          order_number?: number
+          question?: string
+        }
+        Relationships: []
+      }
+      user_quiz_completion: {
+        Row: {
+          completed_at: string
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_quiz_responses: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          selected_answer: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          selected_answer: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          selected_answer?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_quiz_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

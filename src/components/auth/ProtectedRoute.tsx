@@ -1,22 +1,36 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { useProfile } from '@/hooks/useProfile'
+import { SignupQuiz } from '@/components/quiz/SignupQuiz'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
+  const { profile, loading: profileLoading } = useProfile()
+  const [showQuiz, setShowQuiz] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       navigate('/auth')
+      return
     }
-  }, [user, loading, navigate])
 
-  if (loading) {
+    if (!authLoading && !profileLoading && user && profile) {
+      // Show quiz if user hasn't completed it yet
+      setShowQuiz(!profile.quiz_completed)
+    }
+  }, [user, profile, authLoading, profileLoading, navigate])
+
+  const handleQuizComplete = () => {
+    setShowQuiz(false)
+  }
+
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -29,6 +43,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   if (!user) {
     return null
+  }
+
+  if (showQuiz) {
+    return <SignupQuiz onComplete={handleQuizComplete} />
   }
 
   return <>{children}</>
