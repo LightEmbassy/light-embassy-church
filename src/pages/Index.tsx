@@ -10,7 +10,7 @@ const Index = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Home />
+        return <Home onNavigate={setActiveTab} />
       case 'watch':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">
@@ -41,7 +41,7 @@ const Index = () => {
           </div>
         )
       default:
-        return <Home />
+        return <Home onNavigate={setActiveTab} />
     }
   }
 
