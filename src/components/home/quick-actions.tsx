@@ -54,7 +54,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Listen from anywhere!",
       color: "bg-primary-glow",
       textColor: "text-primary",
-      tab: "watch"
+      tab: "podcast"
     }
   ]
 

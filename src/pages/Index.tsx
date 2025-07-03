@@ -5,6 +5,7 @@ import Home from "./Home"
 import Watch from "./Watch"
 import Prayers from "./Prayers"
 import Messages from "./Messages"
+import Podcast from "./Podcast"
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home")
@@ -26,6 +27,8 @@ const Index = () => {
         )
       case 'prayers':
         return <Prayers />
+      case 'podcast':
+        return <Podcast />
       case 'messages':
         return <Messages />
       case 'events':
