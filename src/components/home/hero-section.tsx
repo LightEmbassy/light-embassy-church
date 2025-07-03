@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Play, Heart } from "lucide-react"
-import heroLight from "@/assets/hero-light.jpg"
+import heroLightEmbassy from "@/assets/hero-light-embassy.jpg"
 
 export function HeroSection() {
   return (
@@ -9,7 +9,7 @@ export function HeroSection() {
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroLight})` }}
+        style={{ backgroundImage: `url(${heroLightEmbassy})` }}
       />
       
       {/* Gradient Overlay */}
