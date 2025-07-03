@@ -9,6 +9,45 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          last_message_at: string | null
+          priority: number
+          staff_id: string | null
+          status: Database["public"]["Enums"]["conversation_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          priority?: number
+          staff_id?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"]
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          priority?: number
+          staff_id?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       "LE APP": {
         Row: {
           created_at: string
@@ -23,6 +62,101 @@ export type Database = {
           id?: number
         }
         Relationships: []
+      }
+      message_notifications: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_notifications_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_notifications_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_from_staff: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          sender_id: string
+          status: Database["public"]["Enums"]["message_status"]
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_from_staff?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          sender_id: string
+          status?: Database["public"]["Enums"]["message_status"]
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_from_staff?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          sender_id?: string
+          status?: Database["public"]["Enums"]["message_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prayer_interactions: {
         Row: {
@@ -98,6 +232,7 @@ export type Database = {
           created_at: string
           id: string
           quiz_completed: boolean
+          role: Database["public"]["Enums"]["user_role"]
           updated_at: string
           user_id: string
           username: string
@@ -107,6 +242,7 @@ export type Database = {
           created_at?: string
           id?: string
           quiz_completed?: boolean
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           user_id: string
           username: string
@@ -116,6 +252,7 @@ export type Database = {
           created_at?: string
           id?: string
           quiz_completed?: boolean
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
           user_id?: string
           username?: string
@@ -213,6 +350,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      conversation_status:
+        | "active"
+        | "closed"
+        | "pending_moderation"
+        | "escalated"
+      message_status: "sent" | "delivered" | "read" | "moderated" | "flagged"
       prayer_category:
         | "healing"
         | "finance"
@@ -222,6 +365,7 @@ export type Database = {
         | "salvation"
         | "protection"
         | "other"
+      user_role: "user" | "counsellor" | "staff" | "moderator" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -337,6 +481,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      conversation_status: [
+        "active",
+        "closed",
+        "pending_moderation",
+        "escalated",
+      ],
+      message_status: ["sent", "delivered", "read", "moderated", "flagged"],
       prayer_category: [
         "healing",
         "finance",
@@ -347,6 +498,7 @@ export const Constants = {
         "protection",
         "other",
       ],
+      user_role: ["user", "counsellor", "staff", "moderator", "admin"],
     },
   },
 } as const

@@ -3,6 +3,7 @@ import { Navigation as TopNavigation } from "@/components/layout/Navigation"
 import { Navigation } from "@/components/ui/navigation"
 import Home from "./Home"
 import Prayers from "./Prayers"
+import Messages from "./Messages"
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home")
@@ -31,6 +32,8 @@ const Index = () => {
         )
       case 'prayers':
         return <Prayers />
+      case 'messages':
+        return <Messages />
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">
