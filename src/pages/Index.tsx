@@ -7,6 +7,7 @@ import Learn from "./Learn"
 import Prayers from "./Prayers"
 import Messages from "./Messages"
 import Podcast from "./Podcast"
+import Admin from "./Admin"
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home")
@@ -25,6 +26,8 @@ const Index = () => {
         return <Podcast />
       case 'messages':
         return <Messages />
+      case 'admin':
+        return <Admin />
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">
