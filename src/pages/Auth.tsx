@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
-import heroLightEmbassy from '@/assets/hero-light-embassy-new.jpg'
+import sunriseHero from '@/assets/sunrise-hero.jpg'
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false)
@@ -63,7 +63,7 @@ export default function Auth() {
       {/* Background Image */}
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroLightEmbassy})` }}
+        style={{ backgroundImage: `url(${sunriseHero})` }}
       />
       
       {/* Gradient Overlay */}
