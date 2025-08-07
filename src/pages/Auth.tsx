@@ -20,9 +20,16 @@ export default function Auth() {
   const [loading, setLoading] = useState(false)
   
   const [searchParams] = useSearchParams()
-  const { signUp, signIn, resetPassword } = useAuth()
+  const { user, signUp, signIn, resetPassword, loading: authLoading } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
+
+  // Redirect signed-in users to home page
+  useEffect(() => {
+    if (!authLoading && user && !isSettingNewPassword) {
+      navigate('/', { replace: true })
+    }
+  }, [user, authLoading, navigate, isSettingNewPassword])
 
   // Check for password reset token in URL
   useEffect(() => {
@@ -151,6 +158,11 @@ export default function Auth() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Don't render the auth form if user is already signed in (except for password reset)
+  if (!authLoading && user && !isSettingNewPassword) {
+    return null
   }
 
   return (
