@@ -1,24 +1,107 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { supabase } from '@/integrations/supabase/client'
 import sunriseHero from '@/assets/sunrise-hero.jpg'
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [isResetPassword, setIsResetPassword] = useState(false)
+  const [isSettingNewPassword, setIsSettingNewPassword] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   
+  const [searchParams] = useSearchParams()
   const { signUp, signIn, resetPassword } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
+
+  // Check for password reset token in URL
+  useEffect(() => {
+    const type = searchParams.get('type')
+    const accessToken = searchParams.get('access_token')
+    const refreshToken = searchParams.get('refresh_token')
+    
+    if (type === 'recovery' && accessToken && refreshToken) {
+      // Set the session with the tokens from the URL
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken
+      }).then(({ error }) => {
+        if (error) {
+          toast({
+            title: "Error",
+            description: "Invalid password reset link",
+            variant: "destructive"
+          })
+        } else {
+          setIsSettingNewPassword(true)
+        }
+      })
+    }
+  }, [searchParams, toast])
+
+  const handleSetNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (password !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive"
+      })
+      return
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Error", 
+        description: "Password must be at least 6 characters long",
+        variant: "destructive"
+      })
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      })
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        })
+      } else {
+        toast({
+          title: "Success",
+          description: "Your password has been updated successfully"
+        })
+        // Clear URL parameters and redirect to home
+        window.history.replaceState({}, document.title, "/auth")
+        navigate('/')
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -82,74 +165,134 @@ export default function Auth() {
       <Card className="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-sm border-0 shadow-divine">
         <CardHeader className="text-center space-y-4">
           <CardTitle className="font-playfair text-2xl text-foreground">
-            {isResetPassword ? 'Reset Password' : (isSignUp ? 'Join Light Embassy' : 'Welcome Back')}
+            {isSettingNewPassword ? 'Set New Password' : (isResetPassword ? 'Reset Password' : (isSignUp ? 'Join Light Embassy' : 'Welcome Back'))}
           </CardTitle>
           <p className="text-muted-foreground font-inter">
-            {isResetPassword 
-              ? 'Enter your email to receive password reset instructions'
-              : (isSignUp 
-                ? 'Create your account to access all our content' 
-                : 'Sign in to continue your spiritual journey'
+            {isSettingNewPassword
+              ? 'Enter your new password below'
+              : (isResetPassword 
+                ? 'Enter your email to receive password reset instructions'
+                : (isSignUp 
+                  ? 'Create your account to access all our content' 
+                  : 'Sign in to continue your spiritual journey'
+                )
               )
             }
           </p>
         </CardHeader>
         
         <CardContent className="space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="font-inter">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="font-inter"
-                placeholder="your@email.com"
-              />
-            </div>
-            
-            {isSignUp && !isResetPassword && (
+          {isSettingNewPassword ? (
+            <form onSubmit={handleSetNewPassword} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="font-inter">Username</Label>
+                <Label htmlFor="newPassword" className="font-inter">New Password</Label>
                 <Input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                  className="font-inter"
-                  placeholder="Choose a username"
-                />
-              </div>
-            )}
-            
-            {!isResetPassword && (
-              <div className="space-y-2">
-                <Label htmlFor="password" className="font-inter">Password</Label>
-                <Input
-                  id="password"
+                  id="newPassword"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="font-inter"
-                  placeholder="Enter your password"
+                  placeholder="Enter your new password"
+                  minLength={6}
                 />
               </div>
-            )}
-            
-            <Button 
-              type="submit" 
-              className="w-full transition-divine" 
-              disabled={loading}
-            >
-              {loading ? 'Please wait...' : (isResetPassword ? 'Send Reset Email' : (isSignUp ? 'Create Account' : 'Sign In'))}
-            </Button>
-          </form>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="font-inter">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="font-inter"
+                  placeholder="Confirm your new password"
+                  minLength={6}
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full transition-divine" 
+                disabled={loading}
+              >
+                {loading ? 'Updating...' : 'Update Password'}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isResetPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="font-inter">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="font-inter"
+                    placeholder="your@email.com"
+                  />
+                </div>
+              )}
+              
+              {isResetPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="resetEmail" className="font-inter">Email</Label>
+                  <Input
+                    id="resetEmail"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="font-inter"
+                    placeholder="your@email.com"
+                  />
+                </div>
+              )}
+              
+              {isSignUp && !isResetPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="username" className="font-inter">Username</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                    className="font-inter"
+                    placeholder="Choose a username"
+                  />
+                </div>
+              )}
+              
+              {!isResetPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="font-inter">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="font-inter"
+                    placeholder="Enter your password"
+                  />
+                </div>
+              )}
+              
+              <Button 
+                type="submit" 
+                className="w-full transition-divine" 
+                disabled={loading}
+              >
+                {loading ? 'Please wait...' : (isResetPassword ? 'Send Reset Email' : (isSignUp ? 'Create Account' : 'Sign In'))}
+              </Button>
+            </form>
+          )}
           
-          {!isResetPassword && (
+          {!isResetPassword && !isSettingNewPassword && (
             <div className="text-center">
               <p className="text-sm text-muted-foreground font-inter">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}
@@ -164,7 +307,7 @@ export default function Auth() {
             </div>
           )}
           
-          {!isSignUp && !isResetPassword && (
+          {!isSignUp && !isResetPassword && !isSettingNewPassword && (
             <div className="text-center">
               <Button
                 variant="link"
