@@ -35,15 +35,18 @@ export default function Auth() {
       supabase.auth.setSession({
         access_token: accessToken,
         refresh_token: refreshToken
-      }).then(({ error }) => {
+      }).then(({ data, error }) => {
         if (error) {
+          console.error('Session restore error:', error)
           toast({
             title: "Error",
-            description: "Invalid password reset link",
+            description: "Invalid or expired password reset link",
             variant: "destructive"
           })
-        } else {
+        } else if (data?.session) {
           setIsSettingNewPassword(true)
+          // Clear the URL parameters for security
+          window.history.replaceState({}, document.title, "/auth")
         }
       })
     }
@@ -222,35 +225,18 @@ export default function Auth() {
             </form>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isResetPassword && (
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="font-inter">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="font-inter"
-                    placeholder="your@email.com"
-                  />
-                </div>
-              )}
-              
-              {isResetPassword && (
-                <div className="space-y-2">
-                  <Label htmlFor="resetEmail" className="font-inter">Email</Label>
-                  <Input
-                    id="resetEmail"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="font-inter"
-                    placeholder="your@email.com"
-                  />
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="font-inter">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="font-inter"
+                  placeholder="your@email.com"
+                />
+              </div>
               
               {isSignUp && !isResetPassword && (
                 <div className="space-y-2">
