@@ -142,9 +142,10 @@ export default function Auth() {
           setIsResetPassword(false)
         } else if (isSignUp) {
           toast({
-            title: "Success",
-            description: "Please check your email to confirm your account"
+            title: "Welcome to Light Embassy!",
+            description: "Your account has been created successfully"
           })
+          navigate('/')
         } else {
           navigate('/')
         }
