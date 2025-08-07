@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
-import heroLightEmbassy from '@/assets/hero-light-embassy.jpg'
+import heroLightEmbassy from '@/assets/hero-light-embassy-new.jpg'
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false)
