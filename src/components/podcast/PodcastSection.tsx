@@ -170,7 +170,42 @@ export function PodcastSection() {
         </Card>
       </div>
 
-      {/* Episodes */}
+      {/* Podcast Player */}
+      <div className="px-6 mb-8">
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            <div className="bg-gradient-spiritual p-4">
+              <h2 className="font-playfair text-xl font-semibold text-white mb-2">
+                Listen Now
+              </h2>
+              <p className="text-white/90 text-sm">
+                Stream episodes directly from our podcast player
+              </p>
+            </div>
+            <div className="bg-background p-4">
+              <iframe 
+                title="Light Embassy Church" 
+                allowTransparency={true}
+                height="315" 
+                width="100%" 
+                style={{ 
+                  border: 'none', 
+                  minWidth: 'min(100%, 430px)', 
+                  height: '315px',
+                  borderRadius: '8px'
+                }} 
+                scrolling="no" 
+                data-name="pb-iframe-player" 
+                src="https://www.podbean.com/player-v2/?i=kcax9-fe37d7-pbblog-playlist&share=1&download=1&rtl=0&fonts=Arial&skin=1b1b1b&font-color=auto&logo_link=none&order=episodic&limit=12&filter=all&ss=9759bd5d428236f9e94fa1e9343e28d5&btn-skin=7&size=315" 
+                loading="lazy" 
+                allowFullScreen
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Episodes List */}
       <div className="px-6">
         <div className="space-y-4">
           <h2 className="font-playfair text-xl font-semibold text-foreground">
