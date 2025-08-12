@@ -48,13 +48,34 @@ serve(async (req) => {
                         item.match(/<title[^>]*>(.*?)<\/title>/)
       const title = titleMatch ? titleMatch[1].trim() : 'Untitled Episode'
       
-      // Extract description
-      const descMatch = item.match(/<description[^>]*><!\[CDATA\[(.*?)\]\]><\/description>/) || 
-                       item.match(/<description[^>]*>(.*?)<\/description>/)
-      let description = descMatch ? descMatch[1].trim() : 'No description available'
+      // Extract description - try multiple possible fields
+      let description = 'No description available'
       
-      // Clean up HTML tags from description
-      description = description.replace(/<[^>]+>/g, '').substring(0, 200)
+      // Try content:encoded first (usually has full description)
+      const contentMatch = item.match(/<content:encoded[^>]*><!\[CDATA\[(.*?)\]\]><\/content:encoded>/s)
+      if (contentMatch) {
+        description = contentMatch[1].trim()
+      } else {
+        // Fallback to description field
+        const descMatch = item.match(/<description[^>]*><!\[CDATA\[(.*?)\]\]><\/description>/s) || 
+                         item.match(/<description[^>]*>(.*?)<\/description>/s)
+        if (descMatch) {
+          description = descMatch[1].trim()
+        }
+      }
+      
+      // Clean up HTML tags but preserve line breaks and basic formatting
+      description = description
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/p>/gi, '\n\n')
+        .replace(/<p[^>]*>/gi, '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .trim()
       
       // Extract enclosure URL (audio file)
       const enclosureMatch = item.match(/<enclosure[^>]*url="([^"]*)"/)
