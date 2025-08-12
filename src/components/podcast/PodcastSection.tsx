@@ -2,7 +2,9 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Clock, ExternalLink, Headphones, Share2 } from "lucide-react"
+import { Play, Clock, ExternalLink, Headphones, Share2, Loader2 } from "lucide-react"
+import { useState, useEffect } from "react"
+import Parser from 'rss-parser'
 
 interface Episode {
   id: string
@@ -15,17 +17,64 @@ interface Episode {
 }
 
 export function PodcastSection() {
-  const episodes: Episode[] = [
-    {
-      id: "1",
-      title: "Welcome to Light Embassy Church Podcast",
-      description: "Revealing the Bible, discovering the truth, living the best life! Join us as we begin this journey together.",
-      artwork: "https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg",
-      duration: "25:30",
-      publishedAt: "Aug 02, 2023",
-      audioUrl: "https://lightembassychurch.podbean.com/e/welcome-to-light-embassy-church-podcast/"
+  const [episodes, setEpisodes] = useState<Episode[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchPodcastFeed = async () => {
+      try {
+        setLoading(true)
+        const parser = new Parser({
+          customFields: {
+            item: ['itunes:duration', 'itunes:image']
+          }
+        })
+        
+        // Use a CORS proxy to fetch the RSS feed
+        const proxyUrl = 'https://api.allorigins.win/get?url='
+        const feedUrl = 'https://feed.podbean.com/lightembassychurch/feed.xml'
+        
+        const response = await fetch(proxyUrl + encodeURIComponent(feedUrl))
+        const data = await response.json()
+        const feed = await parser.parseString(data.contents)
+        
+        const podcastEpisodes: Episode[] = feed.items.map((item: any, index: number) => ({
+          id: item.guid || index.toString(),
+          title: item.title || 'Untitled Episode',
+          description: item.contentSnippet || item.content || 'No description available',
+          artwork: item['itunes:image']?.href || feed.image?.url || "https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg",
+          duration: item['itunes:duration'] || 'Unknown',
+          publishedAt: item.pubDate ? new Date(item.pubDate).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          }) : 'Unknown date',
+          audioUrl: item.link || item.enclosure?.url || ''
+        }))
+        
+        setEpisodes(podcastEpisodes)
+        setError(null)
+      } catch (err) {
+        console.error('Failed to fetch podcast feed:', err)
+        setError('Failed to load podcast episodes')
+        // Fallback to hardcoded episode
+        setEpisodes([{
+          id: "1",
+          title: "Welcome to Light Embassy Church Podcast",
+          description: "Revealing the Bible, discovering the truth, living the best life! Join us as we begin this journey together.",
+          artwork: "https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg",
+          duration: "25:30",
+          publishedAt: "Aug 02, 2023",
+          audioUrl: "https://lightembassychurch.podbean.com/e/welcome-to-light-embassy-church-podcast/"
+        }])
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchPodcastFeed()
+  }, [])
 
   const EpisodeCard = ({ episode }: { episode: Episode }) => (
     <Card className="group cursor-pointer hover:shadow-divine transition-divine">
@@ -141,11 +190,22 @@ export function PodcastSection() {
           <h2 className="font-playfair text-xl font-semibold text-foreground">
             Latest Episodes
           </h2>
-          <div className="space-y-3">
-            {episodes.map((episode) => (
-              <EpisodeCard key={episode.id} episode={episode} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Loading episodes...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>{error}</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {episodes.map((episode) => (
+                <EpisodeCard key={episode.id} episode={episode} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
