@@ -2,51 +2,65 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Play, BookOpen, Heart, Calendar, Users, Headphones } from "lucide-react"
 
-export function QuickActions() {
+interface QuickActionsProps {
+  onNavigate?: (tab: string) => void
+}
+
+export function QuickActions({ onNavigate }: QuickActionsProps) {
   const actions = [
     {
       icon: Play,
       title: "Watch",
       description: "Pure word of God's grace",
       color: "bg-gradient-spiritual",
-      textColor: "text-white"
+      textColor: "text-white",
+      tab: "watch"
     },
     {
       icon: BookOpen,
       title: "Read",
       description: "Dig deeper into God's Word",
       color: "bg-gradient-divine",
-      textColor: "text-primary"
+      textColor: "text-primary",
+      tab: "learn"
     },
     {
       icon: Heart,
       title: "Prayer Request",
       description: "Request prayer for yourself or others",
       color: "bg-accent",
-      textColor: "text-primary"
+      textColor: "text-primary",
+      tab: "prayers"
     },
     {
       icon: Users,
       title: "Connect",
       description: "How to connect with us & others",
       color: "bg-gradient-peace",
-      textColor: "text-primary"
+      textColor: "text-primary",
+      tab: "events"
     },
     {
       icon: BookOpen,
       title: "Discover More",
       description: "A safe place for questions",
       color: "bg-muted",
-      textColor: "text-primary"
+      textColor: "text-primary",
+      tab: "learn"
     },
     {
       icon: Headphones,
       title: "Podcast",
       description: "Listen from anywhere!",
       color: "bg-primary-glow",
-      textColor: "text-primary"
+      textColor: "text-primary",
+      tab: "podcast"
     }
   ]
+
+  const handleActionClick = (tab: string) => {
+    onNavigate?.(tab)
+  }
 
   return (
     <div className="p-6 space-y-4">
@@ -61,6 +75,7 @@ export function QuickActions() {
             <Card 
               key={index} 
               className="border-0 shadow-gentle hover:shadow-divine transition-divine cursor-pointer group"
+              onClick={() => handleActionClick(action.tab)}
             >
               <CardContent className={`p-4 ${action.color} rounded-lg`}>
                 <div className="flex flex-col items-center text-center space-y-2">
