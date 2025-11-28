@@ -41,7 +41,7 @@ interface Conversation {
 
 interface ConversationViewProps {
   conversationId: string
-  onBack: () => void
+  onBack?: () => void
 }
 
 export function ConversationView({ conversationId, onBack }: ConversationViewProps) {
@@ -245,9 +245,11 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
       <div className="border-b bg-card p-4">
         <div className="container mx-auto max-w-4xl">
           <div className="flex items-center gap-4 mb-3">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
+            {onBack && (
+              <Button variant="ghost" size="sm" onClick={onBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
             <div className="flex-1">
               <h1 className="text-xl font-semibold">{conversation?.title}</h1>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
