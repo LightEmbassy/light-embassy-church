@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { supabase } from "@/integrations/supabase/client"
@@ -7,12 +7,10 @@ import { useToast } from "@/hooks/use-toast"
 import { 
   Users, 
   Shield, 
-  Mail, 
   Calendar,
   Search,
   MoreHorizontal,
-  UserCheck,
-  UserX
+  UserCheck
 } from "lucide-react"
 import { Tables } from "@/integrations/supabase/types"
 import { Input } from "@/components/ui/input"
@@ -20,10 +18,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 type Profile = Tables<"profiles">
+type UserRole = 'user' | 'counsellor' | 'staff' | 'moderator' | 'admin'
+
+interface ProfileWithRole extends Profile {
+  role?: UserRole
+}
 
 export function UserManagement() {
   const { toast } = useToast()
-  const [profiles, setProfiles] = useState<Profile[]>([])
+  const [profiles, setProfiles] = useState<ProfileWithRole[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [roleFilter, setRoleFilter] = useState<string>("all")
@@ -34,14 +37,31 @@ export function UserManagement() {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false })
 
-      if (error) throw error
+      if (profilesError) throw profilesError
 
-      setProfiles(data || [])
+      // Fetch roles for each profile
+      const { data: rolesData, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id, role")
+
+      if (rolesError) throw rolesError
+
+      // Merge profiles with roles
+      const profilesWithRoles = (profilesData || []).map(profile => {
+        const userRole = rolesData?.find(r => r.user_id === profile.user_id)
+        return {
+          ...profile,
+          role: (userRole?.role as UserRole) || 'user'
+        }
+      })
+
+      setProfiles(profilesWithRoles)
     } catch (error) {
       console.error("Error fetching profiles:", error)
       toast({
@@ -54,12 +74,18 @@ export function UserManagement() {
     }
   }
 
-  const handleRoleChange = async (userId: string, newRole: "user" | "counsellor" | "staff" | "moderator" | "admin") => {
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: newRole })
+      // Delete existing role
+      await supabase
+        .from("user_roles")
+        .delete()
         .eq("user_id", userId)
+
+      // Insert new role
+      const { error } = await supabase
+        .from("user_roles")
+        .insert({ user_id: userId, role: newRole })
 
       if (error) throw error
 
@@ -79,13 +105,13 @@ export function UserManagement() {
       console.error("Error updating user role:", error)
       toast({
         title: "Error",
-        description: "Failed to update user role.",
+        description: "Failed to update user role. You may not have permission.",
         variant: "destructive"
       })
     }
   }
 
-  const getRoleColor = (role: string) => {
+  const getRoleColor = (role?: UserRole) => {
     const colors: Record<string, string> = {
       admin: "bg-red-100 text-red-800",
       moderator: "bg-orange-100 text-orange-800",
@@ -93,7 +119,7 @@ export function UserManagement() {
       counsellor: "bg-purple-100 text-purple-800",
       user: "bg-gray-100 text-gray-800"
     }
-    return colors[role] || colors.user
+    return colors[role || 'user'] || colors.user
   }
 
   const filteredProfiles = profiles.filter(profile => {
@@ -236,7 +262,7 @@ export function UserManagement() {
                     variant="secondary"
                     className={`capitalize ${getRoleColor(profile.role)}`}
                   >
-                    {profile.role}
+                    {profile.role || 'user'}
                   </Badge>
                   
                   {profile.quiz_completed && (
