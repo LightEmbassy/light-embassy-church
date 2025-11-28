@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Play, Heart } from "lucide-react"
-import heroLightEmbassy from "@/assets/hero-light-embassy.jpg"
+import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
 
 export function HeroSection() {
   return (
@@ -19,7 +19,7 @@ export function HeroSection() {
       <div className="relative z-10 flex flex-col justify-end h-full p-6 text-white">
         <div className="space-y-4">
           <h1 className="font-playfair text-3xl font-bold leading-tight">
-            Light Embassy
+            Light Embassy Church
           </h1>
           <p className="text-white/90 text-lg font-inter">
             Revealing the Bible, discovering the truth, living the best life!

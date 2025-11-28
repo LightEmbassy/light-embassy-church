@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Church, Home, Play, BookOpen, Heart, Calendar, User } from "lucide-react"
+import { Church, Home, Play, BookOpen, Heart, Calendar, User, MessageSquare, Headphones } from "lucide-react"
 
 interface NavigationProps {
   activeTab: string
@@ -13,8 +13,10 @@ export function Navigation({ activeTab, onTabChange, className }: NavigationProp
     { id: 'home', label: 'Home', icon: Home },
     { id: 'watch', label: 'Watch', icon: Play },
     { id: 'learn', label: 'Learn', icon: BookOpen },
-    { id: 'pray', label: 'Pray', icon: Heart },
-    { id: 'events', label: 'Events', icon: Calendar },
+    { id: 'prayers', label: 'Prayers', icon: Heart },
+    { id: 'podcast', label: 'Podcast', icon: Headphones },
+    { id: 'chat', label: 'Chat', icon: MessageSquare },
+    { id: 'locations', label: 'Locations', icon: Church },
   ]
 
   return (
