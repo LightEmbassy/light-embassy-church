@@ -14,16 +14,127 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      prayer_requests: {
+        Row: {
+          category: Database["public"]["Enums"]["prayer_category"]
+          created_at: string
+          description: string
+          id: string
+          is_anonymous: boolean
+          request_pastoral_counselling: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["prayer_category"]
+          created_at?: string
+          description: string
+          id?: string
+          is_anonymous?: boolean
+          request_pastoral_counselling?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["prayer_category"]
+          created_at?: string
+          description?: string
+          id?: string
+          is_anonymous?: boolean
+          request_pastoral_counselling?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          quiz_completed: boolean
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          quiz_completed?: boolean
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          quiz_completed?: boolean
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["user_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      conversation_status:
+        | "active"
+        | "closed"
+        | "pending_moderation"
+        | "escalated"
+      message_status: "sent" | "delivered" | "read" | "moderated" | "flagged"
+      prayer_category:
+        | "healing"
+        | "finance"
+        | "family"
+        | "guidance"
+        | "thanksgiving"
+        | "salvation"
+        | "protection"
+        | "other"
+      user_role: "user" | "counsellor" | "staff" | "moderator" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +261,25 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      conversation_status: [
+        "active",
+        "closed",
+        "pending_moderation",
+        "escalated",
+      ],
+      message_status: ["sent", "delivered", "read", "moderated", "flagged"],
+      prayer_category: [
+        "healing",
+        "finance",
+        "family",
+        "guidance",
+        "thanksgiving",
+        "salvation",
+        "protection",
+        "other",
+      ],
+      user_role: ["user", "counsellor", "staff", "moderator", "admin"],
+    },
   },
 } as const
