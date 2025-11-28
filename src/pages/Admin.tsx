@@ -1,5 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext"
 import { useProfile } from "@/hooks/useProfile"
+import { useUserRole } from "@/hooks/useUserRole"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -22,7 +23,10 @@ import {
 
 export default function Admin() {
   const { user } = useAuth()
-  const { profile, loading } = useProfile()
+  const { profile, loading: profileLoading } = useProfile()
+  const { role, loading: roleLoading, isStaff } = useUserRole()
+
+  const loading = profileLoading || roleLoading
 
   if (loading) {
     return (
@@ -36,7 +40,7 @@ export default function Admin() {
   }
 
   // Check if user has admin/moderator/staff permissions
-  const hasAdminAccess = profile && ['admin', 'moderator', 'staff'].includes((profile as any).role)
+  const hasAdminAccess = isStaff()
 
   if (!hasAdminAccess) {
     return (
@@ -73,7 +77,7 @@ export default function Admin() {
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Shield className="h-4 w-4" />
-              <span className="capitalize">{(profile as any)?.role || 'user'}</span>
+              <span className="capitalize">{role || 'user'}</span>
             </div>
           </div>
         </div>

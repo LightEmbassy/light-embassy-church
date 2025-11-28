@@ -14,6 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversations: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          last_message_at: string | null
+          priority: number
+          staff_id: string | null
+          status: Database["public"]["Enums"]["conversation_status"]
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          priority?: number
+          staff_id?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"]
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          priority?: number
+          staff_id?: string | null
+          status?: Database["public"]["Enums"]["conversation_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      favorite_verses: {
+        Row: {
+          book: string
+          chapter: number
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          verse: number
+          verse_reference: string
+          verse_text: string
+        }
+        Insert: {
+          book: string
+          chapter: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          verse: number
+          verse_reference: string
+          verse_text: string
+        }
+        Update: {
+          book?: string
+          chapter?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          verse?: number
+          verse_reference?: string
+          verse_text?: string
+        }
+        Relationships: []
+      }
+      message_notifications: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_notifications_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_notifications_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          is_from_staff: boolean
+          moderated_at: string | null
+          moderated_by: string | null
+          moderation_notes: string | null
+          sender_id: string
+          status: Database["public"]["Enums"]["message_status"]
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_from_staff?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          sender_id: string
+          status?: Database["public"]["Enums"]["message_status"]
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_from_staff?: boolean
+          moderated_at?: string | null
+          moderated_by?: string | null
+          moderation_notes?: string | null
+          sender_id?: string
+          status?: Database["public"]["Enums"]["message_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prayer_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          prayer_request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          prayer_request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          prayer_request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prayer_interactions_prayer_request_id_fkey"
+            columns: ["prayer_request_id"]
+            isOneToOne: false
+            referencedRelation: "prayer_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       prayer_requests: {
         Row: {
           category: Database["public"]["Enums"]["prayer_category"]
@@ -79,6 +281,89 @@ export type Database = {
           username?: string
         }
         Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          correct_answer: number
+          created_at: string
+          id: string
+          options: Json
+          order_number: number
+          question: string
+        }
+        Insert: {
+          correct_answer: number
+          created_at?: string
+          id?: string
+          options: Json
+          order_number: number
+          question: string
+        }
+        Update: {
+          correct_answer?: number
+          created_at?: string
+          id?: string
+          options?: Json
+          order_number?: number
+          question?: string
+        }
+        Relationships: []
+      }
+      user_quiz_completion: {
+        Row: {
+          completed_at: string
+          id: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          score: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_quiz_responses: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_id: string
+          selected_answer: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct: boolean
+          question_id: string
+          selected_answer: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_id?: string
+          selected_answer?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_quiz_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
