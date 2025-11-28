@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
+import { useNavigation } from '@/contexts/NavigationContext'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -38,12 +39,29 @@ interface MessageCenterProps {
 export function MessageCenter({ onBack }: MessageCenterProps) {
   const { user } = useAuth()
   const { toast } = useToast()
+  const { navigateTo: navContextNavigateTo, goBack: navContextGoBack, canGoBack } = useNavigation()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [newConversationOpen, setNewConversationOpen] = useState(false)
+
+  const handleSelectConversation = (id: string) => {
+    setSelectedConversation(id)
+  }
+
+  const handleBackFromConversation = () => {
+    setSelectedConversation(null)
+  }
+
+  const handleBackFromMessages = () => {
+    if (onBack) {
+      onBack()
+    } else if (canGoBack) {
+      navContextGoBack()
+    }
+  }
 
   useEffect(() => {
     fetchConversations()
@@ -171,7 +189,7 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
     return (
       <ConversationView
         conversationId={selectedConversation}
-        onBack={() => setSelectedConversation(null)}
+        onBack={handleBackFromConversation}
       />
     )
   }
@@ -179,14 +197,14 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {onBack && (
+        {(onBack || canGoBack) && (
           <Button 
             variant="ghost" 
-            onClick={onBack}
+            onClick={handleBackFromMessages}
             className="mb-4 gap-2"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Home
+            Back
           </Button>
         )}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
@@ -261,7 +279,7 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
               <Card 
                 key={conversation.id} 
                 className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => setSelectedConversation(conversation.id)}
+                onClick={() => handleSelectConversation(conversation.id)}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">

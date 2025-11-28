@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect } from "react"
 import { Navigation as TopNavigation } from "@/components/layout/Navigation"
 import { Navigation } from "@/components/ui/navigation"
+import { useNavigation } from "@/contexts/NavigationContext"
 import Home from "./Home"
 import Watch from "./Watch"
 import Learn from "./Learn"
@@ -12,30 +13,34 @@ import Chat from "./Chat"
 import Admin from "./Admin"
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("home")
+  const { currentTab, navigateTo, goBack, navigationHistory } = useNavigation()
 
-  const handleBackToHome = () => setActiveTab('home')
+  useEffect(() => {
+    // Get current state data if any
+    const currentState = navigationHistory[navigationHistory.length - 1]
+    console.log('Current navigation state:', currentState)
+  }, [navigationHistory])
 
   const renderContent = () => {
-    switch (activeTab) {
+    switch (currentTab) {
       case 'home':
-        return <Home onNavigate={setActiveTab} />
+        return <Home onNavigate={navigateTo} />
       case 'watch':
-        return <Watch onBack={handleBackToHome} />
+        return <Watch onBack={goBack} />
       case 'learn':
-        return <Learn onBack={handleBackToHome} />
+        return <Learn onBack={goBack} />
       case 'prayers':
-        return <Prayers onBack={handleBackToHome} />
+        return <Prayers onBack={goBack} />
       case 'podcast':
-        return <Podcast onBack={handleBackToHome} />
+        return <Podcast onBack={goBack} />
       case 'messages':
-        return <Messages onBack={handleBackToHome} />
+        return <Messages onBack={goBack} />
       case 'locations':
-        return <Locations onBack={handleBackToHome} />
+        return <Locations onBack={goBack} />
       case 'chat':
-        return <Chat onBack={handleBackToHome} />
+        return <Chat onBack={goBack} />
       case 'admin':
-        return <Admin onBack={handleBackToHome} />
+        return <Admin onBack={goBack} />
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">
@@ -46,7 +51,7 @@ const Index = () => {
           </div>
         )
       default:
-        return <Home onNavigate={setActiveTab} />
+        return <Home onNavigate={navigateTo} />
     }
   }
 
@@ -56,7 +61,7 @@ const Index = () => {
       <div className="pt-20">
         {renderContent()}
       </div>
-      <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
+      <Navigation activeTab={currentTab} onTabChange={navigateTo} />
     </div>
   )
 };
