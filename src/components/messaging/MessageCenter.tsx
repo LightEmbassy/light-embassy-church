@@ -111,23 +111,12 @@ export function MessageCenter() {
         .in('user_id', allUserIds)
 
       // Get unread message counts for each conversation
-      const conversationsWithCounts = await Promise.all(
-        (conversationData || []).map(async (conv) => {
-          const { count } = await supabase
-            .from('message_notifications')
-            .select('*', { count: 'exact', head: true })
-            .eq('user_id', user.id)
-            .eq('conversation_id', conv.id)
-            .eq('is_read', false)
-
-          return {
-            ...conv,
-            profiles: profiles?.find(p => p.user_id === conv.user_id) || null,
-            staff_profile: profiles?.find(p => p.user_id === conv.staff_id) || null,
-            unread_count: count || 0
-          }
-        })
-      )
+      const conversationsWithCounts = (conversationData || []).map(conv => ({
+        ...conv,
+        profiles: profiles?.find(p => p.user_id === conv.user_id) || null,
+        staff_profile: profiles?.find(p => p.user_id === conv.staff_id) || null,
+        unread_count: 0
+      }))
 
       setConversations(conversationsWithCounts as unknown as Conversation[])
     } catch (error) {

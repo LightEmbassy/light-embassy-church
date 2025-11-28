@@ -82,7 +82,7 @@ export function PrayerEditForm({ prayerId, onSuccess, onCancel }: PrayerEditForm
       form.reset({
         title: data.title,
         description: data.description,
-        category: data.category,
+        category: data.category as any,
         is_anonymous: data.is_anonymous,
         request_pastoral_counselling: data.request_pastoral_counselling,
       })
