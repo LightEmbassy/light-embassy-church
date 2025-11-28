@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Navigation as TopNavigation } from "@/components/layout/Navigation"
 import { Navigation } from "@/components/ui/navigation"
 import Home from "./Home"
 
@@ -52,7 +53,10 @@ const Index = () => {
 
   return (
     <div className="font-inter">
-      {renderContent()}
+      <TopNavigation />
+      <div className="pt-20">
+        {renderContent()}
+      </div>
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
