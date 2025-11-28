@@ -3,7 +3,7 @@ import { PrayerRequestForm } from '@/components/prayers/PrayerRequestForm'
 import { PrayerEditForm } from '@/components/prayers/PrayerEditForm'
 import { PrayerWall } from '@/components/prayers/PrayerWall'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { Plus, ArrowLeft } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -23,7 +23,11 @@ interface PrayerRequest {
   user_id: string
 }
 
-export default function Prayers() {
+interface PrayersProps {
+  onBack?: () => void
+}
+
+export default function Prayers({ onBack }: PrayersProps) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editingPrayer, setEditingPrayer] = useState<PrayerRequest | null>(null)
@@ -50,6 +54,16 @@ export default function Prayers() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4 gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        )}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">Prayer Requests</h1>

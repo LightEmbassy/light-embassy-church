@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { MessageSquare, Plus, Search, Clock, CheckCircle, AlertCircle } from 'lucide-react'
+import { MessageSquare, Plus, Search, Clock, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ConversationView } from './ConversationView'
 import { NewConversationDialog } from './NewConversationDialog'
@@ -31,7 +31,11 @@ interface Conversation {
   unread_count?: number
 }
 
-export function MessageCenter() {
+interface MessageCenterProps {
+  onBack?: () => void
+}
+
+export function MessageCenter({ onBack }: MessageCenterProps) {
   const { user } = useAuth()
   const { toast } = useToast()
   const [conversations, setConversations] = useState<Conversation[]>([])
@@ -175,6 +179,16 @@ export function MessageCenter() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4 gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        )}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold mb-2">Messages</h1>

@@ -1,5 +1,9 @@
 import { LocationsSection } from "@/components/locations/LocationsSection"
 
-export default function Locations() {
-  return <LocationsSection />
+interface LocationsProps {
+  onBack?: () => void
+}
+
+export default function Locations({ onBack }: LocationsProps) {
+  return <LocationsSection onBack={onBack} />
 }

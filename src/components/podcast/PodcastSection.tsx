@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Clock, ExternalLink, Headphones, Share2 } from "lucide-react"
+import { Play, Clock, ExternalLink, Headphones, Share2, ArrowLeft } from "lucide-react"
 
 interface Episode {
   id: string
@@ -14,7 +14,11 @@ interface Episode {
   audioUrl: string
 }
 
-export function PodcastSection() {
+interface PodcastSectionProps {
+  onBack?: () => void
+}
+
+export function PodcastSection({ onBack }: PodcastSectionProps) {
   const episodes: Episode[] = [
     {
       id: "1",
@@ -84,6 +88,16 @@ export function PodcastSection() {
     <div className="min-h-screen bg-background pb-20 pt-16">
       {/* Header */}
       <div className="p-6">
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4 gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        )}
         <div className="flex items-center justify-between mb-2">
           <h1 className="font-playfair text-3xl font-bold text-primary">Podcast</h1>
           <Button variant="outline" size="sm" className="gap-2" asChild>

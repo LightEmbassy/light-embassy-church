@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Clock, Users, ExternalLink, Share2 } from "lucide-react"
+import { Play, Clock, Users, ExternalLink, Share2, ArrowLeft } from "lucide-react"
 
 interface VideoItem {
   id: string
@@ -16,7 +16,11 @@ interface VideoItem {
   embedId: string
 }
 
-export function WatchSection() {
+interface WatchSectionProps {
+  onBack?: () => void
+}
+
+export function WatchSection({ onBack }: WatchSectionProps) {
   // Real videos from Light Embassy Church and related Swedish churches
   const featuredVideos: VideoItem[] = [
     {
@@ -167,6 +171,16 @@ export function WatchSection() {
     <div className="min-h-screen bg-background pb-20 pt-16">
       {/* Header */}
       <div className="p-6">
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4 gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        )}
         <div className="flex items-center justify-between mb-2">
           <h1 className="font-playfair text-3xl font-bold text-primary">Watch</h1>
           <Button variant="outline" size="sm" className="gap-2" asChild>

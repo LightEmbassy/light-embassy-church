@@ -1,5 +1,9 @@
 import { PodcastSection } from "@/components/podcast/PodcastSection"
 
-export default function Podcast() {
-  return <PodcastSection />
+interface PodcastProps {
+  onBack?: () => void
+}
+
+export default function Podcast({ onBack }: PodcastProps) {
+  return <PodcastSection onBack={onBack} />
 }

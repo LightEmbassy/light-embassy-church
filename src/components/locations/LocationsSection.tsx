@@ -12,10 +12,15 @@ import {
   Phone, 
   ExternalLink,
   Calendar,
-  Users
+  Users,
+  ArrowLeft
 } from "lucide-react"
 
-export function LocationsSection() {
+interface LocationsSectionProps {
+  onBack?: () => void
+}
+
+export function LocationsSection({ onBack }: LocationsSectionProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
   const [locations] = useState<Location[]>([
@@ -132,6 +137,16 @@ export function LocationsSection() {
     <div className="min-h-screen bg-background pb-20 pt-16">
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4 gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        )}
         <div className="text-center mb-8">
           <h1 className="font-playfair text-4xl font-bold mb-4 text-primary">
             Find Us
