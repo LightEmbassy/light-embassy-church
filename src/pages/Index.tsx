@@ -14,26 +14,28 @@ import Admin from "./Admin"
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home")
 
+  const handleBackToHome = () => setActiveTab('home')
+
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
         return <Home onNavigate={setActiveTab} />
       case 'watch':
-        return <Watch />
+        return <Watch onBack={handleBackToHome} />
       case 'learn':
-        return <Learn />
+        return <Learn onBack={handleBackToHome} />
       case 'prayers':
-        return <Prayers />
+        return <Prayers onBack={handleBackToHome} />
       case 'podcast':
-        return <Podcast />
+        return <Podcast onBack={handleBackToHome} />
       case 'messages':
-        return <Messages />
+        return <Messages onBack={handleBackToHome} />
       case 'locations':
-        return <Locations />
+        return <Locations onBack={handleBackToHome} />
       case 'chat':
-        return <Chat />
+        return <Chat onBack={handleBackToHome} />
       case 'admin':
-        return <Admin />
+        return <Admin onBack={handleBackToHome} />
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">

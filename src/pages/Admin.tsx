@@ -17,10 +17,15 @@ import {
   Heart, 
   HelpCircle, 
   BarChart3,
-  Shield
+  Shield,
+  ArrowLeft
 } from "lucide-react"
 
-export default function Admin() {
+interface AdminProps {
+  onBack?: () => void
+}
+
+export default function Admin({ onBack }: AdminProps) {
   const { user } = useAuth()
   const { profile, loading } = useProfile()
 
@@ -62,6 +67,16 @@ export default function Admin() {
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
+          {onBack && (
+            <Button 
+              variant="ghost" 
+              onClick={onBack}
+              className="mb-4 gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Button>
+          )}
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="font-playfair text-4xl font-bold text-primary">
