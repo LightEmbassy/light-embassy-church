@@ -19,7 +19,9 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
-type Profile = Tables<"profiles">
+type Profile = Tables<"profiles"> & {
+  role: string
+}
 
 export function UserManagement() {
   const { toast } = useToast()
@@ -34,14 +36,31 @@ export function UserManagement() {
 
   const fetchProfiles = async () => {
     try {
-      const { data, error } = await supabase
+      // Fetch profiles
+      const { data: profilesData, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false })
 
-      if (error) throw error
+      if (profilesError) throw profilesError
 
-      setProfiles(data || [])
+      // Fetch user roles
+      const { data: rolesData, error: rolesError } = await supabase
+        .from("user_roles")
+        .select("user_id, role")
+
+      if (rolesError) throw rolesError
+
+      // Create a map of user_id to role
+      const roleMap = new Map(rolesData?.map(r => [r.user_id, r.role]) || [])
+
+      // Combine profiles with roles (default to 'user' if no role assigned)
+      const profilesWithRoles = profilesData?.map(profile => ({
+        ...profile,
+        role: roleMap.get(profile.user_id) || 'user'
+      })) || []
+
+      setProfiles(profilesWithRoles)
     } catch (error) {
       console.error("Error fetching profiles:", error)
       toast({
@@ -56,13 +75,31 @@ export function UserManagement() {
 
   const handleRoleChange = async (userId: string, newRole: "user" | "counsellor" | "staff" | "moderator" | "admin") => {
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: newRole })
+      // Check if user already has a role entry
+      const { data: existingRole } = await supabase
+        .from("user_roles")
+        .select("id")
         .eq("user_id", userId)
+        .single()
 
-      if (error) throw error
+      if (existingRole) {
+        // Update existing role
+        const { error } = await supabase
+          .from("user_roles")
+          .update({ role: newRole })
+          .eq("user_id", userId)
 
+        if (error) throw error
+      } else {
+        // Insert new role
+        const { error } = await supabase
+          .from("user_roles")
+          .insert({ user_id: userId, role: newRole })
+
+        if (error) throw error
+      }
+
+      // Update local state
       setProfiles(prev =>
         prev.map(profile =>
           profile.user_id === userId
