@@ -1,7 +1,1 @@
-project_id = "hmmxqwztiijmninavhcf"
-
-[functions.chat-assistant]
-verify_jwt = true
-
-[functions.podcast-feed]
-verify_jwt = false
+project_id = "tfbwlsrdrhsrtvblrxqy"

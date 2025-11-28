@@ -1,15 +1,6 @@
 import { useState } from "react"
-import { Navigation as TopNavigation } from "@/components/layout/Navigation"
 import { Navigation } from "@/components/ui/navigation"
 import Home from "./Home"
-import Watch from "./Watch"
-import Learn from "./Learn"
-import Prayers from "./Prayers"
-import Messages from "./Messages"
-import Podcast from "./Podcast"
-import Locations from "./Locations"
-import Chat from "./Chat"
-import Admin from "./Admin"
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home")
@@ -17,23 +8,34 @@ const Index = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'home':
-        return <Home onNavigate={setActiveTab} />
+        return <Home />
       case 'watch':
-        return <Watch />
+        return (
+          <div className="min-h-screen bg-background pb-20 pt-16">
+            <div className="text-center p-8">
+              <h1 className="font-playfair text-3xl font-bold mb-4 text-primary">Watch</h1>
+              <p className="text-muted-foreground">Live services and recorded content coming soon!</p>
+            </div>
+          </div>
+        )
       case 'learn':
-        return <Learn />
-      case 'prayers':
-        return <Prayers />
-      case 'podcast':
-        return <Podcast />
-      case 'messages':
-        return <Messages />
-      case 'locations':
-        return <Locations />
-      case 'chat':
-        return <Chat />
-      case 'admin':
-        return <Admin />
+        return (
+          <div className="min-h-screen bg-background pb-20 pt-16">
+            <div className="text-center p-8">
+              <h1 className="font-playfair text-3xl font-bold mb-4 text-primary">Learn</h1>
+              <p className="text-muted-foreground">Bible studies and teaching materials coming soon!</p>
+            </div>
+          </div>
+        )
+      case 'pray':
+        return (
+          <div className="min-h-screen bg-background pb-20 pt-16">
+            <div className="text-center p-8">
+              <h1 className="font-playfair text-3xl font-bold mb-4 text-primary">Pray</h1>
+              <p className="text-muted-foreground">Prayer requests and spiritual support coming soon!</p>
+            </div>
+          </div>
+        )
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">
@@ -44,16 +46,13 @@ const Index = () => {
           </div>
         )
       default:
-        return <Home onNavigate={setActiveTab} />
+        return <Home />
     }
   }
 
   return (
     <div className="font-inter">
-      <TopNavigation />
-      <div className="pt-20">
-        {renderContent()}
-      </div>
+      {renderContent()}
       <Navigation activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
