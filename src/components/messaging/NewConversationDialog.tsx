@@ -80,10 +80,9 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
         .from('conversations')
         .insert({
           user_id: user.id,
-          title: data.title,
-          category: data.category,
-          priority: data.priority,
-        })
+          subject: data.title,
+          status: 'open'
+        } as any)
         .select()
         .single()
 

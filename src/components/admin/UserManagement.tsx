@@ -73,7 +73,7 @@ export function UserManagement() {
     }
   }
 
-  const handleRoleChange = async (userId: string, newRole: "user" | "counsellor" | "staff" | "moderator" | "admin") => {
+  const handleRoleChange = async (userId: string, newRole: "user" | "staff" | "moderator" | "admin") => {
     try {
       // Check if user already has a role entry
       const { data: existingRole } = await supabase
@@ -127,7 +127,6 @@ export function UserManagement() {
       admin: "bg-red-100 text-red-800",
       moderator: "bg-orange-100 text-orange-800",
       staff: "bg-blue-100 text-blue-800",
-      counsellor: "bg-purple-100 text-purple-800",
       user: "bg-gray-100 text-gray-800"
     }
     return colors[role] || colors.user
@@ -144,7 +143,6 @@ export function UserManagement() {
     admin: profiles.filter(p => p.role === "admin").length,
     moderator: profiles.filter(p => p.role === "moderator").length,
     staff: profiles.filter(p => p.role === "staff").length,
-    counsellor: profiles.filter(p => p.role === "counsellor").length,
     user: profiles.filter(p => p.role === "user").length
   }
 
@@ -166,7 +164,7 @@ export function UserManagement() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
             <Users className="h-6 w-6 mx-auto mb-2 text-blue-600" />
@@ -193,13 +191,6 @@ export function UserManagement() {
             <Users className="h-6 w-6 mx-auto mb-2 text-blue-600" />
             <p className="text-xl font-bold">{roleStats.staff}</p>
             <p className="text-xs text-muted-foreground">Staff</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <UserCheck className="h-6 w-6 mx-auto mb-2 text-purple-600" />
-            <p className="text-xl font-bold">{roleStats.counsellor}</p>
-            <p className="text-xs text-muted-foreground">Counsellors</p>
           </CardContent>
         </Card>
         <Card>
@@ -232,7 +223,6 @@ export function UserManagement() {
             <SelectItem value="admin">Admin</SelectItem>
             <SelectItem value="moderator">Moderator</SelectItem>
             <SelectItem value="staff">Staff</SelectItem>
-            <SelectItem value="counsellor">Counsellor</SelectItem>
             <SelectItem value="user">User</SelectItem>
           </SelectContent>
         </Select>
@@ -306,12 +296,6 @@ export function UserManagement() {
                         disabled={profile.role === "staff"}
                       >
                         Make Staff
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleRoleChange(profile.user_id, "counsellor")}
-                        disabled={profile.role === "counsellor"}
-                      >
-                        Make Counsellor
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => handleRoleChange(profile.user_id, "user")}

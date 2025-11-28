@@ -40,10 +40,6 @@ interface PrayerRequest {
   profiles?: {
     username: string
   } | null
-  prayer_interactions: {
-    id: string
-    user_id: string
-  }[]
 }
 
 const categoryLabels = {
@@ -101,17 +97,6 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
           fetchPrayers()
         }
       )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'prayer_interactions'
-        },
-        () => {
-          fetchPrayers()
-        }
-      )
       .subscribe()
 
     return () => {
@@ -138,8 +123,7 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
 
       if (prayerError) throw prayerError
 
-      // Fetch user profiles and prayer interactions separately
-      const prayerIds = prayerData?.map(p => p.id) || []
+      // Fetch user profiles separately
       const userIds = prayerData?.map(p => p.user_id) || []
 
       // Get profiles
@@ -148,17 +132,10 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
         .select('user_id, username')
         .in('user_id', userIds)
 
-      // Get prayer interactions
-      const { data: interactions } = await supabase
-        .from('prayer_interactions')
-        .select('id, user_id, prayer_request_id')
-        .in('prayer_request_id', prayerIds)
-
       // Combine the data
       const prayersWithData = prayerData?.map(prayer => ({
         ...prayer,
-        profiles: profiles?.find(p => p.user_id === prayer.user_id) || null,
-        prayer_interactions: interactions?.filter(i => i.prayer_request_id === prayer.id) || []
+        profiles: profiles?.find(p => p.user_id === prayer.user_id) || null
       })) || []
 
       setPrayers(prayersWithData as unknown as PrayerRequest[])
@@ -175,93 +152,12 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
   }
 
   const handleDeletePrayer = async () => {
-    if (!prayerToDelete || !user) return
-
-    try {
-      const { error } = await supabase
-        .from('prayer_requests')
-        .delete()
-        .eq('id', prayerToDelete)
-        .eq('user_id', user.id)
-
-      if (error) throw error
-
-      toast({
-        title: 'Prayer request deleted',
-        description: 'Your prayer request has been removed.',
-      })
-
-      setPrayerToDelete(null)
-      setDeleteDialogOpen(false)
-      fetchPrayers()
-    } catch (error) {
-      console.error('Error deleting prayer:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to delete prayer request.',
-        variant: 'destructive',
-      })
-    }
-  }
-
-  const handlePrayedFor = async (prayerId: string) => {
-    if (!user) return
-
-    try {
-      // Check if user already prayed for this request
-      const existingInteraction = prayers
-        .find(p => p.id === prayerId)
-        ?.prayer_interactions?.find(i => i.user_id === user.id)
-
-      if (existingInteraction) {
-        // Remove the prayer interaction
-        const { error } = await supabase
-          .from('prayer_interactions')
-          .delete()
-          .eq('id', existingInteraction.id)
-
-        if (error) throw error
-
-        toast({
-          title: 'Prayer removed',
-          description: 'Your prayer has been removed.',
-        })
-      } else {
-        // Add new prayer interaction
-        const { error } = await supabase
-          .from('prayer_interactions')
-          .insert({
-            prayer_request_id: prayerId,
-            user_id: user.id,
-            interaction_type: 'prayed_for'
-          })
-
-        if (error) throw error
-
-        toast({
-          title: 'Prayer recorded',
-          description: 'Thank you for praying!',
-        })
-      }
-
-      // Refresh the prayers list
-      fetchPrayers()
-    } catch (error) {
-      console.error('Error updating prayer interaction:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to update prayer status.',
-        variant: 'destructive',
-      })
-    }
-  }
-
-  const getUserHasPrayed = (prayer: PrayerRequest) => {
-    return prayer.prayer_interactions?.some(i => i.user_id === user?.id) || false
-  }
-
-  const getPrayerCount = (prayer: PrayerRequest) => {
-    return prayer.prayer_interactions?.length || 0
+    // Disabled in public mode
+    toast({
+      title: 'Not available',
+      description: 'Authentication required for this action.',
+      variant: 'destructive',
+    })
   }
 
   if (loading) {
@@ -377,29 +273,12 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
                 </p>
                 
                 {prayer.request_pastoral_counselling && (
-                  <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
                     <p className="text-sm text-blue-800">
                       📞 This person has requested pastoral counselling
                     </p>
                   </div>
                 )}
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Hand className="h-4 w-4" />
-                    <span>{getPrayerCount(prayer)} people have prayed</span>
-                  </div>
-                  
-                  <Button
-                    variant={getUserHasPrayed(prayer) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handlePrayedFor(prayer.id)}
-                    className="flex items-center gap-2"
-                  >
-                    <Hand className="h-4 w-4" />
-                    {getUserHasPrayed(prayer) ? "Prayed ✓" : "I've prayed for this"}
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           ))}

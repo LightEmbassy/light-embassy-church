@@ -157,18 +157,8 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
   }
 
   const markMessagesAsRead = async () => {
-    if (!user) return
-
-    try {
-      await supabase
-        .from('message_notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
-        .eq('user_id', user.id)
-        .eq('conversation_id', conversationId)
-        .eq('is_read', false)
-    } catch (error) {
-      console.error('Error marking messages as read:', error)
-    }
+    // Disabled in public mode
+    return
   }
 
   const sendMessage = async () => {

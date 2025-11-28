@@ -113,8 +113,9 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
         .from('user_quiz_completion')
         .insert({
           user_id: user.id,
-          score: correctAnswers
-        })
+          score: correctAnswers,
+          total_questions: questions.length
+        } as any)
 
       // Update profile to mark quiz as completed
       await supabase
