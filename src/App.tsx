@@ -7,8 +7,10 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Prayers from "./pages/Prayers";
+import { AdminRoute } from "./components/auth/AdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -21,9 +23,9 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/auth" element={<Navigate to="/" replace />} />
+              <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<Index />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
