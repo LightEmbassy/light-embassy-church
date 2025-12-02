@@ -21,93 +21,79 @@ interface WatchSectionProps {
 }
 
 export function WatchSection({ onBack }: WatchSectionProps) {
-  // Real videos from Light Embassy Church and related Swedish churches
+  // Videos from Light Embassy Church - https://lightembassy.org/watch
   const featuredVideos: VideoItem[] = [
     {
       id: "1",
-      title: "Step out of your boat - Joakim Lundqvist, Pastor Word of Life Sweden",
-      description: "Incredible stories of God at work through Eastern Europe, including the humanitarian refugee crisis. A powerful message about stepping out in faith.",
-      thumbnail: "https://img.youtube.com/vi/dQbISDDbt_A/maxresdefault.jpg",
-      duration: "45:30",
-      views: "2.1K",
-      publishedAt: "March 2022",
-      embedId: "dQbISDDbt_A"
+      title: "The King Is Coming!",
+      description: "A powerful message from Light Embassy Church about the return of Christ and living in expectation of His coming.",
+      thumbnail: "https://img.youtube.com/vi/J8zRYVAsqw8/maxresdefault.jpg",
+      duration: "30:32",
+      views: "Featured",
+      publishedAt: "Light Embassy",
+      embedId: "J8zRYVAsqw8"
     },
     {
       id: "2", 
-      title: "The Power To See - Pastor Wilberforce Bezudde",
-      description: "Pastor Wilberforce teaches the importance of using your faith to see. From the IBC Conference in Stockholm.",
-      thumbnail: "https://img.youtube.com/vi/K0BPLdZQu8E/maxresdefault.jpg",
-      duration: "32:15",
-      views: "136",
-      publishedAt: "June 2023",
-      embedId: "K0BPLdZQu8E"
+      title: "Light Embassy Church Healing Special Feature",
+      description: "A special feature on healing testimonies and the power of God's healing grace at Light Embassy Church.",
+      thumbnail: "https://img.youtube.com/vi/pMRaAr6kc3o/maxresdefault.jpg",
+      duration: "19:42",
+      views: "Featured",
+      publishedAt: "Light Embassy",
+      embedId: "pMRaAr6kc3o"
     },
     {
       id: "3",
-      title: "Living as Light in a Darkened World",
-      description: "Pastor Tim Dunn explores living as a beacon of light and embodying wisdom in a world shadowed by darkness.",
-      thumbnail: "https://img.youtube.com/vi/2dO6kKqaRKE/maxresdefault.jpg", 
-      duration: "28:45",
-      views: "634",
-      publishedAt: "Recent",
-      embedId: "2dO6kKqaRKE"
+      title: "His Word is Greater Than Feeling",
+      description: "An encouraging message about trusting God's Word above our feelings and circumstances.",
+      thumbnail: "https://img.youtube.com/vi/UZP-pj1yQCc/maxresdefault.jpg", 
+      duration: "15:48",
+      views: "Featured",
+      publishedAt: "Light Embassy",
+      embedId: "UZP-pj1yQCc"
     }
   ]
 
-  const sermons: VideoItem[] = [
+  // Light Embassy Podcast playlist
+  const podcast: VideoItem[] = [
     {
       id: "4",
-      title: "Step out of your boat - Joakim Lundqvist",
-      description: "Over 700 churches planted throughout Eastern Europe. Hear incredible stories of God at work and a message about stepping out in faith.",
-      thumbnail: "https://img.youtube.com/vi/dQbISDDbt_A/maxresdefault.jpg",
-      duration: "52:20",
-      views: "2.1K",
-      publishedAt: "March 2022", 
-      embedId: "dQbISDDbt_A"
-    },
-    {
-      id: "5",
-      title: "The Power To See - Full Sermon",
-      description: "Pastor Wilberforce teaches the importance of using your faith to see. A powerful message from Stockholm conference.",
-      thumbnail: "https://img.youtube.com/vi/K0BPLdZQu8E/maxresdefault.jpg",
-      duration: "41:15",
-      views: "136",
-      publishedAt: "June 2023",
-      embedId: "K0BPLdZQu8E"
-    },
-    {
-      id: "6",
-      title: "What is a Simple Church?",
-      description: "Exploring the essence of simple church ministry and authentic Christian community.",
-      thumbnail: "https://img.youtube.com/vi/uMC3tBGqPmI/maxresdefault.jpg",
-      duration: "35:20",
-      views: "76",
-      publishedAt: "February 2025",
-      embedId: "uMC3tBGqPmI"
+      title: "Light Embassy Podcast",
+      description: "Revealing the Bible, discovering the truth, living the best life! Watch and listen to the Light Embassy Podcast series.",
+      thumbnail: "https://img.youtube.com/vi/J8zRYVAsqw8/maxresdefault.jpg",
+      duration: "Series",
+      views: "Podcast",
+      publishedAt: "Light Embassy",
+      embedId: "videoseries?list=PLqEHLUKupSnCw8WAJHCscE9f0lmFhzB_Z"
     }
   ]
 
-  const worship: VideoItem[] = [
+  // The Trumpeter - Daily Devotional
+  const devotional: VideoItem[] = [
     {
-      id: "7",
-      title: "Glory Is The Highest Form Of Honor",
-      description: "Pastor Lee's message about glory and honor in worship from Sunday service.",
-      thumbnail: "https://img.youtube.com/vi/yhrZfWcUtr4/maxresdefault.jpg",
-      duration: "35:45",
-      views: "83",
-      publishedAt: "June 2022",
-      embedId: "yhrZfWcUtr4"
-    },
+      id: "5",
+      title: "The Trumpeter - Daily Devotional",
+      description: "We're committed to empowering you with knowledge and resources needed for your spiritual edification and growth.",
+      thumbnail: "https://img.youtube.com/vi/pMRaAr6kc3o/maxresdefault.jpg",
+      duration: "Series",
+      views: "Devotional",
+      publishedAt: "Light Embassy",
+      embedId: "videoseries?list=PLqEHLUKupSnAOEp8ZSfuhu7H2CuKkRZKU"
+    }
+  ]
+
+  // The Spiritual Man - Teaching Series
+  const teaching: VideoItem[] = [
     {
-      id: "8", 
-      title: "Power From On High",
-      description: "Pastor Ken's message about receiving power from God in worship and ministry.",
-      thumbnail: "https://img.youtube.com/vi/F5gn2nwywYE/maxresdefault.jpg",
-      duration: "25:30",
-      views: "21",
-      publishedAt: "June 2022",
-      embedId: "F5gn2nwywYE"
+      id: "6",
+      title: "The Spiritual Man - Teaching Series",
+      description: "Recordings of the teaching series at Light Embassy Church on the topic of 'the spiritual man'.",
+      thumbnail: "https://img.youtube.com/vi/UZP-pj1yQCc/maxresdefault.jpg",
+      duration: "Series",
+      views: "Teaching",
+      publishedAt: "Light Embassy",
+      embedId: "videoseries?list=PLqEHLUKupSnB1GZiueI895TJJ9v6oRJoa"
     }
   ]
 
@@ -198,16 +184,17 @@ export function WatchSection({ onBack }: WatchSectionProps) {
       {/* Content Tabs */}
       <div className="px-6">
         <Tabs defaultValue="featured" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="featured">Featured</TabsTrigger>
-            <TabsTrigger value="sermons">Sermons</TabsTrigger>
-            <TabsTrigger value="worship">Worship</TabsTrigger>
+            <TabsTrigger value="podcast">Podcast</TabsTrigger>
+            <TabsTrigger value="devotional">Devotional</TabsTrigger>
+            <TabsTrigger value="teaching">Teaching</TabsTrigger>
           </TabsList>
           
           <TabsContent value="featured" className="mt-6">
             <div className="space-y-4">
               <h2 className="font-playfair text-xl font-semibold text-foreground">
-                Featured Content
+                Featured Videos
               </h2>
               <div className="grid gap-4">
                 {featuredVideos.map((video) => (
@@ -217,29 +204,69 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             </div>
           </TabsContent>
           
-          <TabsContent value="sermons" className="mt-6">
+          <TabsContent value="podcast" className="mt-6">
             <div className="space-y-4">
               <h2 className="font-playfair text-xl font-semibold text-foreground">
-                Sermons & Teaching
+                Light Embassy Podcast
               </h2>
+              <p className="text-muted-foreground text-sm mb-4">
+                Revealing the Bible, discovering the truth, living the best life!
+              </p>
               <div className="grid gap-4">
-                {sermons.map((video) => (
+                {podcast.map((video) => (
                   <VideoCard key={video.id} video={video} />
                 ))}
               </div>
+              <Button variant="outline" className="w-full gap-2" asChild>
+                <a href="https://www.youtube.com/playlist?list=PLqEHLUKupSnCw8WAJHCscE9f0lmFhzB_Z" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  View Full Podcast Playlist
+                </a>
+              </Button>
             </div>
           </TabsContent>
           
-          <TabsContent value="worship" className="mt-6">
+          <TabsContent value="devotional" className="mt-6">
             <div className="space-y-4">
               <h2 className="font-playfair text-xl font-semibold text-foreground">
-                Worship & Music
+                The Trumpeter - Daily Devotional
               </h2>
+              <p className="text-muted-foreground text-sm mb-4">
+                Empowering you with knowledge and resources for spiritual edification and growth.
+              </p>
               <div className="grid gap-4">
-                {worship.map((video) => (
+                {devotional.map((video) => (
                   <VideoCard key={video.id} video={video} />
                 ))}
               </div>
+              <Button variant="outline" className="w-full gap-2" asChild>
+                <a href="https://www.youtube.com/playlist?list=PLqEHLUKupSnAOEp8ZSfuhu7H2CuKkRZKU" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  View Full Devotional Playlist
+                </a>
+              </Button>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="teaching" className="mt-6">
+            <div className="space-y-4">
+              <h2 className="font-playfair text-xl font-semibold text-foreground">
+                The Spiritual Man - Teaching Series
+              </h2>
+              <p className="text-muted-foreground text-sm mb-4">
+                Deep teachings on the topic of "the spiritual man" from Light Embassy Church.
+              </p>
+              <div className="grid gap-4">
+                {teaching.map((video) => (
+                  <VideoCard key={video.id} video={video} />
+                ))}
+              </div>
+              <Button variant="outline" className="w-full gap-2" asChild>
+                <a href="https://www.youtube.com/playlist?list=PLqEHLUKupSnB1GZiueI895TJJ9v6oRJoa" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                  View Full Teaching Playlist
+                </a>
+              </Button>
             </div>
           </TabsContent>
         </Tabs>
