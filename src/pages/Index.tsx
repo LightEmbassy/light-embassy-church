@@ -11,6 +11,7 @@ import Podcast from "./Podcast"
 import Locations from "./Locations"
 import Chat from "./Chat"
 import Admin from "./Admin"
+import Quiz from "./Quiz"
 
 const Index = () => {
   const { currentTab, navigateTo, goBack, navigationHistory } = useNavigation()
@@ -41,6 +42,8 @@ const Index = () => {
         return <Chat onBack={goBack} />
       case 'admin':
         return <Admin onBack={goBack} />
+      case 'quiz':
+        return <Quiz onBack={goBack} />
       case 'events':
         return (
           <div className="min-h-screen bg-background pb-20 pt-16">
