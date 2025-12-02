@@ -342,6 +342,7 @@ export type Database = {
           id: string
           options: Json
           order_number: number
+          podcast_title: string | null
           podcast_url: string | null
           question: string
         }
@@ -351,6 +352,7 @@ export type Database = {
           id?: string
           options: Json
           order_number: number
+          podcast_title?: string | null
           podcast_url?: string | null
           question: string
         }
@@ -360,6 +362,7 @@ export type Database = {
           id?: string
           options?: Json
           order_number?: number
+          podcast_title?: string | null
           podcast_url?: string | null
           question?: string
         }
