@@ -16,6 +16,7 @@ interface QuizQuestion {
   correct_answer: number
   order_number: number
   podcast_url?: string
+  podcast_title?: string
 }
 
 interface SignupQuizProps {
@@ -218,7 +219,7 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
                         ) : (
                           <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
                         )}
-                        <span className="text-sm font-inter">Question {index + 1}</span>
+                        <span className="text-sm font-inter truncate">{question.podcast_title || `Question ${index + 1}`}</span>
                       </div>
                       {question.podcast_url && (
                         <a 
