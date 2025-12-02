@@ -262,17 +262,25 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
             <CardContent className="space-y-6">
               {/* Podcast Episode Source */}
               {currentQuestion.podcast_title && currentQuestion.podcast_url && (
-                <div className="flex items-center justify-center gap-2 p-2 bg-primary/5 rounded-lg">
-                  <span className="text-xs text-muted-foreground font-inter">Based on:</span>
-                  <a 
-                    href={currentQuestion.podcast_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-primary hover:underline font-inter flex items-center gap-1"
-                  >
-                    {currentQuestion.podcast_title} <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
+                <a 
+                  href={currentQuestion.podcast_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 p-3 bg-primary/10 rounded-lg border border-primary/20 hover:bg-primary/20 transition-colors group"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                      <ExternalLink className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-inter">Listen to the episode:</p>
+                      <p className="text-sm font-semibold text-primary font-inter group-hover:underline">
+                        {currentQuestion.podcast_title}
+                      </p>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-primary/60" />
+                </a>
               )}
               
               <div className="space-y-4">
