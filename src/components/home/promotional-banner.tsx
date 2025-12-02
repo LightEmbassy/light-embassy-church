@@ -17,6 +17,16 @@ interface PromoBanner {
 
 const promoBanners: PromoBanner[] = [
   {
+    id: "quiz",
+    title: "Take a Quiz",
+    description: "Test your knowledge of Scripture and grow in your understanding of God's Word",
+    action: "Start Quiz",
+    actionUrl: "/quiz",
+    icon: ClipboardList,
+    gradient: "bg-gradient-to-r from-purple-500/10 to-pink-500/10",
+    badge: "Challenge Yourself"
+  },
+  {
     id: "watch",
     title: "Watch Our Videos",
     description: "Filled with the pure word of God's grace to build you up and deliver unto you an inheritance among the saints",
@@ -46,16 +56,6 @@ const promoBanners: PromoBanner[] = [
     gradient: "bg-gradient-to-r from-orange-500/10 to-red-500/10",
     badge: "Bible Study"
   },
-  {
-    id: "quiz",
-    title: "Take a Quiz",
-    description: "Test your knowledge of Scripture and grow in your understanding of God's Word",
-    action: "Start Quiz",
-    actionUrl: "/quiz",
-    icon: ClipboardList,
-    gradient: "bg-gradient-to-r from-purple-500/10 to-pink-500/10",
-    badge: "Challenge Yourself"
-  }
 ]
 
 interface PromotionalBannerProps {
