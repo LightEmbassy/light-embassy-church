@@ -42,8 +42,6 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
       const { data, error } = await supabase
         .from('quiz_questions')
         .select('*')
-        .order('order_number')
-        .limit(5)
 
       if (error) throw error
 
@@ -52,7 +50,9 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
         options: Array.isArray(q.options) ? q.options : JSON.parse(q.options as string)
       })) || []
 
-      setQuestions(formattedQuestions)
+      // Shuffle questions randomly
+      const shuffled = formattedQuestions.sort(() => Math.random() - 0.5).slice(0, 5)
+      setQuestions(shuffled)
     } catch (error) {
       console.error('Error fetching questions:', error)
       toast({
@@ -260,6 +260,21 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
             </CardHeader>
             
             <CardContent className="space-y-6">
+              {/* Podcast Episode Source */}
+              {currentQuestion.podcast_title && currentQuestion.podcast_url && (
+                <div className="flex items-center justify-center gap-2 p-2 bg-primary/5 rounded-lg">
+                  <span className="text-xs text-muted-foreground font-inter">Based on:</span>
+                  <a 
+                    href={currentQuestion.podcast_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline font-inter flex items-center gap-1"
+                  >
+                    {currentQuestion.podcast_title} <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
+              
               <div className="space-y-4">
                 <h3 className="font-playfair text-xl font-semibold text-center">
                   {currentQuestion.question}
