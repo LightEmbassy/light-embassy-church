@@ -236,6 +236,9 @@ export type Database = {
       prayer_requests: {
         Row: {
           category: string
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
           created_at: string
           description: string
           id: string
@@ -246,9 +249,13 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          wants_contact: boolean
         }
         Insert: {
           category: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           created_at?: string
           description: string
           id?: string
@@ -259,9 +266,13 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          wants_contact?: boolean
         }
         Update: {
           category?: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
           created_at?: string
           description?: string
           id?: string
@@ -272,6 +283,7 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          wants_contact?: boolean
         }
         Relationships: []
       }

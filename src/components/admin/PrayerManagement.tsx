@@ -14,13 +14,16 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Eye
+  Eye,
+  Mail,
+  Phone
 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
@@ -37,6 +40,10 @@ interface PrayerRequest {
   status: string
   created_at: string
   updated_at: string
+  wants_contact?: boolean
+  contact_name?: string
+  contact_email?: string
+  contact_phone?: string
   profile?: {
     username: string
   }
@@ -221,6 +228,11 @@ export function PrayerManagement() {
                 {prayer.request_pastoral_counselling && (
                   <Badge variant="destructive" className="text-xs">
                     Needs Counselling
+                  </Badge>
+                )}
+                {prayer.wants_contact && (
+                  <Badge className="text-xs bg-blue-100 text-blue-800">
+                    Contact Requested
                   </Badge>
                 )}
                 {prayer.is_anonymous && (
@@ -502,6 +514,40 @@ export function PrayerManagement() {
                   {new Date(selectedPrayer.created_at).toLocaleString()}
                 </div>
               </div>
+
+              {/* Contact Details Section */}
+              {selectedPrayer.wants_contact && (selectedPrayer.contact_name || selectedPrayer.contact_email || selectedPrayer.contact_phone) && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+                  <p className="text-sm font-medium text-blue-800 flex items-center gap-2">
+                    <Phone className="h-4 w-4" />
+                    Contact Requested
+                  </p>
+                  <div className="space-y-1 text-sm">
+                    {selectedPrayer.contact_name && (
+                      <div className="flex items-center gap-2 text-blue-700">
+                        <User className="h-3 w-3" />
+                        {selectedPrayer.contact_name}
+                      </div>
+                    )}
+                    {selectedPrayer.contact_email && (
+                      <div className="flex items-center gap-2 text-blue-700">
+                        <Mail className="h-3 w-3" />
+                        <a href={`mailto:${selectedPrayer.contact_email}`} className="hover:underline">
+                          {selectedPrayer.contact_email}
+                        </a>
+                      </div>
+                    )}
+                    {selectedPrayer.contact_phone && (
+                      <div className="flex items-center gap-2 text-blue-700">
+                        <Phone className="h-3 w-3" />
+                        <a href={`tel:${selectedPrayer.contact_phone}`} className="hover:underline">
+                          {selectedPrayer.contact_phone}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="flex gap-2 pt-4 border-t">
                 {selectedPrayer.status === 'pending' && (

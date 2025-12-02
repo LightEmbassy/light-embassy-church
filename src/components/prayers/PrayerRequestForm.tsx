@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent } from '@/components/ui/card'
-import { CheckCircle, Send } from 'lucide-react'
+import { CheckCircle, Send, User, Mail, Phone } from 'lucide-react'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100, 'Title must be less than 100 characters'),
@@ -26,6 +26,10 @@ const formSchema = z.object({
   category: z.enum(['healing', 'finance', 'family', 'guidance', 'thanksgiving', 'salvation', 'protection', 'other']),
   is_anonymous: z.boolean().default(true),
   request_pastoral_counselling: z.boolean().default(false),
+  wants_contact: z.boolean().default(false),
+  contact_name: z.string().max(100, 'Name must be less than 100 characters').optional(),
+  contact_email: z.string().email('Please enter a valid email').optional().or(z.literal('')),
+  contact_phone: z.string().max(20, 'Phone must be less than 20 characters').optional(),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -58,13 +62,18 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
       category: 'other',
       is_anonymous: true,
       request_pastoral_counselling: false,
+      wants_contact: false,
+      contact_name: '',
+      contact_email: '',
+      contact_phone: '',
     },
   })
+
+  const wantsContact = form.watch('wants_contact')
 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      // Use authenticated user ID if available, otherwise use a placeholder for anonymous submissions
       const userId = user?.id || '00000000-0000-0000-0000-000000000000'
       
       const { error } = await supabase
@@ -74,10 +83,14 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
           title: data.title,
           description: data.description,
           category: data.category,
-          is_anonymous: user ? data.is_anonymous : true, // Force anonymous if not logged in
+          is_anonymous: data.is_anonymous,
           request_pastoral_counselling: data.request_pastoral_counselling,
           is_public: true,
-          status: 'pending'
+          status: 'pending',
+          wants_contact: data.wants_contact,
+          contact_name: data.wants_contact ? data.contact_name || null : null,
+          contact_email: data.wants_contact ? data.contact_email || null : null,
+          contact_phone: data.wants_contact ? data.contact_phone || null : null,
         })
 
       if (error) throw error
@@ -86,7 +99,6 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
       form.reset()
     } catch (error) {
       console.error('Error submitting prayer request:', error)
-      // Still show success if it's an RLS error - the request might have gone through
       setIsSubmitted(true)
     } finally {
       setIsSubmitting(false)
@@ -98,7 +110,6 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
     form.reset()
   }
 
-  // Show success confirmation
   if (isSubmitted) {
     return (
       <Card className="border-0 shadow-none">
@@ -119,7 +130,7 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
 
             <div className="bg-muted/50 rounded-lg p-4 text-sm text-muted-foreground">
               <p>
-                💬 If you requested pastoral counselling, a member of our team will reach out to you soon.
+                💬 If you requested to be contacted, a member of our team will reach out to you soon.
               </p>
             </div>
 
@@ -209,7 +220,10 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
               )}
             />
 
-            {user && (
+            {/* Privacy & Contact Options */}
+            <div className="space-y-3 pt-2 border-t">
+              <p className="text-sm font-medium text-foreground">Privacy & Contact Options</p>
+              
               <FormField
                 control={form.control}
                 name="is_anonymous"
@@ -222,33 +236,131 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>Submit anonymously</FormLabel>
+                      <FormLabel className="font-normal">Post anonymously</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        Your name won't be shown publicly
+                      </p>
                     </div>
                   </FormItem>
                 )}
               />
-            )}
 
-            <FormField
-              control={form.control}
-              name="request_pastoral_counselling"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Request pastoral counselling</FormLabel>
-                    <p className="text-xs text-muted-foreground">
-                      A pastor will reach out to pray with you personally
-                    </p>
-                  </div>
-                </FormItem>
+              <FormField
+                control={form.control}
+                name="wants_contact"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-normal">I'd like someone to contact me</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        Provide your details below so we can reach out
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              {/* Contact Details (shown when wants_contact is checked) */}
+              {wantsContact && (
+                <div className="ml-6 space-y-3 p-4 bg-muted/30 rounded-lg border">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Please provide at least one way to contact you:
+                  </p>
+                  
+                  <FormField
+                    control={form.control}
+                    name="contact_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Your Name</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                              placeholder="Your name" 
+                              className="pl-10"
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="contact_email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                              type="email"
+                              placeholder="your@email.com" 
+                              className="pl-10"
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="contact_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm">Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                              type="tel"
+                              placeholder="+1 234 567 8900" 
+                              className="pl-10"
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               )}
-            />
+
+              <FormField
+                control={form.control}
+                name="request_pastoral_counselling"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-normal">Request pastoral counselling</FormLabel>
+                      <p className="text-xs text-muted-foreground">
+                        A pastor will reach out to pray with you personally
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <Button 
               type="submit" 
