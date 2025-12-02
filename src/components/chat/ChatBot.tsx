@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Send, Bot, User, Loader2 } from "lucide-react"
+import { Send, Bot, User, Loader2, RotateCcw } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 
@@ -97,13 +97,38 @@ export function ChatBot() {
     }
   }
 
+  const clearConversation = () => {
+    setMessages([
+      {
+        id: '1',
+        content: 'Hello! I\'m here to help you with questions about faith, the Bible, and Light Embassy Church. How can I assist you today?',
+        role: 'assistant',
+        timestamp: new Date()
+      }
+    ])
+  }
+
   return (
     <Card className="h-[600px] flex flex-col">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2">
-          <Bot className="h-5 w-5 text-primary" />
-          Light Embassy Assistant
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5 text-primary" />
+            Light Embassy Assistant
+          </CardTitle>
+          {messages.length > 1 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearConversation}
+              disabled={isLoading}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <RotateCcw className="h-4 w-4 mr-1" />
+              Clear
+            </Button>
+          )}
+        </div>
       </CardHeader>
       
       <CardContent className="flex flex-col flex-1 p-4 gap-4">
