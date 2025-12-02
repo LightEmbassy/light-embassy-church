@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2 } from "lucide-react"
+import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2, Volume2, X } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
+import { Slider } from "@/components/ui/slider"
 
 interface Episode {
   id: string
@@ -24,6 +25,11 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [loading, setLoading] = useState(true)
   const [fallbackImage, setFallbackImage] = useState("https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg")
+  const [currentEpisode, setCurrentEpisode] = useState<Episode | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
     fetchEpisodes()
@@ -48,58 +54,135 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
     }
   }
 
-  const EpisodeCard = ({ episode }: { episode: Episode }) => (
-    <Card className="group cursor-pointer hover:shadow-divine transition-divine">
-      <CardContent className="p-0">
-        <div className="flex gap-4 p-4">
-          <div className="relative flex-shrink-0">
-            <AspectRatio ratio={1} className="w-20">
-              <img
-                src={episode.artwork}
-                alt={episode.title}
-                className="object-cover w-full h-full rounded-lg"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-divine rounded-lg" />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-divine">
-                <div className="bg-white/90 rounded-full p-2 backdrop-blur-sm">
-                  <Play className="h-4 w-4 text-primary fill-primary" />
+  const playEpisode = (episode: Episode) => {
+    if (currentEpisode?.id === episode.id) {
+      togglePlayPause()
+    } else {
+      setCurrentEpisode(episode)
+      setIsPlaying(true)
+      setCurrentTime(0)
+    }
+  }
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime)
+    }
+  }
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setAudioDuration(audioRef.current.duration)
+    }
+  }
+
+  const handleSeek = (value: number[]) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = value[0]
+      setCurrentTime(value[0])
+    }
+  }
+
+  const closePlayer = () => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+    }
+    setCurrentEpisode(null)
+    setIsPlaying(false)
+    setCurrentTime(0)
+  }
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  useEffect(() => {
+    if (currentEpisode && audioRef.current) {
+      audioRef.current.play().catch(console.error)
+    }
+  }, [currentEpisode])
+
+  const EpisodeCard = ({ episode }: { episode: Episode }) => {
+    const isCurrentlyPlaying = currentEpisode?.id === episode.id && isPlaying
+    const isCurrentEpisode = currentEpisode?.id === episode.id
+
+    return (
+      <Card 
+        className={`group cursor-pointer hover:shadow-divine transition-divine ${isCurrentEpisode ? 'ring-2 ring-primary' : ''}`}
+        onClick={() => playEpisode(episode)}
+      >
+        <CardContent className="p-0">
+          <div className="flex gap-4 p-4">
+            <div className="relative flex-shrink-0">
+              <AspectRatio ratio={1} className="w-20">
+                <img
+                  src={episode.artwork}
+                  alt={episode.title}
+                  className="object-cover w-full h-full rounded-lg"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-divine rounded-lg" />
+                <div className={`absolute inset-0 flex items-center justify-center transition-divine ${isCurrentEpisode ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                  <div className="bg-white/90 rounded-full p-2 backdrop-blur-sm">
+                    {isCurrentlyPlaying ? (
+                      <Pause className="h-4 w-4 text-primary fill-primary" />
+                    ) : (
+                      <Play className="h-4 w-4 text-primary fill-primary" />
+                    )}
+                  </div>
                 </div>
-              </div>
-            </AspectRatio>
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <h3 className="font-inter font-semibold text-foreground line-clamp-2 mb-2">
-              {episode.title}
-            </h3>
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-              {episode.description}
-            </p>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {episode.duration}
+              </AspectRatio>
+            </div>
+            
+            <div className="flex-1 min-w-0">
+              <h3 className="font-inter font-semibold text-foreground line-clamp-2 mb-2">
+                {episode.title}
+              </h3>
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                {episode.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-3 w-3" />
+                    {episode.duration}
+                  </div>
+                  <span>{episode.publishedAt}</span>
                 </div>
-                <span>{episode.publishedAt}</span>
+                <ShareDialog
+                  content={{
+                    title: episode.title,
+                    text: `Listen to this podcast episode: ${episode.title}\n\n${episode.description}`,
+                    url: episode.audioUrl
+                  }}
+                >
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </Button>
+                </ShareDialog>
               </div>
-              <ShareDialog
-                content={{
-                  title: episode.title,
-                  text: `Listen to this podcast episode: ${episode.title}\n\n${episode.description}`,
-                  url: episode.audioUrl
-                }}
-              >
-                <Button variant="ghost" size="sm">
-                  <Share2 className="h-4 w-4" />
-                </Button>
-              </ShareDialog>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20 pt-16">
@@ -220,6 +303,67 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Audio Player */}
+      {currentEpisode && (
+        <div className="fixed bottom-16 left-0 right-0 bg-card border-t shadow-lg z-50">
+          <div className="p-4 space-y-3">
+            <div className="flex items-center gap-3">
+              <img 
+                src={currentEpisode.artwork} 
+                alt={currentEpisode.title}
+                className="w-12 h-12 rounded-lg object-cover"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-foreground text-sm line-clamp-1">
+                  {currentEpisode.title}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatTime(currentTime)} / {formatTime(audioDuration || 0)}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={togglePlayPause}
+                >
+                  {isPlaying ? (
+                    <Pause className="h-5 w-5" />
+                  ) : (
+                    <Play className="h-5 w-5" />
+                  )}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={closePlayer}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <Slider
+              value={[currentTime]}
+              max={audioDuration || 100}
+              step={1}
+              onValueChange={handleSeek}
+              className="w-full"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Hidden Audio Element */}
+      <audio
+        ref={audioRef}
+        src={currentEpisode?.audioUrl}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+      />
     </div>
   )
 }
