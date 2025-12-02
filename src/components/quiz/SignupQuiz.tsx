@@ -41,6 +41,7 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
         .from('quiz_questions')
         .select('*')
         .order('order_number')
+        .limit(5)
 
       if (error) throw error
 
