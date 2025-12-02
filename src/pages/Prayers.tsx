@@ -7,6 +7,7 @@ import { Plus, ArrowLeft } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -82,6 +83,9 @@ export default function Prayers({ onBack }: PrayersProps) {
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Submit a Prayer Request</DialogTitle>
+                <DialogDescription>
+                  Share your prayer request with our community. It will be reviewed before being posted.
+                </DialogDescription>
               </DialogHeader>
               <PrayerRequestForm onSuccess={handleFormSuccess} />
             </DialogContent>
