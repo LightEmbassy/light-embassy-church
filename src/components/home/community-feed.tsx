@@ -27,6 +27,8 @@ export function CommunityFeed() {
   const [newPost, setNewPost] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
+  const [likingPosts, setLikingPosts] = useState<Set<string>>(new Set())
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -53,6 +55,32 @@ export function CommunityFeed() {
       supabase.removeChannel(channel)
     }
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      fetchUserLikes()
+    } else {
+      setLikedPosts(new Set())
+    }
+  }, [user])
+
+  const fetchUserLikes = async () => {
+    if (!user) return
+
+    try {
+      const { data, error } = await supabase
+        .from('post_likes')
+        .select('post_id')
+        .eq('user_id', user.id)
+
+      if (error) throw error
+
+      const likedIds = new Set(data?.map(like => like.post_id) || [])
+      setLikedPosts(likedIds)
+    } catch (error) {
+      console.error('Error fetching user likes:', error)
+    }
+  }
 
   const fetchPosts = async () => {
     try {
@@ -126,6 +154,89 @@ export function CommunityFeed() {
       toast.error("Failed to post. Please try again.")
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const handleLike = async (postId: string) => {
+    if (!user) {
+      toast.error("Please sign in to like posts")
+      navigate('/auth')
+      return
+    }
+
+    if (likingPosts.has(postId)) return
+
+    setLikingPosts(prev => new Set(prev).add(postId))
+    const isLiked = likedPosts.has(postId)
+
+    // Optimistic update
+    setLikedPosts(prev => {
+      const newSet = new Set(prev)
+      if (isLiked) {
+        newSet.delete(postId)
+      } else {
+        newSet.add(postId)
+      }
+      return newSet
+    })
+
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          likes_count: isLiked ? post.likes_count - 1 : post.likes_count + 1
+        }
+      }
+      return post
+    }))
+
+    try {
+      if (isLiked) {
+        const { error } = await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id)
+
+        if (error) throw error
+      } else {
+        const { error } = await supabase
+          .from('post_likes')
+          .insert({
+            post_id: postId,
+            user_id: user.id
+          })
+
+        if (error) throw error
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error)
+      // Revert optimistic update
+      setLikedPosts(prev => {
+        const newSet = new Set(prev)
+        if (isLiked) {
+          newSet.add(postId)
+        } else {
+          newSet.delete(postId)
+        }
+        return newSet
+      })
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            likes_count: isLiked ? post.likes_count + 1 : post.likes_count - 1
+          }
+        }
+        return post
+      }))
+      toast.error("Failed to update like")
+    } finally {
+      setLikingPosts(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(postId)
+        return newSet
+      })
     }
   }
 
@@ -208,46 +319,57 @@ export function CommunityFeed() {
             </CardContent>
           </Card>
         ) : (
-          posts.map((post) => (
-            <Card key={post.id} className="border-0 shadow-gentle">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-primary text-primary-foreground font-medium">
-                      {getInitials(post.profile?.username)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h4 className="font-inter font-medium text-foreground">
-                      {post.profile?.username || "Community Member"}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {formatTime(post.created_at)}
-                    </p>
+          posts.map((post) => {
+            const isLiked = likedPosts.has(post.id)
+            const isLiking = likingPosts.has(post.id)
+            
+            return (
+              <Card key={post.id} className="border-0 shadow-gentle">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="bg-primary text-primary-foreground font-medium">
+                        {getInitials(post.profile?.username)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h4 className="font-inter font-medium text-foreground">
+                        {post.profile?.username || "Community Member"}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {formatTime(post.created_at)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-foreground leading-relaxed font-inter whitespace-pre-wrap">
-                  {post.content}
-                </p>
-                
-                <div className="flex items-center gap-4 pt-2">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary transition-divine">
-                    <Heart className="mr-2 h-4 w-4" />
-                    {post.likes_count}
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary transition-divine">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    {post.comments_count}
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary transition-divine">
-                    <Share className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-foreground leading-relaxed font-inter whitespace-pre-wrap">
+                    {post.content}
+                  </p>
+                  
+                  <div className="flex items-center gap-4 pt-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={`transition-divine ${isLiked ? 'text-red-500 hover:text-red-600' : 'text-muted-foreground hover:text-red-500'}`}
+                      onClick={() => handleLike(post.id)}
+                      disabled={isLiking}
+                    >
+                      <Heart className={`mr-2 h-4 w-4 ${isLiked ? 'fill-current' : ''}`} />
+                      {post.likes_count}
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary transition-divine">
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      {post.comments_count}
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary transition-divine">
+                      <Share className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })
         )}
       </div>
     </div>
