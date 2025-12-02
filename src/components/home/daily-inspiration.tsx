@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Share, Headphones, ExternalLink, Play } from "lucide-react"
+import { Share, Headphones, Play } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 
 interface PodcastEpisode {
@@ -11,6 +11,7 @@ interface PodcastEpisode {
   audio_url: string
   image_url: string | null
   published_at: string | null
+  link?: string
 }
 
 export function DailyInspiration() {
@@ -23,6 +24,7 @@ export function DailyInspiration() {
 
   const fetchLatestEpisode = async () => {
     try {
+      // First try database
       const { data, error } = await supabase
         .from('podcasts')
         .select('*')
@@ -30,8 +32,27 @@ export function DailyInspiration() {
         .limit(1)
         .maybeSingle()
 
-      if (error) throw error
-      setLatestEpisode(data)
+      if (data) {
+        setLatestEpisode(data)
+        setLoading(false)
+        return
+      }
+
+      // Fallback: fetch from edge function
+      const { data: feedData, error: feedError } = await supabase.functions.invoke('fetch-podcasts')
+      
+      if (feedData && feedData.length > 0) {
+        const episode = feedData[0]
+        setLatestEpisode({
+          id: episode.id || '1',
+          title: episode.title,
+          description: episode.description,
+          audio_url: episode.audioUrl || episode.link,
+          image_url: episode.imageUrl,
+          published_at: episode.pubDate,
+          link: episode.link
+        })
+      }
     } catch (error) {
       console.error('Error fetching latest episode:', error)
     } finally {
@@ -40,8 +61,11 @@ export function DailyInspiration() {
   }
 
   const handleListen = () => {
-    if (latestEpisode?.audio_url) {
-      window.open(latestEpisode.audio_url, '_blank')
+    const url = latestEpisode?.link || latestEpisode?.audio_url
+    if (url) {
+      window.open(url, '_blank')
+    } else {
+      window.open('https://lightembassychurch.podbean.com/', '_blank')
     }
   }
 
