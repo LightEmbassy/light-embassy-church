@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle, XCircle, ArrowLeft, Trophy, BookOpen, RotateCcw } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { CheckCircle, XCircle, ArrowLeft, Trophy, BookOpen, RotateCcw, Mail } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
+import { toast } from 'sonner'
 import heroLightEmbassy from '@/assets/hero-light-embassy.jpg'
 
 interface QuizQuestion {
@@ -28,6 +30,8 @@ export default function Quiz({ onBack }: QuizPageProps) {
   const [score, setScore] = useState(0)
   const [loading, setLoading] = useState(true)
   const [quizStarted, setQuizStarted] = useState(false)
+  const [email, setEmail] = useState('')
+  const [submittingEmail, setSubmittingEmail] = useState(false)
 
   useEffect(() => {
     fetchQuestions()
@@ -96,8 +100,33 @@ export default function Quiz({ onBack }: QuizPageProps) {
     setQuizStarted(false)
   }
 
-  const handleStartQuiz = () => {
-    setQuizStarted(true)
+  const handleStartQuiz = async () => {
+    if (!email.trim()) {
+      toast.error('Please enter your email address')
+      return
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email.trim())) {
+      toast.error('Please enter a valid email address')
+      return
+    }
+
+    setSubmittingEmail(true)
+    try {
+      const { error } = await supabase
+        .from('quiz_entries')
+        .insert({ email: email.trim().toLowerCase() })
+
+      if (error) throw error
+      
+      setQuizStarted(true)
+    } catch (error) {
+      console.error('Error saving email:', error)
+      toast.error('Something went wrong. Please try again.')
+    } finally {
+      setSubmittingEmail(false)
+    }
   }
 
   if (loading) {
@@ -175,12 +204,30 @@ export default function Quiz({ onBack }: QuizPageProps) {
               </p>
             </div>
             
+            <div className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  placeholder="Enter your email to start"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-10"
+                  onKeyDown={(e) => e.key === 'Enter' && handleStartQuiz()}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                We'll keep you updated on future quizzes and events
+              </p>
+            </div>
+            
             <Button 
               onClick={handleStartQuiz}
               size="lg"
               className="w-full"
+              disabled={submittingEmail}
             >
-              Start Quiz
+              {submittingEmail ? 'Starting...' : 'Start Quiz'}
             </Button>
           </CardContent>
         </Card>
