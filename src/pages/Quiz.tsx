@@ -101,32 +101,32 @@ export default function Quiz({ onBack }: QuizPageProps) {
   }
 
   const handleStartQuiz = async () => {
-    if (!email.trim()) {
-      toast.error('Please enter your email address')
-      return
+    const trimmedEmail = email.trim()
+    
+    // If email is provided, validate and save it
+    if (trimmedEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(trimmedEmail)) {
+        toast.error('Please enter a valid email address')
+        return
+      }
+
+      setSubmittingEmail(true)
+      try {
+        const { error } = await supabase
+          .from('quiz_entries')
+          .insert({ email: trimmedEmail.toLowerCase() })
+
+        if (error) throw error
+      } catch (error) {
+        console.error('Error saving email:', error)
+        // Don't block quiz start if email save fails
+      } finally {
+        setSubmittingEmail(false)
+      }
     }
     
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email.trim())) {
-      toast.error('Please enter a valid email address')
-      return
-    }
-
-    setSubmittingEmail(true)
-    try {
-      const { error } = await supabase
-        .from('quiz_entries')
-        .insert({ email: email.trim().toLowerCase() })
-
-      if (error) throw error
-      
-      setQuizStarted(true)
-    } catch (error) {
-      console.error('Error saving email:', error)
-      toast.error('Something went wrong. Please try again.')
-    } finally {
-      setSubmittingEmail(false)
-    }
+    setQuizStarted(true)
   }
 
   if (loading) {
@@ -209,7 +209,7 @@ export default function Quiz({ onBack }: QuizPageProps) {
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="email"
-                  placeholder="Enter your email to start"
+                  placeholder="Enter email to win a prize (optional)"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
@@ -217,7 +217,7 @@ export default function Quiz({ onBack }: QuizPageProps) {
                 />
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                We'll keep you updated on future quizzes and events
+                Enter your email to be eligible for prizes and updates
               </p>
             </div>
             
