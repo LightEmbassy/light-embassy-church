@@ -1,16 +1,21 @@
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Play, Heart } from "lucide-react"
 import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
 
 export function HeroSection() {
   return (
     <div className="relative h-[400px] overflow-hidden rounded-b-3xl">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${heroLightEmbassy})` }}
-      />
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster={heroLightEmbassy}
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="https://lightembassy.org/wp-content/uploads/2024/09/le-web-header.mp4" type="video/mp4" />
+      </video>
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent" />
