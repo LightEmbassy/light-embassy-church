@@ -47,6 +47,15 @@ export function ChatBot() {
       timestamp: new Date()
     }
 
+    // Build conversation history excluding the initial greeting (id='1')
+    // and include all actual conversation messages
+    const conversationHistory = messages
+      .filter(m => m.id !== '1') // Exclude static greeting
+      .map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
@@ -55,10 +64,7 @@ export function ChatBot() {
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
         body: {
           message: input,
-          conversation: messages.map(m => ({
-            role: m.role,
-            content: m.content
-          }))
+          conversation: conversationHistory
         }
       })
 
