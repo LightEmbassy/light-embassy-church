@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Send, Bot, User, Loader2, RotateCcw } from "lucide-react"
+import { Send, Bot, User, Loader2, RotateCcw, ChevronDown, ChevronUp } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+
+const MAX_PREVIEW_LENGTH = 300
 
 interface Message {
   id: string
@@ -26,8 +28,21 @@ export function ChatBot() {
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [expandedMessages, setExpandedMessages] = useState<Set<string>>(new Set())
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+
+  const toggleExpanded = (messageId: string) => {
+    setExpandedMessages(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(messageId)) {
+        newSet.delete(messageId)
+      } else {
+        newSet.add(messageId)
+      }
+      return newSet
+    })
+  }
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -134,43 +149,73 @@ export function ChatBot() {
       <CardContent className="flex flex-col flex-1 p-4 gap-4">
         <ScrollArea className="flex-1 pr-4">
           <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${
-                  message.role === 'user' ? 'justify-end' : 'justify-start'
-                }`}
-              >
-                {message.role === 'assistant' && (
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-primary/10">
-                      <Bot className="h-4 w-4 text-primary" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                
+            {messages.map((message) => {
+              const isLong = message.content.length > MAX_PREVIEW_LENGTH
+              const isExpanded = expandedMessages.has(message.id)
+              const displayContent = isLong && !isExpanded 
+                ? message.content.slice(0, MAX_PREVIEW_LENGTH) + '...'
+                : message.content
+
+              return (
                 <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted'
+                  key={message.id}
+                  className={`flex gap-3 ${
+                    message.role === 'user' ? 'justify-end' : 'justify-start'
                   }`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                  <span className="text-xs opacity-70 mt-1 block">
-                    {message.timestamp.toLocaleTimeString()}
-                  </span>
+                  {message.role === 'assistant' && (
+                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0">
+                      <AvatarFallback className="bg-primary/10">
+                        <Bot className="h-4 w-4 text-primary" />
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  
+                  <div
+                    className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                      message.role === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted'
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{displayContent}</p>
+                    {isLong && (
+                      <button
+                        onClick={() => toggleExpanded(message.id)}
+                        className={`text-xs flex items-center gap-1 mt-1 ${
+                          message.role === 'user' 
+                            ? 'text-primary-foreground/80 hover:text-primary-foreground' 
+                            : 'text-primary hover:text-primary/80'
+                        }`}
+                      >
+                        {isExpanded ? (
+                          <>
+                            <ChevronUp className="h-3 w-3" />
+                            Show less
+                          </>
+                        ) : (
+                          <>
+                            <ChevronDown className="h-3 w-3" />
+                            Read more
+                          </>
+                        )}
+                      </button>
+                    )}
+                    <span className="text-xs opacity-70 mt-1 block">
+                      {message.timestamp.toLocaleTimeString()}
+                    </span>
+                  </div>
+                  
+                  {message.role === 'user' && (
+                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0">
+                      <AvatarFallback className="bg-muted">
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
                 </div>
-                
-                {message.role === 'user' && (
-                  <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-muted">
-                      <User className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-              </div>
-            ))}
+              )
+            })}
             
             {isLoading && (
               <div className="flex gap-3">
