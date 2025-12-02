@@ -242,6 +242,7 @@ export type Database = {
           is_anonymous: boolean
           is_public: boolean
           request_pastoral_counselling: boolean
+          status: string
           title: string
           updated_at: string
           user_id: string
@@ -254,6 +255,7 @@ export type Database = {
           is_anonymous?: boolean
           is_public?: boolean
           request_pastoral_counselling?: boolean
+          status?: string
           title: string
           updated_at?: string
           user_id: string
@@ -266,6 +268,7 @@ export type Database = {
           is_anonymous?: boolean
           is_public?: boolean
           request_pastoral_counselling?: boolean
+          status?: string
           title?: string
           updated_at?: string
           user_id?: string
