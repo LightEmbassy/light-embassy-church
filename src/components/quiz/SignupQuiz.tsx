@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { CheckCircle, XCircle } from 'lucide-react'
+import { CheckCircle, XCircle, ExternalLink } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import heroLightEmbassy from '@/assets/hero-light-embassy.jpg'
@@ -15,6 +15,7 @@ interface QuizQuestion {
   options: string[]
   correct_answer: number
   order_number: number
+  podcast_url?: string
 }
 
 interface SignupQuizProps {
@@ -210,13 +211,25 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
                   const isCorrect = selectedAnswer === question.correct_answer
                   
                   return (
-                    <div key={question.id} className="flex items-center gap-3 p-3 bg-background/50 rounded-lg">
-                      {isCorrect ? (
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-red-500" />
+                    <div key={question.id} className="flex items-center justify-between gap-3 p-3 bg-background/50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        {isCorrect ? (
+                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                        )}
+                        <span className="text-sm font-inter">Question {index + 1}</span>
+                      </div>
+                      {question.podcast_url && (
+                        <a 
+                          href={question.podcast_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs text-primary hover:underline font-inter"
+                        >
+                          Listen <ExternalLink className="w-3 h-3" />
+                        </a>
                       )}
-                      <span className="text-sm font-inter">Question {index + 1}</span>
                     </div>
                   )
                 })}
