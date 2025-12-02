@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Input } from '@/components/ui/input'
-import { CheckCircle, XCircle, ArrowLeft, Trophy, BookOpen, RotateCcw, Mail } from 'lucide-react'
+import { CheckCircle, XCircle, ArrowLeft, Trophy, BookOpen, RotateCcw, Mail, Play, Headphones, ExternalLink } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
 import heroLightEmbassy from '@/assets/hero-light-embassy.jpg'
@@ -16,6 +16,8 @@ interface QuizQuestion {
   options: string[]
   correct_answer: number
   order_number: number
+  podcast_url?: string
+  podcast_title?: string
 }
 
 interface QuizPageProps {
@@ -42,7 +44,6 @@ export default function Quiz({ onBack }: QuizPageProps) {
       const { data, error } = await supabase
         .from('quiz_questions')
         .select('*')
-        .order('order_number')
 
       if (error) throw error
 
@@ -51,7 +52,9 @@ export default function Quiz({ onBack }: QuizPageProps) {
         options: Array.isArray(q.options) ? q.options : JSON.parse(q.options as string)
       })) || []
 
-      setQuestions(formattedQuestions)
+      // Shuffle questions randomly
+      const shuffled = formattedQuestions.sort(() => Math.random() - 0.5)
+      setQuestions(shuffled)
     } catch (error) {
       console.error('Error fetching questions:', error)
     } finally {
@@ -275,7 +278,7 @@ export default function Quiz({ onBack }: QuizPageProps) {
                   const isCorrect = selectedAnswer === question.correct_answer
                   
                   return (
-                    <div key={question.id} className="p-4 bg-background/50 rounded-lg space-y-2">
+                    <div key={question.id} className="p-4 bg-background/50 rounded-lg space-y-3">
                       <div className="flex items-start gap-3">
                         {isCorrect ? (
                           <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
@@ -291,6 +294,22 @@ export default function Quiz({ onBack }: QuizPageProps) {
                           )}
                         </div>
                       </div>
+                      {question.podcast_url && question.podcast_title && (
+                        <a 
+                          href={question.podcast_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 ml-8 px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors group"
+                        >
+                          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Play className="w-3 h-3 text-primary-foreground ml-0.5" fill="currentColor" />
+                          </div>
+                          <span className="text-xs font-medium text-primary group-hover:underline truncate">
+                            {question.podcast_title}
+                          </span>
+                          <ExternalLink className="w-3 h-3 text-primary/60 flex-shrink-0" />
+                        </a>
+                      )}
                     </div>
                   )
                 })}
@@ -356,6 +375,29 @@ export default function Quiz({ onBack }: QuizPageProps) {
         </CardHeader>
         
         <CardContent className="space-y-6 pb-8">
+          {/* Podcast Episode Link */}
+          {currentQuestion.podcast_title && currentQuestion.podcast_url && (
+            <a 
+              href={currentQuestion.podcast_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-4 bg-sacred-gold/20 rounded-xl border-2 border-sacred-gold/40 hover:bg-sacred-gold/30 transition-all group"
+            >
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform flex-shrink-0">
+                <Play className="w-5 h-5 text-primary-foreground ml-0.5" fill="currentColor" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-foreground/70 font-medium flex items-center gap-1">
+                  <Headphones className="w-3 h-3" /> Based on podcast episode:
+                </p>
+                <p className="text-sm font-bold text-primary group-hover:underline truncate">
+                  {currentQuestion.podcast_title}
+                </p>
+              </div>
+              <ExternalLink className="w-5 h-5 text-primary flex-shrink-0" />
+            </a>
+          )}
+
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-center px-4">
               {currentQuestion.question}
