@@ -147,7 +147,7 @@ export default function Prayers({ onBack }: PrayersProps) {
         variant="ghost"
         size="sm"
         onClick={handleAdminClick}
-        className="fixed bottom-4 right-4 gap-1.5 text-xs text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
+        className="fixed bottom-24 right-4 z-40 gap-1.5 text-xs text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
       >
         <Shield className="h-3 w-3" />
         {user && isAdmin ? 'Admin' : 'Admin Login'}
