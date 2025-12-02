@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { PrayerRequestForm } from '@/components/prayers/PrayerRequestForm'
 import { PrayerEditForm } from '@/components/prayers/PrayerEditForm'
 import { PrayerWall } from '@/components/prayers/PrayerWall'
 import { Button } from '@/components/ui/button'
-import { Plus, ArrowLeft } from 'lucide-react'
+import { Plus, ArrowLeft, Shield } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -12,6 +13,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { useAuth } from '@/contexts/AuthContext'
+import { supabase } from '@/integrations/supabase/client'
 
 interface PrayerRequest {
   id: string
@@ -32,6 +35,34 @@ export default function Prayers({ onBack }: PrayersProps) {
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editingPrayer, setEditingPrayer] = useState<PrayerRequest | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      if (!user) {
+        setIsAdmin(false)
+        return
+      }
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .in('role', ['admin', 'moderator', 'staff'])
+        .maybeSingle()
+      setIsAdmin(!!data)
+    }
+    checkAdminRole()
+  }, [user])
+
+  const handleAdminClick = () => {
+    if (user && isAdmin) {
+      navigate('/admin')
+    } else {
+      navigate('/auth')
+    }
+  }
 
   const handleFormSuccess = () => {
     setIsFormOpen(false)
@@ -110,6 +141,17 @@ export default function Prayers({ onBack }: PrayersProps) {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* Admin Login Button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={handleAdminClick}
+        className="fixed bottom-4 right-4 gap-1.5 text-xs text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
+      >
+        <Shield className="h-3 w-3" />
+        {user && isAdmin ? 'Admin' : 'Admin Login'}
+      </Button>
     </div>
   )
 }
