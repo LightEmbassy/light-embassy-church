@@ -243,6 +243,24 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_entries: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       quiz_questions: {
         Row: {
           correct_answer: number
