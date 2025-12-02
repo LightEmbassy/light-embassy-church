@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/home/hero-section"
 import { PromotionalBanner } from "@/components/home/promotional-banner"
+import { SignupBanner } from "@/components/home/signup-banner"
 import { QuickActions } from "@/components/home/quick-actions"
 import { DailyInspiration } from "@/components/home/daily-inspiration"
 import { CommunityFeed } from "@/components/home/community-feed"
@@ -13,6 +14,7 @@ export default function Home({ onNavigate }: HomeProps) {
     <div className="min-h-screen bg-background pb-20">
       <PromotionalBanner onNavigate={onNavigate} />
       <HeroSection />
+      <SignupBanner />
       <QuickActions onNavigate={onNavigate} />
       <DailyInspiration />
       <CommunityFeed />
