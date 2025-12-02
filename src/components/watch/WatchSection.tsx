@@ -1,9 +1,11 @@
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Clock, Users, ExternalLink, Share2, ArrowLeft } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Play, Clock, Users, ExternalLink, Share2, ArrowLeft, X } from "lucide-react"
 
 interface VideoItem {
   id: string
@@ -21,6 +23,8 @@ interface WatchSectionProps {
 }
 
 export function WatchSection({ onBack }: WatchSectionProps) {
+  const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
+
   // Videos from Light Embassy Church - https://lightembassy.org/watch
   const featuredVideos: VideoItem[] = [
     {
@@ -97,8 +101,25 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     }
   ]
 
+  const getYouTubeEmbedUrl = (embedId: string) => {
+    if (embedId.startsWith("videoseries")) {
+      return `https://www.youtube.com/embed/${embedId}`
+    }
+    return `https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0`
+  }
+
+  const getYouTubeWatchUrl = (embedId: string) => {
+    if (embedId.startsWith("videoseries")) {
+      return `https://www.youtube.com/playlist?${embedId.split("?")[1]}`
+    }
+    return `https://www.youtube.com/watch?v=${embedId}`
+  }
+
   const VideoCard = ({ video }: { video: VideoItem }) => (
-    <Card className="group cursor-pointer hover:shadow-divine transition-divine">
+    <Card 
+      className="group cursor-pointer hover:shadow-divine transition-divine"
+      onClick={() => setPlayingVideo(video)}
+    >
       <CardContent className="p-0">
         <div className="relative">
           <AspectRatio ratio={16 / 9}>
@@ -108,8 +129,8 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               className="object-cover w-full h-full rounded-t-lg"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-divine rounded-t-lg" />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-divine">
-              <div className="bg-white/90 rounded-full p-4 backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/90 rounded-full p-4 backdrop-blur-sm group-hover:scale-110 transition-transform">
                 <Play className="h-8 w-8 text-primary fill-primary" />
               </div>
             </div>
@@ -129,7 +150,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
-                {video.views} views
+                {video.views}
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-3 w-3" />
@@ -140,10 +161,14 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               content={{
                 title: video.title,
                 text: `Watch this message: ${video.title}\n\n${video.description}`,
-                url: `https://www.youtube.com/watch?v=${video.embedId}`
+                url: getYouTubeWatchUrl(video.embedId)
               }}
             >
-              <Button variant="ghost" size="sm">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <Share2 className="h-4 w-4" />
               </Button>
             </ShareDialog>
@@ -292,6 +317,63 @@ export function WatchSection({ onBack }: WatchSectionProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Video Player Dialog */}
+      <Dialog open={!!playingVideo} onOpenChange={(open) => !open && setPlayingVideo(null)}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
+            <div className="flex items-start justify-between gap-4">
+              <DialogTitle className="font-playfair text-lg pr-8">
+                {playingVideo?.title}
+              </DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="px-4 pb-4">
+            <AspectRatio ratio={16 / 9} className="bg-black rounded-lg overflow-hidden">
+              {playingVideo && (
+                <iframe
+                  src={getYouTubeEmbedUrl(playingVideo.embedId)}
+                  title={playingVideo.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              )}
+            </AspectRatio>
+            {playingVideo && (
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-muted-foreground">
+                  {playingVideo.description}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" className="gap-2" asChild>
+                    <a 
+                      href={getYouTubeWatchUrl(playingVideo.embedId)} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Watch on YouTube
+                    </a>
+                  </Button>
+                  <ShareDialog
+                    content={{
+                      title: playingVideo.title,
+                      text: `Watch this message: ${playingVideo.title}\n\n${playingVideo.description}`,
+                      url: getYouTubeWatchUrl(playingVideo.embedId)
+                    }}
+                  >
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <Share2 className="h-4 w-4" />
+                      Share
+                    </Button>
+                  </ShareDialog>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
