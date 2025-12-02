@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Clock, ExternalLink, Headphones, Share2, ArrowLeft } from "lucide-react"
+import { Play, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2 } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
 
 interface Episode {
   id: string
@@ -19,17 +21,32 @@ interface PodcastSectionProps {
 }
 
 export function PodcastSection({ onBack }: PodcastSectionProps) {
-  const episodes: Episode[] = [
-    {
-      id: "1",
-      title: "Welcome to Light Embassy Church Podcast",
-      description: "Revealing the Bible, discovering the truth, living the best life! Join us as we begin this journey together.",
-      artwork: "https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg",
-      duration: "25:30",
-      publishedAt: "Aug 02, 2023",
-      audioUrl: "https://lightembassychurch.podbean.com/e/welcome-to-light-embassy-church-podcast/"
+  const [episodes, setEpisodes] = useState<Episode[]>([])
+  const [loading, setLoading] = useState(true)
+  const [fallbackImage, setFallbackImage] = useState("https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg")
+
+  useEffect(() => {
+    fetchEpisodes()
+  }, [])
+
+  const fetchEpisodes = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-podcasts')
+      
+      if (error) throw error
+      
+      if (data?.episodes) {
+        setEpisodes(data.episodes)
+      }
+      if (data?.fallbackImage) {
+        setFallbackImage(data.fallbackImage)
+      }
+    } catch (error) {
+      console.error('Error fetching podcasts:', error)
+    } finally {
+      setLoading(false)
     }
-  ]
+  }
 
   const EpisodeCard = ({ episode }: { episode: Episode }) => (
     <Card className="group cursor-pointer hover:shadow-divine transition-divine">
@@ -155,11 +172,22 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
           <h2 className="font-playfair text-xl font-semibold text-foreground">
             Latest Episodes
           </h2>
-          <div className="space-y-3">
-            {episodes.map((episode) => (
-              <EpisodeCard key={episode.id} episode={episode} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <span className="ml-2 text-muted-foreground">Loading episodes...</span>
+            </div>
+          ) : episodes.length === 0 ? (
+            <p className="text-muted-foreground text-center py-8">
+              No episodes available at this time.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {episodes.map((episode) => (
+                <EpisodeCard key={episode.id} episode={episode} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
