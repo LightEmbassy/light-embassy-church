@@ -13,6 +13,7 @@ interface PromoBanner {
   icon: React.ComponentType<{ className?: string }>
   gradient: string
   badge?: string
+  animated?: boolean
 }
 
 const promoBanners: PromoBanner[] = [
@@ -24,7 +25,8 @@ const promoBanners: PromoBanner[] = [
     actionUrl: "/quiz",
     icon: ClipboardList,
     gradient: "bg-gradient-to-r from-purple-500/10 to-pink-500/10",
-    badge: "Challenge Yourself"
+    badge: "Challenge Yourself",
+    animated: true
   },
   {
     id: "watch",
@@ -90,8 +92,8 @@ export function PromotionalBanner({ onNavigate }: PromotionalBannerProps) {
         <CardContent className="p-4 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-3 flex-1">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg p-2 mt-1">
-                <Icon className="h-5 w-5 text-primary" />
+              <div className={`bg-white/20 backdrop-blur-sm rounded-lg p-2 mt-1 ${banner.animated ? 'animate-pulse' : ''}`}>
+                <Icon className={`h-5 w-5 text-primary ${banner.animated ? 'animate-bounce' : ''}`} />
               </div>
               
               <div className="flex-1 space-y-2">
