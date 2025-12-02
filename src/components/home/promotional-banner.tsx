@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { X, Play, BookOpen, Headphones, ArrowRight } from "lucide-react"
+import { X, Play, BookOpen, Headphones, ArrowRight, ClipboardList } from "lucide-react"
 
 interface PromoBanner {
   id: string
@@ -45,6 +45,16 @@ const promoBanners: PromoBanner[] = [
     icon: BookOpen,
     gradient: "bg-gradient-to-r from-orange-500/10 to-red-500/10",
     badge: "Bible Study"
+  },
+  {
+    id: "quiz",
+    title: "Take a Quiz",
+    description: "Test your knowledge of Scripture and grow in your understanding of God's Word",
+    action: "Start Quiz",
+    actionUrl: "/quiz",
+    icon: ClipboardList,
+    gradient: "bg-gradient-to-r from-purple-500/10 to-pink-500/10",
+    badge: "Challenge Yourself"
   }
 ]
 
