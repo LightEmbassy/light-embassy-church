@@ -81,7 +81,7 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
 
       toast({
         title: 'Prayer Request Submitted',
-        description: 'Your prayer request has been shared with the community.',
+        description: 'Your prayer request has been submitted and will be reviewed by our team before being shared.',
       })
 
       form.reset()
