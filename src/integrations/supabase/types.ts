@@ -342,6 +342,7 @@ export type Database = {
           id: string
           options: Json
           order_number: number
+          podcast_url: string | null
           question: string
         }
         Insert: {
@@ -350,6 +351,7 @@ export type Database = {
           id?: string
           options: Json
           order_number: number
+          podcast_url?: string | null
           question: string
         }
         Update: {
@@ -358,6 +360,7 @@ export type Database = {
           id?: string
           options?: Json
           order_number?: number
+          podcast_url?: string | null
           question?: string
         }
         Relationships: []
