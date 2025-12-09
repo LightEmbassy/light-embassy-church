@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Play, BookOpen, Heart, Calendar, Users, Headphones } from "lucide-react"
+import { Play, BookOpen, Heart, Users, Headphones, MessageCircle } from "lucide-react"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -33,20 +33,12 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       tab: "prayers"
     },
     {
-      icon: Users,
-      title: "Connect",
-      description: "How to connect with us & others",
+      icon: MessageCircle,
+      title: "Messages",
+      description: "Connect with church staff",
       color: "bg-gradient-peace",
       textColor: "text-primary",
-      tab: "events"
-    },
-    {
-      icon: BookOpen,
-      title: "Discover More",
-      description: "A safe place for questions",
-      color: "bg-muted",
-      textColor: "text-primary",
-      tab: "learn"
+      tab: "messages"
     },
     {
       icon: Headphones,
