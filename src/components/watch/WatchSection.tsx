@@ -1,11 +1,14 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Play, Clock, Users, ExternalLink, Share2, ArrowLeft, X } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Play, Clock, Users, ExternalLink, Share2, ArrowLeft } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
 interface VideoItem {
   id: string
@@ -24,82 +27,63 @@ interface WatchSectionProps {
 
 export function WatchSection({ onBack }: WatchSectionProps) {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
+  const [featuredVideos, setFeaturedVideos] = useState<VideoItem[]>([])
+  const [podcastVideos, setPodcastVideos] = useState<VideoItem[]>([])
+  const [devotionalVideos, setDevotionalVideos] = useState<VideoItem[]>([])
+  const [teachingVideos, setTeachingVideos] = useState<VideoItem[]>([])
+  const [loading, setLoading] = useState<Record<string, boolean>>({
+    featured: true,
+    podcast: true,
+    devotional: true,
+    teaching: true
+  })
+  const { toast } = useToast()
 
-  // Videos from Light Embassy Church - https://lightembassy.org/watch
-  const featuredVideos: VideoItem[] = [
-    {
-      id: "1",
-      title: "The King Is Coming!",
-      description: "A powerful message from Light Embassy Church about the return of Christ and living in expectation of His coming.",
-      thumbnail: "https://img.youtube.com/vi/J8zRYVAsqw8/maxresdefault.jpg",
-      duration: "30:32",
-      views: "Featured",
-      publishedAt: "Light Embassy",
-      embedId: "J8zRYVAsqw8"
-    },
-    {
-      id: "2", 
-      title: "Light Embassy Church Healing Special Feature",
-      description: "A special feature on healing testimonies and the power of God's healing grace at Light Embassy Church.",
-      thumbnail: "https://img.youtube.com/vi/pMRaAr6kc3o/maxresdefault.jpg",
-      duration: "19:42",
-      views: "Featured",
-      publishedAt: "Light Embassy",
-      embedId: "pMRaAr6kc3o"
-    },
-    {
-      id: "3",
-      title: "His Word is Greater Than Feeling",
-      description: "An encouraging message about trusting God's Word above our feelings and circumstances.",
-      thumbnail: "https://img.youtube.com/vi/UZP-pj1yQCc/maxresdefault.jpg", 
-      duration: "15:48",
-      views: "Featured",
-      publishedAt: "Light Embassy",
-      embedId: "UZP-pj1yQCc"
-    }
-  ]
+  const fetchVideos = async (category: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
+        body: { category, maxResults: category === 'featured' ? 10 : 15 }
+      })
 
-  // Light Embassy Podcast playlist
-  const podcast: VideoItem[] = [
-    {
-      id: "4",
-      title: "Light Embassy Podcast",
-      description: "Revealing the Bible, discovering the truth, living the best life! Watch and listen to the Light Embassy Podcast series.",
-      thumbnail: "https://img.youtube.com/vi/J8zRYVAsqw8/maxresdefault.jpg",
-      duration: "Series",
-      views: "Podcast",
-      publishedAt: "Light Embassy",
-      embedId: "videoseries?list=PLqEHLUKupSnCw8WAJHCscE9f0lmFhzB_Z"
-    }
-  ]
+      if (error) {
+        console.error(`Error fetching ${category} videos:`, error)
+        throw error
+      }
 
-  // The Trumpeter - Daily Devotional
-  const devotional: VideoItem[] = [
-    {
-      id: "5",
-      title: "The Trumpeter - Daily Devotional",
-      description: "We're committed to empowering you with knowledge and resources needed for your spiritual edification and growth.",
-      thumbnail: "https://img.youtube.com/vi/pMRaAr6kc3o/maxresdefault.jpg",
-      duration: "Series",
-      views: "Devotional",
-      publishedAt: "Light Embassy",
-      embedId: "videoseries?list=PLqEHLUKupSnAOEp8ZSfuhu7H2CuKkRZKU"
+      return data?.videos || []
+    } catch (error) {
+      console.error(`Failed to fetch ${category} videos:`, error)
+      toast({
+        title: "Error loading videos",
+        description: "Unable to load videos. Please try again later.",
+        variant: "destructive"
+      })
+      return []
     }
-  ]
+  }
 
-  // The Spiritual Man - Teaching Series
-  const teaching: VideoItem[] = [
-    {
-      id: "6",
-      title: "The Spiritual Man - Teaching Series",
-      description: "Recordings of the teaching series at Light Embassy Church on the topic of 'the spiritual man'.",
-      thumbnail: "https://img.youtube.com/vi/UZP-pj1yQCc/maxresdefault.jpg",
-      duration: "Series",
-      views: "Teaching",
-      publishedAt: "Light Embassy",
-      embedId: "videoseries?list=PLqEHLUKupSnB1GZiueI895TJJ9v6oRJoa"
+  useEffect(() => {
+    const loadAllVideos = async () => {
+      // Load featured videos first
+      const featured = await fetchVideos('featured')
+      setFeaturedVideos(featured)
+      setLoading(prev => ({ ...prev, featured: false }))
+
+      // Load other categories in parallel
+      const [podcast, devotional, teaching] = await Promise.all([
+        fetchVideos('podcast'),
+        fetchVideos('devotional'),
+        fetchVideos('teaching')
+      ])
+
+      setPodcastVideos(podcast)
+      setDevotionalVideos(devotional)
+      setTeachingVideos(teaching)
+      setLoading({ featured: false, podcast: false, devotional: false, teaching: false })
     }
-  ]
+
+    loadAllVideos()
+  }, [])
 
   const getYouTubeEmbedUrl = (embedId: string) => {
     if (embedId.startsWith("videoseries")) {
@@ -127,6 +111,10 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               src={video.thumbnail}
               alt={video.title}
               className="object-cover w-full h-full rounded-t-lg"
+              onError={(e) => {
+                // Fallback to default YouTube thumbnail
+                e.currentTarget.src = `https://img.youtube.com/vi/${video.embedId}/hqdefault.jpg`
+              }}
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-divine rounded-t-lg" />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -178,6 +166,49 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     </Card>
   )
 
+  const VideoSkeleton = () => (
+    <Card>
+      <CardContent className="p-0">
+        <Skeleton className="aspect-video rounded-t-lg" />
+        <div className="p-4 space-y-2">
+          <Skeleton className="h-5 w-3/4" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+          <div className="flex justify-between mt-3">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-8 w-8 rounded" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const renderVideoGrid = (videos: VideoItem[], isLoading: boolean) => {
+    if (isLoading) {
+      return (
+        <div className="grid gap-4">
+          {[1, 2, 3].map(i => <VideoSkeleton key={i} />)}
+        </div>
+      )
+    }
+
+    if (videos.length === 0) {
+      return (
+        <div className="text-center py-8 text-muted-foreground">
+          No videos available at the moment.
+        </div>
+      )
+    }
+
+    return (
+      <div className="grid gap-4">
+        {videos.map((video) => (
+          <VideoCard key={video.id} video={video} />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20 pt-16">
       {/* Header */}
@@ -219,13 +250,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
           <TabsContent value="featured" className="mt-6">
             <div className="space-y-4">
               <h2 className="font-playfair text-xl font-semibold text-foreground">
-                Featured Videos
+                Latest Videos
               </h2>
-              <div className="grid gap-4">
-                {featuredVideos.map((video) => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </div>
+              {renderVideoGrid(featuredVideos, loading.featured)}
             </div>
           </TabsContent>
           
@@ -237,11 +264,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               <p className="text-muted-foreground text-sm mb-4">
                 Revealing the Bible, discovering the truth, living the best life!
               </p>
-              <div className="grid gap-4">
-                {podcast.map((video) => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </div>
+              {renderVideoGrid(podcastVideos, loading.podcast)}
               <Button variant="outline" className="w-full gap-2" asChild>
                 <a href="https://www.youtube.com/playlist?list=PLqEHLUKupSnCw8WAJHCscE9f0lmFhzB_Z" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
@@ -259,11 +282,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               <p className="text-muted-foreground text-sm mb-4">
                 Empowering you with knowledge and resources for spiritual edification and growth.
               </p>
-              <div className="grid gap-4">
-                {devotional.map((video) => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </div>
+              {renderVideoGrid(devotionalVideos, loading.devotional)}
               <Button variant="outline" className="w-full gap-2" asChild>
                 <a href="https://www.youtube.com/playlist?list=PLqEHLUKupSnAOEp8ZSfuhu7H2CuKkRZKU" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
@@ -281,11 +300,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               <p className="text-muted-foreground text-sm mb-4">
                 Deep teachings on the topic of "the spiritual man" from Light Embassy Church.
               </p>
-              <div className="grid gap-4">
-                {teaching.map((video) => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </div>
+              {renderVideoGrid(teachingVideos, loading.teaching)}
               <Button variant="outline" className="w-full gap-2" asChild>
                 <a href="https://www.youtube.com/playlist?list=PLqEHLUKupSnB1GZiueI895TJJ9v6oRJoa" target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
