@@ -106,9 +106,10 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
 
   const fetchPrayers = async () => {
     try {
+      // Only select non-sensitive columns - exclude contact_name, contact_email, contact_phone
       let query = supabase
         .from('prayer_requests')
-        .select('*')
+        .select('id, title, description, category, is_anonymous, is_public, request_pastoral_counselling, status, created_at, updated_at, user_id')
         .order('created_at', { ascending: false })
 
       if (selectedCategory !== 'all') {
