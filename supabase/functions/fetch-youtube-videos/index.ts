@@ -5,8 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Light Embassy Church YouTube channel ID (from @lightembassychurchlundswed41)
-const CHANNEL_ID = 'UCkLK4mN8U-C6agXuupGdNPA';
+// Light Embassy Church YouTube channel ID
+const CHANNEL_ID = 'UC72Dphhm_d-W3zvu87yzr5Q';
 
 interface VideoItem {
   id: string;
