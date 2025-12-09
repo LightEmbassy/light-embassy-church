@@ -1,1 +1,10 @@
 project_id = "hmmxqwztiijmninavhcf"
+
+[functions.chat-assistant]
+verify_jwt = false
+
+[functions.fetch-podcasts]
+verify_jwt = false
+
+[functions.fetch-youtube-videos]
+verify_jwt = false
