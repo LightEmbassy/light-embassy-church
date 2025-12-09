@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button"
 import { Play, Heart } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
 
 export function HeroSection() {
+  const navigate = useNavigate()
+  
   return (
     <div className="relative h-[400px] overflow-hidden rounded-b-3xl">
       {/* Background Video */}
@@ -35,6 +38,7 @@ export function HeroSection() {
               variant="secondary" 
               size="lg"
               className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm transition-divine"
+              onClick={() => navigate('/watch')}
             >
               <Play className="mr-2 h-5 w-5" />
               Watch Videos
