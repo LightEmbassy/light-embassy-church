@@ -10,7 +10,8 @@ import { formatDistanceToNow } from "date-fns"
 
 interface ForumTopic {
   id: string
-  user_id: string
+  user_id: string | null
+  guest_name: string | null
   title: string
   content: string
   status: string
@@ -26,7 +27,8 @@ interface ForumTopic {
 interface ForumReply {
   id: string
   topic_id: string
-  user_id: string
+  user_id: string | null
+  guest_name: string | null
   content: string
   status: string
   created_at: string
@@ -34,6 +36,12 @@ interface ForumReply {
   profile?: {
     username: string
   }
+}
+
+const getDisplayName = (item: ForumTopic | ForumReply) => {
+  if (item.profile?.username) return item.profile.username
+  if (item.guest_name) return item.guest_name
+  return "Anonymous"
 }
 
 export function ForumManagement() {
@@ -65,16 +73,20 @@ export function ForumManagement() {
 
       if (repliesError) throw repliesError
 
-      // Fetch profiles
+      // Fetch profiles for items with user_id
       const allUserIds = [...new Set([
-        ...(topicsData?.map(t => t.user_id) || []),
-        ...(repliesData?.map(r => r.user_id) || [])
+        ...(topicsData?.filter(t => t.user_id).map(t => t.user_id) || []),
+        ...(repliesData?.filter(r => r.user_id).map(r => r.user_id) || [])
       ])]
 
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, username')
-        .in('user_id', allUserIds)
+      let profiles: any[] = []
+      if (allUserIds.length > 0) {
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('user_id, username')
+          .in('user_id', allUserIds)
+        profiles = profilesData || []
+      }
 
       // Map profiles to topics
       const topicsWithProfiles = topicsData?.map(topic => ({
@@ -262,7 +274,7 @@ export function ForumManagement() {
                     <div>
                       <CardTitle className="text-lg">{topic.title}</CardTitle>
                       <p className="text-sm text-muted-foreground">
-                        by {topic.profile?.username || "Unknown"} • {formatDistanceToNow(new Date(topic.created_at), { addSuffix: true })}
+                        by {getDisplayName(topic)} • {formatDistanceToNow(new Date(topic.created_at), { addSuffix: true })}
                       </p>
                     </div>
                     {getStatusBadge(topic.status)}
@@ -312,7 +324,7 @@ export function ForumManagement() {
                         Reply to: <span className="font-medium text-foreground">{reply.topic_title}</span>
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        by {reply.profile?.username || "Unknown"} • {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
+                        by {getDisplayName(reply)} • {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
                       </p>
                     </div>
                     {getStatusBadge(reply.status)}
@@ -380,7 +392,7 @@ export function ForumManagement() {
                         {topic.content}
                       </p>
                       <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <span>{topic.profile?.username || "Unknown"}</span>
+                        <span>{getDisplayName(topic)}</span>
                         <span className="flex items-center gap-1">
                           <Eye className="h-3 w-3" />
                           {topic.views_count}

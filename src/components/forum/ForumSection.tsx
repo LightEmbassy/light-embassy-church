@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -6,7 +6,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { MessageSquare, Plus, Eye, Clock, Pin, Search, ArrowLeft, Send } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Label } from "@/components/ui/label"
+import { MessageSquare, Plus, Eye, Clock, Pin, Search, ArrowLeft, Send, ShieldCheck } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
@@ -14,7 +16,8 @@ import { formatDistanceToNow } from "date-fns"
 
 interface ForumTopic {
   id: string
-  user_id: string
+  user_id: string | null
+  guest_name: string | null
   title: string
   content: string
   status: string
@@ -31,7 +34,8 @@ interface ForumTopic {
 interface ForumReply {
   id: string
   topic_id: string
-  user_id: string
+  user_id: string | null
+  guest_name: string | null
   content: string
   status: string
   created_at: string
@@ -39,6 +43,13 @@ interface ForumReply {
     username: string
     avatar_url: string | null
   }
+}
+
+// Simple math captcha questions
+const generateCaptcha = () => {
+  const num1 = Math.floor(Math.random() * 10) + 1
+  const num2 = Math.floor(Math.random() * 10) + 1
+  return { question: `What is ${num1} + ${num2}?`, answer: num1 + num2 }
 }
 
 export function ForumSection() {
@@ -49,11 +60,23 @@ export function ForumSection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [newTitle, setNewTitle] = useState("")
   const [newContent, setNewContent] = useState("")
+  const [guestName, setGuestName] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [selectedTopic, setSelectedTopic] = useState<ForumTopic | null>(null)
   const [replies, setReplies] = useState<ForumReply[]>([])
   const [newReply, setNewReply] = useState("")
+  const [replyGuestName, setReplyGuestName] = useState("")
   const [repliesLoading, setRepliesLoading] = useState(false)
+  
+  // Spam protection state
+  const [captcha, setCaptcha] = useState(generateCaptcha())
+  const [captchaAnswer, setCaptchaAnswer] = useState("")
+  const [replyCaptcha, setReplyCaptcha] = useState(generateCaptcha())
+  const [replyCaptchaAnswer, setReplyCaptchaAnswer] = useState("")
+  const [honeypot, setHoneypot] = useState("")
+  const [humanVerified, setHumanVerified] = useState(false)
+  const [replyHumanVerified, setReplyHumanVerified] = useState(false)
+  const formOpenTime = useRef<number>(0)
 
   useEffect(() => {
     fetchTopics()
@@ -72,6 +95,16 @@ export function ForumSection() {
     }
   }, [])
 
+  // Reset captcha when dialog opens
+  useEffect(() => {
+    if (isDialogOpen) {
+      setCaptcha(generateCaptcha())
+      setCaptchaAnswer("")
+      setHumanVerified(false)
+      formOpenTime.current = Date.now()
+    }
+  }, [isDialogOpen])
+
   const fetchTopics = async () => {
     try {
       const { data, error } = await supabase
@@ -82,17 +115,21 @@ export function ForumSection() {
 
       if (error) throw error
 
-      // Fetch profiles for topics
+      // Fetch profiles for topics with user_id
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(t => t.user_id))]
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('user_id, username, avatar_url')
-          .in('user_id', userIds)
+        const userIds = [...new Set(data.filter(t => t.user_id).map(t => t.user_id))]
+        let profiles: any[] = []
+        if (userIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('user_id, username, avatar_url')
+            .in('user_id', userIds)
+          profiles = profilesData || []
+        }
 
         const topicsWithProfiles = data.map(topic => ({
           ...topic,
-          profile: profiles?.find(p => p.user_id === topic.user_id)
+          profile: topic.user_id ? profiles.find(p => p.user_id === topic.user_id) : undefined
         }))
         setTopics(topicsWithProfiles)
       } else {
@@ -107,6 +144,9 @@ export function ForumSection() {
 
   const fetchReplies = async (topicId: string) => {
     setRepliesLoading(true)
+    setReplyCaptcha(generateCaptcha())
+    setReplyCaptchaAnswer("")
+    setReplyHumanVerified(false)
     try {
       const { data, error } = await supabase
         .from('forum_replies')
@@ -117,15 +157,19 @@ export function ForumSection() {
       if (error) throw error
 
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(r => r.user_id))]
-        const { data: profiles } = await supabase
-          .from('profiles')
-          .select('user_id, username, avatar_url')
-          .in('user_id', userIds)
+        const userIds = [...new Set(data.filter(r => r.user_id).map(r => r.user_id))]
+        let profiles: any[] = []
+        if (userIds.length > 0) {
+          const { data: profilesData } = await supabase
+            .from('profiles')
+            .select('user_id, username, avatar_url')
+            .in('user_id', userIds)
+          profiles = profilesData || []
+        }
 
         const repliesWithProfiles = data.map(reply => ({
           ...reply,
-          profile: profiles?.find(p => p.user_id === reply.user_id)
+          profile: reply.user_id ? profiles.find(p => p.user_id === reply.user_id) : undefined
         }))
         setReplies(repliesWithProfiles)
       } else {
@@ -138,32 +182,75 @@ export function ForumSection() {
     }
   }
 
-  const handleCreateTopic = async () => {
-    if (!user) {
-      toast.error("Please sign in to create a topic")
-      return
+  const validateSpamProtection = (answer: string, captchaObj: typeof captcha, verified: boolean) => {
+    // Check honeypot (should be empty)
+    if (honeypot) {
+      console.log('Honeypot triggered')
+      return false
     }
+    
+    // Check if human verification checkbox is checked
+    if (!verified) {
+      toast.error("Please verify you're human")
+      return false
+    }
+    
+    // Check captcha answer
+    if (parseInt(answer) !== captchaObj.answer) {
+      toast.error("Incorrect answer. Please try again.")
+      return false
+    }
+    
+    // Check timing (must take at least 3 seconds)
+    const timeTaken = Date.now() - formOpenTime.current
+    if (timeTaken < 3000) {
+      toast.error("Please take your time filling out the form")
+      return false
+    }
+    
+    return true
+  }
 
+  const handleCreateTopic = async () => {
     if (!newTitle.trim() || !newContent.trim()) {
       toast.error("Please fill in all fields")
       return
     }
 
+    if (!user && !guestName.trim()) {
+      toast.error("Please enter your name")
+      return
+    }
+
+    if (!validateSpamProtection(captchaAnswer, captcha, humanVerified)) {
+      return
+    }
+
     setSubmitting(true)
     try {
+      const insertData: any = {
+        title: newTitle.trim(),
+        content: newContent.trim()
+      }
+
+      if (user) {
+        insertData.user_id = user.id
+      } else {
+        insertData.guest_name = guestName.trim()
+      }
+
       const { error } = await supabase
         .from('forum_topics')
-        .insert({
-          user_id: user.id,
-          title: newTitle.trim(),
-          content: newContent.trim()
-        })
+        .insert(insertData)
 
       if (error) throw error
 
       toast.success("Topic submitted! It will appear after moderation.")
       setNewTitle("")
       setNewContent("")
+      setGuestName("")
+      setCaptchaAnswer("")
+      setHumanVerified(false)
       setIsDialogOpen(false)
       fetchTopics()
     } catch (error: any) {
@@ -175,30 +262,45 @@ export function ForumSection() {
   }
 
   const handleSubmitReply = async () => {
-    if (!user) {
-      toast.error("Please sign in to reply")
-      return
-    }
-
     if (!newReply.trim() || !selectedTopic) {
       toast.error("Please enter a reply")
       return
     }
 
+    if (!user && !replyGuestName.trim()) {
+      toast.error("Please enter your name")
+      return
+    }
+
+    if (!validateSpamProtection(replyCaptchaAnswer, replyCaptcha, replyHumanVerified)) {
+      return
+    }
+
     setSubmitting(true)
     try {
+      const insertData: any = {
+        topic_id: selectedTopic.id,
+        content: newReply.trim()
+      }
+
+      if (user) {
+        insertData.user_id = user.id
+      } else {
+        insertData.guest_name = replyGuestName.trim()
+      }
+
       const { error } = await supabase
         .from('forum_replies')
-        .insert({
-          topic_id: selectedTopic.id,
-          user_id: user.id,
-          content: newReply.trim()
-        })
+        .insert(insertData)
 
       if (error) throw error
 
       toast.success("Reply submitted! It will appear after moderation.")
       setNewReply("")
+      setReplyGuestName("")
+      setReplyCaptchaAnswer("")
+      setReplyHumanVerified(false)
+      setReplyCaptcha(generateCaptcha())
       fetchReplies(selectedTopic.id)
     } catch (error: any) {
       console.error('Error creating reply:', error)
@@ -210,6 +312,7 @@ export function ForumSection() {
 
   const openTopic = async (topic: ForumTopic) => {
     setSelectedTopic(topic)
+    formOpenTime.current = Date.now()
     fetchReplies(topic.id)
     
     // Increment view count
@@ -219,9 +322,16 @@ export function ForumSection() {
       .eq('id', topic.id)
   }
 
-  const getInitials = (username?: string) => {
-    if (!username) return "?"
-    return username.slice(0, 2).toUpperCase()
+  const getDisplayName = (topic: ForumTopic | ForumReply) => {
+    if (topic.profile?.username) return topic.profile.username
+    if (topic.guest_name) return topic.guest_name
+    return "Anonymous"
+  }
+
+  const getInitials = (topic: ForumTopic | ForumReply) => {
+    const name = getDisplayName(topic)
+    if (name === "Anonymous") return "?"
+    return name.slice(0, 2).toUpperCase()
   }
 
   const filteredTopics = topics.filter(topic =>
@@ -247,13 +357,13 @@ export function ForumSection() {
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-primary/10 text-primary">
-                    {getInitials(selectedTopic.profile?.username)}
+                    {getInitials(selectedTopic)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <CardTitle className="text-xl">{selectedTopic.title}</CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    by {selectedTopic.profile?.username || "Anonymous"} • {formatDistanceToNow(new Date(selectedTopic.created_at), { addSuffix: true })}
+                    by {getDisplayName(selectedTopic)} • {formatDistanceToNow(new Date(selectedTopic.created_at), { addSuffix: true })}
                   </p>
                 </div>
               </div>
@@ -286,13 +396,13 @@ export function ForumSection() {
                     <div key={reply.id} className="flex gap-3 p-4 bg-muted/50 rounded-lg">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                          {getInitials(reply.profile?.username)}
+                          {getInitials(reply)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-medium text-sm">
-                            {reply.profile?.username || "Anonymous"}
+                            {getDisplayName(reply)}
                           </span>
                           <span className="text-xs text-muted-foreground">
                             {formatDistanceToNow(new Date(reply.created_at), { addSuffix: true })}
@@ -305,29 +415,71 @@ export function ForumSection() {
                 </div>
               )}
 
-              {user ? (
-                <div className="mt-6 flex gap-2">
-                  <Textarea
-                    placeholder="Write your reply..."
-                    value={newReply}
-                    onChange={(e) => setNewReply(e.target.value)}
-                    className="min-h-[80px]"
+              <div className="mt-6 space-y-4">
+                <h4 className="font-medium text-sm">Add a Reply</h4>
+                
+                {!user && (
+                  <Input
+                    placeholder="Your name"
+                    value={replyGuestName}
+                    onChange={(e) => setReplyGuestName(e.target.value)}
                   />
-                  <Button 
-                    onClick={handleSubmitReply} 
-                    disabled={submitting || !newReply.trim()}
-                    className="self-end"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                )}
+                
+                <Textarea
+                  placeholder="Write your reply..."
+                  value={newReply}
+                  onChange={(e) => setNewReply(e.target.value)}
+                  className="min-h-[80px]"
+                />
+
+                {/* Honeypot field - hidden from users */}
+                <input
+                  type="text"
+                  name="website"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  style={{ position: 'absolute', left: '-9999px' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
+                <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <ShieldCheck className="h-4 w-4" />
+                    <span>Human verification</span>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="reply-human" 
+                      checked={replyHumanVerified}
+                      onCheckedChange={(checked) => setReplyHumanVerified(checked === true)}
+                    />
+                    <Label htmlFor="reply-human" className="text-sm">I am not a robot</Label>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm whitespace-nowrap">{replyCaptcha.question}</Label>
+                    <Input
+                      type="number"
+                      placeholder="Answer"
+                      value={replyCaptchaAnswer}
+                      onChange={(e) => setReplyCaptchaAnswer(e.target.value)}
+                      className="w-24"
+                    />
+                  </div>
                 </div>
-              ) : (
-                <div className="mt-6 p-4 bg-muted/50 rounded-lg text-center">
-                  <p className="text-muted-foreground">
-                    <a href="/auth" className="text-primary hover:underline">Sign in</a> to reply to this topic
-                  </p>
-                </div>
-              )}
+
+                <Button 
+                  onClick={handleSubmitReply} 
+                  disabled={submitting || !newReply.trim() || (!user && !replyGuestName.trim())}
+                  className="gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  Submit Reply
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -361,35 +513,83 @@ export function ForumSection() {
             </DialogHeader>
             <div className="space-y-4 mt-4">
               {!user && (
-                <div className="p-4 bg-muted/50 rounded-lg text-center">
-                  <p className="text-muted-foreground">
-                    Please <a href="/auth" className="text-primary hover:underline">sign in</a> to create a topic
-                  </p>
+                <div>
+                  <Label htmlFor="guest-name">Your Name</Label>
+                  <Input
+                    id="guest-name"
+                    placeholder="Enter your name"
+                    value={guestName}
+                    onChange={(e) => setGuestName(e.target.value)}
+                  />
                 </div>
               )}
+              
               <div>
+                <Label htmlFor="topic-title">Topic Title</Label>
                 <Input
-                  placeholder="Topic title"
+                  id="topic-title"
+                  placeholder="What do you want to discuss?"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  disabled={!user}
                 />
               </div>
+              
               <div>
+                <Label htmlFor="topic-content">Your Message</Label>
                 <Textarea
+                  id="topic-content"
                   placeholder="Share your thoughts, questions, or insights..."
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
-                  className="min-h-[150px]"
-                  disabled={!user}
+                  className="min-h-[120px]"
                 />
               </div>
+
+              {/* Honeypot field - hidden from users */}
+              <input
+                type="text"
+                name="website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px' }}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+
+              <div className="space-y-3 p-4 bg-muted/30 rounded-lg">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <ShieldCheck className="h-4 w-4" />
+                  <span>Human verification</span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="topic-human" 
+                    checked={humanVerified}
+                    onCheckedChange={(checked) => setHumanVerified(checked === true)}
+                  />
+                  <Label htmlFor="topic-human" className="text-sm">I am not a robot</Label>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Label className="text-sm whitespace-nowrap">{captcha.question}</Label>
+                  <Input
+                    type="number"
+                    placeholder="Answer"
+                    value={captchaAnswer}
+                    onChange={(e) => setCaptchaAnswer(e.target.value)}
+                    className="w-24"
+                  />
+                </div>
+              </div>
+
               <p className="text-xs text-muted-foreground">
                 Your topic will be reviewed by moderators before being published.
               </p>
+              
               <Button 
                 onClick={handleCreateTopic} 
-                disabled={submitting || !user || !newTitle.trim() || !newContent.trim()}
+                disabled={submitting || !newTitle.trim() || !newContent.trim() || (!user && !guestName.trim())}
                 className="w-full"
               >
                 {submitting ? "Submitting..." : "Submit Topic"}
@@ -432,7 +632,7 @@ export function ForumSection() {
                 <div className="flex items-start gap-4">
                   <Avatar className="h-10 w-10 shrink-0">
                     <AvatarFallback className="bg-primary/10 text-primary">
-                      {getInitials(topic.profile?.username)}
+                      {getInitials(topic)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
@@ -451,7 +651,7 @@ export function ForumSection() {
                       {topic.content}
                     </p>
                     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                      <span>{topic.profile?.username || "Anonymous"}</span>
+                      <span>{getDisplayName(topic)}</span>
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {formatDistanceToNow(new Date(topic.created_at), { addSuffix: true })}

@@ -111,29 +111,32 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          guest_name: string | null
           id: string
           status: string
           topic_id: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           content: string
           created_at?: string
+          guest_name?: string | null
           id?: string
           status?: string
           topic_id: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           content?: string
           created_at?: string
+          guest_name?: string | null
           id?: string
           status?: string
           topic_id?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -149,37 +152,40 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          guest_name: string | null
           id: string
           is_pinned: boolean
           replies_count: number
           status: string
           title: string
           updated_at: string
-          user_id: string
+          user_id: string | null
           views_count: number
         }
         Insert: {
           content: string
           created_at?: string
+          guest_name?: string | null
           id?: string
           is_pinned?: boolean
           replies_count?: number
           status?: string
           title: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           views_count?: number
         }
         Update: {
           content?: string
           created_at?: string
+          guest_name?: string | null
           id?: string
           is_pinned?: boolean
           replies_count?: number
           status?: string
           title?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           views_count?: number
         }
         Relationships: []
