@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Play, Clock, ExternalLink, Share2, ArrowLeft } from "lucide-react"
+import { Play, Clock, ExternalLink, Share2, ArrowLeft, Search, X } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
@@ -26,7 +27,17 @@ export function WatchSection({ onBack }: WatchSectionProps) {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
   const [videos, setVideos] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
   const { toast } = useToast()
+
+  const filteredVideos = useMemo(() => {
+    if (!searchQuery.trim()) return videos
+    const query = searchQuery.toLowerCase().trim()
+    return videos.filter(video => 
+      video.title.toLowerCase().includes(query) ||
+      video.description.toLowerCase().includes(query)
+    )
+  }, [videos, searchQuery])
 
   const fetchVideos = async () => {
     try {
@@ -163,10 +174,35 @@ export function WatchSection({ onBack }: WatchSectionProps) {
         <p className="text-muted-foreground">
           Videos from Light Embassy Church
         </p>
+
+        {/* Search Input */}
+        {!loading && videos.length > 0 && (
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search videos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10"
+              maxLength={100}
+            />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                onClick={() => setSearchQuery("")}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Video Grid */}
-      <div className="px-6">
+      <div className="px-6 mt-4">
         {loading ? (
           <div className="grid grid-cols-2 gap-4">
             {[1, 2, 3, 4, 5, 6].map(i => <VideoSkeleton key={i} />)}
@@ -181,9 +217,16 @@ export function WatchSection({ onBack }: WatchSectionProps) {
               </a>
             </Button>
           </div>
+        ) : filteredVideos.length === 0 ? (
+          <div className="text-center py-12 text-muted-foreground">
+            <p>No videos match "{searchQuery}"</p>
+            <Button variant="outline" className="mt-4" onClick={() => setSearchQuery("")}>
+              Clear Search
+            </Button>
+          </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
-            {videos.map((video) => (
+            {filteredVideos.map((video) => (
               <VideoCard key={video.id} video={video} />
             ))}
           </div>
