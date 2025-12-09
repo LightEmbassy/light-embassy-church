@@ -8,6 +8,7 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import Watch from "./pages/Watch";
 import NotFound from "./pages/NotFound";
 import Prayers from "./pages/Prayers";
 import { AdminRoute } from "./components/auth/AdminRoute";
@@ -25,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<Index />} />
+              <Route path="/watch" element={<Watch />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
