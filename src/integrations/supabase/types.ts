@@ -504,7 +504,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_prayer_requests: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_anonymous: boolean | null
+          is_public: boolean | null
+          request_pastoral_counselling: boolean | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          is_public?: boolean | null
+          request_pastoral_counselling?: boolean | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          is_public?: boolean | null
+          request_pastoral_counselling?: boolean | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
