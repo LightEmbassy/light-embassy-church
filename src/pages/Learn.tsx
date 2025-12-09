@@ -1,8 +1,6 @@
-import { BibleSection } from "@/components/bible/BibleSection"
 import { ForumSection } from "@/components/forum/ForumSection"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowLeft, Book, MessageSquare } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 interface LearnProps {
   onBack?: () => void
@@ -31,26 +29,7 @@ export default function Learn({ onBack }: LearnProps) {
           </p>
         </div>
 
-        <Tabs defaultValue="forum" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="forum" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              Community Forum
-            </TabsTrigger>
-            <TabsTrigger value="bible" className="flex items-center gap-2">
-              <Book className="h-4 w-4" />
-              Bible
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="forum">
-            <ForumSection />
-          </TabsContent>
-
-          <TabsContent value="bible">
-            <BibleSection />
-          </TabsContent>
-        </Tabs>
+        <ForumSection />
       </div>
     </div>
   )
