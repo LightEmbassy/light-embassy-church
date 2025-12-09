@@ -5,15 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Light Embassy Church YouTube channel ID
-const CHANNEL_ID = 'UC5PXpZsZQQZxR0qv9QH_BdA';
-
-// YouTube playlist IDs for different categories
-const PLAYLISTS = {
-  podcast: 'PLqEHLUKupSnCw8WAJHCscE9f0lmFhzB_Z',
-  devotional: 'PLqEHLUKupSnAOEp8ZSfuhu7H2CuKkRZKU',
-  teaching: 'PLqEHLUKupSnB1GZiueI895TJJ9v6oRJoa',
-};
+// Light Embassy Church YouTube channel ID (from @lightembassychurchlundswed41)
+const CHANNEL_ID = 'UCkLK4mN8U-C6agXuupGdNPA';
 
 interface VideoItem {
   id: string;
@@ -21,8 +14,6 @@ interface VideoItem {
   description: string;
   thumbnail: string;
   publishedAt: string;
-  duration: string;
-  views: string;
   embedId: string;
 }
 
@@ -33,7 +24,8 @@ function decodeHTMLEntities(text: string): string {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'");
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, num) => String.fromCharCode(parseInt(num)));
 }
 
 function formatDate(dateString: string): string {
@@ -51,10 +43,12 @@ function formatDate(dateString: string): string {
 }
 
 // Parse YouTube RSS feed
-async function parseYouTubeRSS(url: string): Promise<VideoItem[]> {
+async function parseYouTubeRSS(channelId: string, maxResults: number): Promise<VideoItem[]> {
   try {
-    console.log(`Fetching RSS: ${url}`);
-    const response = await fetch(url);
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    console.log(`Fetching RSS: ${rssUrl}`);
+    
+    const response = await fetch(rssUrl);
     if (!response.ok) {
       console.error(`RSS fetch failed: ${response.status}`);
       return [];
@@ -67,14 +61,14 @@ async function parseYouTubeRSS(url: string): Promise<VideoItem[]> {
     const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
     let match;
     
-    while ((match = entryRegex.exec(xml)) !== null) {
+    while ((match = entryRegex.exec(xml)) !== null && videos.length < maxResults) {
       const entry = match[1];
       
       const videoId = entry.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1] || '';
       const title = entry.match(/<title>([^<]+)<\/title>/)?.[1] || '';
       const published = entry.match(/<published>([^<]+)<\/published>/)?.[1] || '';
       
-      // Get description from media:description or media:group
+      // Get description from media:description
       let description = '';
       const mediaGroup = entry.match(/<media:group>([\s\S]*?)<\/media:group>/)?.[1] || '';
       if (mediaGroup) {
@@ -82,24 +76,8 @@ async function parseYouTubeRSS(url: string): Promise<VideoItem[]> {
         description = descMatch ? descMatch[1] : '';
       }
       
-      // Get view count from media:community
-      let views = 'New';
-      const communityMatch = entry.match(/<media:community>([\s\S]*?)<\/media:community>/);
-      if (communityMatch) {
-        const viewsMatch = communityMatch[1].match(/views="(\d+)"/);
-        if (viewsMatch) {
-          const count = parseInt(viewsMatch[1]);
-          if (count >= 1000000) {
-            views = `${(count / 1000000).toFixed(1)}M views`;
-          } else if (count >= 1000) {
-            views = `${(count / 1000).toFixed(1)}K views`;
-          } else {
-            views = `${count} views`;
-          }
-        }
-      }
-      
-      const thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      // Use high quality thumbnail
+      const thumbnail = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
       
       if (videoId) {
         videos.push({
@@ -108,8 +86,6 @@ async function parseYouTubeRSS(url: string): Promise<VideoItem[]> {
           description: decodeHTMLEntities(description).substring(0, 200),
           thumbnail,
           publishedAt: formatDate(published),
-          duration: '',
-          views,
           embedId: videoId,
         });
       }
@@ -129,25 +105,11 @@ serve(async (req) => {
   }
 
   try {
-    const { category = 'featured', maxResults = 10 } = await req.json().catch(() => ({}));
+    const { maxResults = 15 } = await req.json().catch(() => ({}));
     
-    console.log(`Fetching YouTube videos - category: ${category}, maxResults: ${maxResults}`);
+    console.log(`Fetching YouTube videos from channel, maxResults: ${maxResults}`);
     
-    let videos: VideoItem[] = [];
-    
-    if (category === 'featured') {
-      // Fetch from channel RSS feed
-      const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
-      videos = await parseYouTubeRSS(rssUrl);
-    } else if (PLAYLISTS[category as keyof typeof PLAYLISTS]) {
-      // Fetch from playlist RSS feed
-      const playlistId = PLAYLISTS[category as keyof typeof PLAYLISTS];
-      const rssUrl = `https://www.youtube.com/feeds/videos.xml?playlist_id=${playlistId}`;
-      videos = await parseYouTubeRSS(rssUrl);
-    }
-    
-    // Limit results
-    videos = videos.slice(0, maxResults);
+    const videos = await parseYouTubeRSS(CHANNEL_ID, maxResults);
     
     console.log(`Returning ${videos.length} videos`);
 
