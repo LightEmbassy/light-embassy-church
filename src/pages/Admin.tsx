@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext"
-import { useProfile } from "@/hooks/useProfile"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useUserRole } from "@/hooks/useUserRole"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { VideoManagement } from "@/components/admin/VideoManagement"
@@ -10,7 +10,6 @@ import { UserManagement } from "@/components/admin/UserManagement"
 import { QuizManagement } from "@/components/admin/QuizManagement"
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard"
 import { 
-  Settings, 
   Users, 
   Video, 
   Headphones, 
@@ -27,7 +26,7 @@ interface AdminProps {
 
 export default function Admin({ onBack }: AdminProps) {
   const { user } = useAuth()
-  const { profile, loading } = useProfile()
+  const { role, loading, hasAdminAccess } = useUserRole()
 
   if (loading) {
     return (
@@ -39,9 +38,6 @@ export default function Admin({ onBack }: AdminProps) {
       </div>
     )
   }
-
-  // Check if user has admin/moderator/staff permissions
-  const hasAdminAccess = profile && ['admin', 'moderator', 'staff'].includes((profile as any).role)
 
   if (!hasAdminAccess) {
     return (
@@ -88,7 +84,7 @@ export default function Admin({ onBack }: AdminProps) {
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Shield className="h-4 w-4" />
-              <span className="capitalize">{(profile as any)?.role || 'user'}</span>
+              <span className="capitalize">{role || 'user'}</span>
             </div>
           </div>
         </div>
