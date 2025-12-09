@@ -1,6 +1,8 @@
 import { BibleSection } from "@/components/bible/BibleSection"
+import { ForumSection } from "@/components/forum/ForumSection"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ArrowLeft, Book, MessageSquare } from "lucide-react"
 
 interface LearnProps {
   onBack?: () => void
@@ -22,24 +24,33 @@ export default function Learn({ onBack }: LearnProps) {
         )}
         <div className="text-center mb-8">
           <h1 className="font-playfair text-4xl font-bold mb-4 text-primary">
-            Learn & Grow
+            Discover More
           </h1>
           <p className="text-muted-foreground text-lg">
-            Dive deeper into God's Word and grow in your faith journey
+            A safe place for questions, discussions, and growing in faith together
           </p>
         </div>
 
-        <BibleSection />
-        
-        {/* Future sections can be added here */}
-        <div className="mt-12 text-center p-8 bg-muted/50 rounded-lg">
-          <h2 className="font-playfair text-2xl font-semibold mb-4 text-primary">
-            More Coming Soon
-          </h2>
-          <p className="text-muted-foreground">
-            Bible studies, devotionals, and teaching materials will be available here soon!
-          </p>
-        </div>
+        <Tabs defaultValue="forum" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="forum" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Community Forum
+            </TabsTrigger>
+            <TabsTrigger value="bible" className="flex items-center gap-2">
+              <Book className="h-4 w-4" />
+              Bible
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="forum">
+            <ForumSection />
+          </TabsContent>
+
+          <TabsContent value="bible">
+            <BibleSection />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )
