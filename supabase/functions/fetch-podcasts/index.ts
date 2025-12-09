@@ -94,11 +94,13 @@ serve(async (req) => {
       // Strip HTML tags for clean description
       const description = rawDescription.replace(/<[^>]*>/g, '').trim().substring(0, 300)
       
-      // Extract episode-specific artwork
-      const episodeImageMatch = itemContent.match(/<itunes:image[^>]+href=["']([^"']+)["']/)
-      const mediaImageMatch = itemContent.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/)
+      // Extract episode-specific artwork from multiple sources
+      const episodeImageMatch = itemContent.match(/<itunes:image[^>]+href=["']([^"']+)["']/i)
+      const mediaImageMatch = itemContent.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/i)
+      const mediaContentMatch = itemContent.match(/<media:content[^>]+url=["']([^"']+\.(?:jpg|jpeg|png|gif|webp))["']/i)
+      const podbeanImageMatch = itemContent.match(/https:\/\/pbcdn1\.podbean\.com\/[^"'\s<>]+\.(?:jpg|jpeg|png|gif|webp)/i)
       const contentImage = extractImageFromContent(rawDescription)
-      const artwork = episodeImageMatch?.[1] || mediaImageMatch?.[1] || contentImage || fallbackImage
+      const artwork = episodeImageMatch?.[1] || mediaImageMatch?.[1] || mediaContentMatch?.[1] || podbeanImageMatch?.[0] || contentImage || fallbackImage
       
       // Extract duration
       const durationMatch = itemContent.match(/<itunes:duration>([^<]+)<\/itunes:duration>/)
