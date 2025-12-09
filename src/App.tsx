@@ -11,6 +11,9 @@ import Auth from "./pages/Auth";
 import Watch from "./pages/Watch";
 import NotFound from "./pages/NotFound";
 import Prayers from "./pages/Prayers";
+import Podcast from "./pages/Podcast";
+import Learn from "./pages/Learn";
+import Messages from "./pages/Messages";
 import { AdminRoute } from "./components/auth/AdminRoute";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/watch" element={<Watch />} />
               <Route path="/prayers" element={<Prayers />} />
+              <Route path="/podcast" element={<Podcast />} />
+              <Route path="/learn" element={<Learn />} />
+              <Route path="/messages" element={<Messages />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
