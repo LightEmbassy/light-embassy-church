@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Play, BookOpen, Heart, Users, Headphones, MessageCircle } from "lucide-react"
+import { Play, BookOpen, Heart, Headphones, MessageCircle, Users } from "lucide-react"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -17,9 +17,9 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       tab: "watch"
     },
     {
-      icon: BookOpen,
-      title: "Read",
-      description: "Dig deeper into God's Word",
+      icon: Users,
+      title: "Discover More",
+      description: "Community forum & discussions",
       color: "bg-gradient-divine",
       textColor: "text-primary",
       tab: "learn"

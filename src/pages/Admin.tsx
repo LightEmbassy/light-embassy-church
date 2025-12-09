@@ -9,6 +9,7 @@ import { PrayerManagement } from "@/components/admin/PrayerManagement"
 import { UserManagement } from "@/components/admin/UserManagement"
 import { QuizManagement } from "@/components/admin/QuizManagement"
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard"
+import { ForumManagement } from "@/components/admin/ForumManagement"
 import { 
   Users, 
   Video, 
@@ -17,7 +18,8 @@ import {
   HelpCircle, 
   BarChart3,
   Shield,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquare
 } from "lucide-react"
 
 interface AdminProps {
@@ -91,7 +93,7 @@ export default function Admin({ onBack }: AdminProps) {
 
         {/* Dashboard Content */}
         <Tabs defaultValue="analytics" className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-8">
+          <TabsList className="grid w-full grid-cols-7 mb-8">
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Analytics
@@ -107,6 +109,10 @@ export default function Admin({ onBack }: AdminProps) {
             <TabsTrigger value="prayers" className="flex items-center gap-2">
               <Heart className="h-4 w-4" />
               Prayers
+            </TabsTrigger>
+            <TabsTrigger value="forum" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Forum
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
@@ -132,6 +138,10 @@ export default function Admin({ onBack }: AdminProps) {
 
           <TabsContent value="prayers">
             <PrayerManagement />
+          </TabsContent>
+
+          <TabsContent value="forum">
+            <ForumManagement />
           </TabsContent>
 
           <TabsContent value="users">
