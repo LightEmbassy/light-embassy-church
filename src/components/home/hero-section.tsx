@@ -44,11 +44,12 @@ export function HeroSection() {
               Watch Videos
             </Button>
             <Button 
-              variant="outline" 
+              variant="secondary" 
               size="lg"
-              className="border-white/40 text-white hover:bg-white/20 backdrop-blur-sm transition-divine"
+              className="bg-white text-primary font-semibold hover:bg-white/90 backdrop-blur-sm transition-divine shadow-lg"
+              onClick={() => navigate('/prayers')}
             >
-              <Heart className="mr-2 h-5 w-5" />
+              <Heart className="mr-2 h-5 w-5 fill-primary" />
               Prayer Request
             </Button>
           </div>
