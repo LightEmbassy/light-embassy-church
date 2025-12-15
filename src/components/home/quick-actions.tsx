@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Play, BookOpen, Heart, Headphones, MessageCircle, Users } from "lucide-react"
 import watchBg from "@/assets/watch-bg.jpg"
 import podcastBg from "@/assets/podcast-bg.jpg"
+import prayerBg from "@/assets/prayer-bg.jpg"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -35,7 +36,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       color: "bg-accent",
       textColor: "text-primary",
       tab: "prayers",
-      hasImageBg: false
+      hasImageBg: true,
+      bgImage: prayerBg
     },
     {
       icon: MessageCircle,
