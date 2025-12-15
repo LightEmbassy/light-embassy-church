@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2, Volume2, X } from "lucide-react"
+import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2, Volume2, X, Download } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { Slider } from "@/components/ui/slider"
 
@@ -153,7 +153,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
               <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
                 {episode.description}
               </p>
-              <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
@@ -161,21 +161,34 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                   </div>
                   <span>{episode.publishedAt}</span>
                 </div>
-                <ShareDialog
-                  content={{
-                    title: episode.title,
-                    text: `Listen to this podcast episode: ${episode.title}\n\n${episode.description}`,
-                    url: episode.audioUrl
-                  }}
-                >
+                <div className="flex items-center gap-1">
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      window.open(episode.audioUrl, '_blank')
+                    }}
+                    title="Download episode"
                   >
-                    <Share2 className="h-4 w-4" />
+                    <Download className="h-4 w-4" />
                   </Button>
-                </ShareDialog>
+                  <ShareDialog
+                    content={{
+                      title: episode.title,
+                      text: `Listen to this podcast episode: ${episode.title}\n\n${episode.description}`,
+                      url: episode.audioUrl
+                    }}
+                  >
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </ShareDialog>
+                </div>
               </div>
             </div>
           </div>
@@ -333,6 +346,14 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                   ) : (
                     <Play className="h-5 w-5" />
                   )}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => window.open(currentEpisode.audioUrl, '_blank')}
+                  title="Download episode"
+                >
+                  <Download className="h-4 w-4" />
                 </Button>
                 <Button 
                   variant="ghost" 
