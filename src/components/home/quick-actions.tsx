@@ -5,6 +5,7 @@ import podcastBg from "@/assets/podcast-bg.jpg"
 import prayerBg from "@/assets/prayer-bg.jpg"
 import discoverBg from "@/assets/discover-bg.jpg"
 import messagesBg from "@/assets/messages-bg.jpg"
+import quizBg from "@/assets/quiz-bg.jpg"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -69,7 +70,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       color: "bg-accent",
       textColor: "text-primary",
       tab: "quiz",
-      hasImageBg: false
+      hasImageBg: true,
+      bgImage: quizBg
     }
   ]
 
