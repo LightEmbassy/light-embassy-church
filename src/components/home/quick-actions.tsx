@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Play, BookOpen, Heart, Headphones, MessageCircle, Users } from "lucide-react"
+import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -14,7 +14,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Pure word of God's grace",
       color: "bg-gradient-spiritual",
       textColor: "text-white",
-      tab: "watch"
+      tab: "watch",
+      hasImageBg: true
     },
     {
       icon: Users,
@@ -22,7 +23,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Community forum & discussions",
       color: "bg-gradient-divine",
       textColor: "text-primary",
-      tab: "learn"
+      tab: "learn",
+      hasImageBg: false
     },
     {
       icon: Heart,
@@ -30,7 +32,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Request prayer for yourself or others",
       color: "bg-accent",
       textColor: "text-primary",
-      tab: "prayers"
+      tab: "prayers",
+      hasImageBg: false
     },
     {
       icon: MessageCircle,
@@ -38,7 +41,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Connect with church staff",
       color: "bg-gradient-peace",
       textColor: "text-primary",
-      tab: "messages"
+      tab: "messages",
+      hasImageBg: false
     },
     {
       icon: Headphones,
@@ -46,7 +50,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Listen from anywhere!",
       color: "bg-primary-glow",
       textColor: "text-primary",
-      tab: "podcast"
+      tab: "podcast",
+      hasImageBg: false
     }
   ]
 
@@ -63,6 +68,45 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       <div className="grid grid-cols-2 gap-4">
         {actions.map((action, index) => {
           const Icon = action.icon
+          
+          // Special card with image background for Watch
+          if (action.hasImageBg) {
+            return (
+              <Card 
+                key={index} 
+                className="border-0 shadow-gentle hover:shadow-divine transition-divine cursor-pointer group overflow-hidden"
+                onClick={() => handleActionClick(action.tab)}
+              >
+                <CardContent className="p-0 relative h-28">
+                  {/* Background image */}
+                  <img 
+                    src={heroLightEmbassy}
+                    alt={action.title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/70 transition-all" />
+                  
+                  {/* Content */}
+                  <div className="relative h-full flex flex-col items-center justify-center text-center space-y-2 p-4">
+                    <div className="bg-white/90 rounded-full p-2 group-hover:scale-110 transition-transform shadow-md">
+                      <Icon className="h-6 w-6 text-primary fill-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-inter font-bold text-sm text-white drop-shadow-lg">
+                        {action.title}
+                      </h3>
+                      <p className="text-xs text-white/80 drop-shadow">
+                        {action.description}
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          }
+          
+          // Standard card for other actions
           return (
             <Card 
               key={index} 
