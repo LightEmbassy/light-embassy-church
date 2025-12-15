@@ -61,6 +61,15 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       tab: "podcast",
       hasImageBg: true,
       bgImage: podcastBg
+    },
+    {
+      icon: BookOpen,
+      title: "Take Another Quiz",
+      description: "Test your Bible knowledge!",
+      color: "bg-accent",
+      textColor: "text-primary",
+      tab: "quiz",
+      hasImageBg: false
     }
   ]
 
