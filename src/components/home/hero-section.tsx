@@ -34,15 +34,25 @@ export function HeroSection() {
           </p>
           
           <div className="flex gap-3 pt-2">
-            <Button 
-              variant="secondary" 
-              size="lg"
-              className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm transition-divine"
+            {/* Watch Videos Card Button */}
+            <div 
+              className="relative w-32 h-20 rounded-xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-xl transition-all hover:scale-105"
               onClick={() => navigate('/watch')}
             >
-              <Play className="mr-2 h-5 w-5" />
-              Watch Videos
-            </Button>
+              <img 
+                src={heroLightEmbassy}
+                alt="Watch Videos"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/70 transition-all" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="bg-white/90 rounded-full p-2 mb-1 group-hover:scale-110 transition-transform shadow-md">
+                  <Play className="h-4 w-4 text-primary fill-primary" />
+                </div>
+                <span className="text-white font-semibold text-xs drop-shadow-lg">Watch Videos</span>
+              </div>
+            </div>
+            
             <Button 
               variant="secondary" 
               size="lg"
