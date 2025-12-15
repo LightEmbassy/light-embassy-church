@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Play, BookOpen, Heart, Headphones, MessageCircle, Users } from "lucide-react"
 import watchBg from "@/assets/watch-bg.jpg"
+import podcastBg from "@/assets/podcast-bg.jpg"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -15,7 +16,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       color: "bg-gradient-spiritual",
       textColor: "text-white",
       tab: "watch",
-      hasImageBg: true
+      hasImageBg: true,
+      bgImage: watchBg
     },
     {
       icon: Users,
@@ -51,7 +53,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       color: "bg-primary-glow",
       textColor: "text-primary",
       tab: "podcast",
-      hasImageBg: false
+      hasImageBg: true,
+      bgImage: podcastBg
     }
   ]
 
@@ -80,7 +83,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
                 <CardContent className="p-0 relative h-28">
                   {/* Background image */}
                   <img 
-                    src={watchBg}
+                    src={action.bgImage}
                     alt={action.title}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
