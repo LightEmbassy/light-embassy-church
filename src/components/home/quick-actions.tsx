@@ -3,6 +3,7 @@ import { Play, BookOpen, Heart, Headphones, MessageCircle, Users } from "lucide-
 import watchBg from "@/assets/watch-bg.jpg"
 import podcastBg from "@/assets/podcast-bg.jpg"
 import prayerBg from "@/assets/prayer-bg.jpg"
+import discoverBg from "@/assets/discover-bg.jpg"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -27,7 +28,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       color: "bg-gradient-divine",
       textColor: "text-primary",
       tab: "learn",
-      hasImageBg: false
+      hasImageBg: true,
+      bgImage: discoverBg
     },
     {
       icon: Heart,
