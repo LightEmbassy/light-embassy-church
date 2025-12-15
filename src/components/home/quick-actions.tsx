@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Play, BookOpen, Heart, Headphones, MessageCircle, Users } from "lucide-react"
-import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
+import watchBg from "@/assets/watch-bg.jpg"
 
 interface QuickActionsProps {
   onNavigate?: (tab: string) => void
@@ -80,7 +80,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
                 <CardContent className="p-0 relative h-28">
                   {/* Background image */}
                   <img 
-                    src={heroLightEmbassy}
+                    src={watchBg}
                     alt={action.title}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
