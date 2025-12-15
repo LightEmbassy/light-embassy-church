@@ -109,6 +109,17 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
+  const downloadEpisode = (episode: Episode) => {
+    const link = document.createElement('a')
+    link.href = episode.audioUrl
+    link.download = `${episode.title.replace(/[^a-zA-Z0-9\s]/g, '').trim()}.mp3`
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
   useEffect(() => {
     if (currentEpisode && audioRef.current) {
       audioRef.current.play().catch(console.error)
@@ -167,7 +178,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation()
-                      window.open(episode.audioUrl, '_blank')
+                      downloadEpisode(episode)
                     }}
                     title="Download episode"
                   >
@@ -350,7 +361,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                 <Button 
                   variant="ghost" 
                   size="icon"
-                  onClick={() => window.open(currentEpisode.audioUrl, '_blank')}
+                  onClick={() => downloadEpisode(currentEpisode)}
                   title="Download episode"
                 >
                   <Download className="h-4 w-4" />
