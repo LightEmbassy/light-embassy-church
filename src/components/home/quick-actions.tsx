@@ -104,8 +104,8 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
                     alt={action.title}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  {/* Gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/70 transition-all" />
+                  {/* Gradient overlay - stronger for bright backgrounds like quiz */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/50 to-black/30 group-hover:from-black/75 transition-all" />
                   
                   {/* Content */}
                   <div className="relative h-full flex flex-col items-center justify-center text-center space-y-2 p-4">
