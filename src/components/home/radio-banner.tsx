@@ -1,8 +1,15 @@
 import { Radio } from "lucide-react"
 
-export function RadioBanner() {
+interface RadioBannerProps {
+  onNavigate?: (tab: string) => void
+}
+
+export function RadioBanner({ onNavigate }: RadioBannerProps) {
   return (
-    <div className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 py-6 px-4">
+    <button
+      onClick={() => onNavigate('radio')}
+      className="w-full bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 py-6 px-4 hover:from-amber-700 hover:via-amber-600 hover:to-orange-600 transition-all cursor-pointer"
+    >
       <div className="max-w-4xl mx-auto text-center">
         <div className="flex items-center justify-center gap-3 mb-1">
           <Radio className="h-6 w-6 text-white animate-pulse" />
@@ -15,6 +22,6 @@ export function RadioBanner() {
           Listen to free radio on your device
         </p>
       </div>
-    </div>
+    </button>
   )
 }
