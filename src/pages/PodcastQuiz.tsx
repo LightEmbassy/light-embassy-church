@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { ArrowLeft, CheckCircle, XCircle, Headphones, Trophy, RotateCcw } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
+import { Confetti } from "@/components/quiz/Confetti"
 import quizBg from "@/assets/quiz-bg.jpg"
 
 interface QuizQuestion {
@@ -200,9 +201,11 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
   // Results Screen
   if (showResults) {
     const percentage = Math.round((score / questions.length) * 100)
+    const isHighScore = percentage >= 70
     
     return (
       <div className="min-h-screen bg-background pb-20 pt-4">
+        {isHighScore && <Confetti />}
         <div className="px-4 space-y-6">
           {onBack && (
             <Button variant="ghost" onClick={onBack} className="mb-4">
