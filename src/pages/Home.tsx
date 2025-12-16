@@ -16,7 +16,7 @@ export default function Home({ onNavigate }: HomeProps) {
       <PromotionalBanner onNavigate={onNavigate} />
       <HeroSection />
       <SignupBanner />
-      <RadioBanner />
+      <RadioBanner onNavigate={onNavigate} />
       <QuickActions onNavigate={onNavigate} />
       <DailyInspiration />
       <CommunityFeed />
