@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/home/hero-section"
 import { PromotionalBanner } from "@/components/home/promotional-banner"
 import { SignupBanner } from "@/components/home/signup-banner"
+import { RadioBanner } from "@/components/home/radio-banner"
 import { QuickActions } from "@/components/home/quick-actions"
 import { DailyInspiration } from "@/components/home/daily-inspiration"
 import { CommunityFeed } from "@/components/home/community-feed"
@@ -15,6 +16,7 @@ export default function Home({ onNavigate }: HomeProps) {
       <PromotionalBanner onNavigate={onNavigate} />
       <HeroSection />
       <SignupBanner />
+      <RadioBanner />
       <QuickActions onNavigate={onNavigate} />
       <DailyInspiration />
       <CommunityFeed />
