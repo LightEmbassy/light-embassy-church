@@ -66,10 +66,10 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
     {
       icon: BookOpen,
       title: "Take Another Quiz",
-      description: "Test your Bible knowledge!",
+      description: "Test your podcast knowledge!",
       color: "bg-accent",
       textColor: "text-primary",
-      tab: "quiz",
+      tab: "podcast-quiz",
       hasImageBg: true,
       bgImage: quizBg
     }
