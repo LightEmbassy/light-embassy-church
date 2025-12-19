@@ -52,7 +52,11 @@ const generateCaptcha = () => {
   return { question: `What is ${num1} + ${num2}?`, answer: num1 + num2 }
 }
 
-export function ForumSection() {
+interface ForumSectionProps {
+  selectedTopic?: string
+}
+
+export function ForumSection({ selectedTopic: topicFilter = "all" }: ForumSectionProps) {
   const { user } = useAuth()
   const [topics, setTopics] = useState<ForumTopic[]>([])
   const [loading, setLoading] = useState(true)
@@ -334,10 +338,30 @@ export function ForumSection() {
     return name.slice(0, 2).toUpperCase()
   }
 
-  const filteredTopics = topics.filter(topic =>
-    topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    topic.content.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  // Topic keywords for filtering
+  const topicKeywords: Record<string, string[]> = {
+    healing: ['healing', 'heal', 'health', 'sick', 'disease', 'miracle'],
+    faith: ['faith', 'believe', 'trust', 'abraham', 'promise'],
+    love: ['love', 'loving', 'compassion', 'grace'],
+    purpose: ['purpose', 'busy', 'life', 'calling', 'destiny'],
+    bible: ['bible', 'scripture', 'word', 'misunderstood', 'interpretation'],
+    community: ['community', 'church', 'fellowship', 'together', 'serve']
+  }
+
+  const filteredTopics = topics.filter(topic => {
+    const matchesSearch = topic.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      topic.content.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    if (topicFilter === "all") return matchesSearch
+    
+    const keywords = topicKeywords[topicFilter] || []
+    const matchesTopic = keywords.some(keyword => 
+      topic.title.toLowerCase().includes(keyword) ||
+      topic.content.toLowerCase().includes(keyword)
+    )
+    
+    return matchesSearch && matchesTopic
+  })
 
   if (selectedTopic) {
     return (
