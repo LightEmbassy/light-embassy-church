@@ -96,7 +96,6 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
           conversation_id: conversation.id,
           sender_id: user.id,
           content: data.message,
-          is_from_staff: false,
         })
 
       if (messageError) throw messageError
