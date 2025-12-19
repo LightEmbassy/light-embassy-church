@@ -23,10 +23,42 @@ const colors = [
   "#F7DC6F"
 ]
 
+function playCelebrationSound() {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+    
+    // Play a sequence of ascending notes for a celebratory effect
+    const notes = [523.25, 659.25, 783.99, 1046.50] // C5, E5, G5, C6
+    
+    notes.forEach((frequency, index) => {
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + index * 0.15)
+      
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime + index * 0.15)
+      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + index * 0.15 + 0.05)
+      gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + index * 0.15 + 0.4)
+      
+      oscillator.start(audioContext.currentTime + index * 0.15)
+      oscillator.stop(audioContext.currentTime + index * 0.15 + 0.5)
+    })
+  } catch (error) {
+    console.log('Audio not supported:', error)
+  }
+}
+
 export function Confetti() {
   const [pieces, setPieces] = useState<ConfettiPiece[]>([])
 
   useEffect(() => {
+    // Play celebration sound
+    playCelebrationSound()
+    
     const confettiPieces: ConfettiPiece[] = Array.from({ length: 50 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
