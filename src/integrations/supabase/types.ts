@@ -499,6 +499,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement: Database["public"]["Enums"]["achievement_type"]
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement: Database["public"]["Enums"]["achievement_type"]
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement?: Database["public"]["Enums"]["achievement_type"]
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_quiz_completion: {
         Row: {
           completed_at: string
@@ -658,6 +679,12 @@ export type Database = {
       }
     }
     Functions: {
+      check_and_award_achievements: {
+        Args: { p_user_id: string }
+        Returns: {
+          new_achievement: Database["public"]["Enums"]["achievement_type"]
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -668,6 +695,18 @@ export type Database = {
       is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
+      achievement_type:
+        | "first_video"
+        | "first_podcast"
+        | "videos_10"
+        | "videos_25"
+        | "videos_50"
+        | "podcasts_10"
+        | "podcasts_25"
+        | "podcasts_50"
+        | "total_100"
+        | "weekly_streak"
+        | "early_bird"
       app_role: "admin" | "moderator" | "staff" | "user"
     }
     CompositeTypes: {
@@ -796,6 +835,19 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      achievement_type: [
+        "first_video",
+        "first_podcast",
+        "videos_10",
+        "videos_25",
+        "videos_50",
+        "podcasts_10",
+        "podcasts_25",
+        "podcasts_50",
+        "total_100",
+        "weekly_streak",
+        "early_bird",
+      ],
       app_role: ["admin", "moderator", "staff", "user"],
     },
   },
