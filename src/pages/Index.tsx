@@ -14,6 +14,7 @@ import Admin from "./Admin"
 import Quiz from "./Quiz"
 import Radio from "./Radio"
 import PodcastQuiz from "./PodcastQuiz"
+import Progress from "./Progress"
 
 const Index = () => {
   const { currentTab, navigateTo, goBack, navigationHistory } = useNavigation()
@@ -48,6 +49,8 @@ const Index = () => {
         return <Quiz onBack={goBack} />
       case 'radio':
         return <Radio onBack={goBack} />
+      case 'progress':
+        return <Progress />
       case 'podcast-quiz':
         return <PodcastQuiz onBack={goBack} />
       case 'events':

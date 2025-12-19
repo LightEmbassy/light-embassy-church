@@ -190,6 +190,33 @@ export type Database = {
         }
         Relationships: []
       }
+      media_history: {
+        Row: {
+          id: string
+          media_id: string
+          media_title: string
+          media_type: string
+          user_id: string
+          watched_at: string
+        }
+        Insert: {
+          id?: string
+          media_id: string
+          media_title: string
+          media_type: string
+          user_id: string
+          watched_at?: string
+        }
+        Update: {
+          id?: string
+          media_id?: string
+          media_title?: string
+          media_type?: string
+          user_id?: string
+          watched_at?: string
+        }
+        Relationships: []
+      }
       message_notifications: {
         Row: {
           created_at: string
