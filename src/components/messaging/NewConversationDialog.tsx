@@ -24,13 +24,10 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Subject is required').max(100, 'Subject must be less than 100 characters'),
-  category: z.string().min(1, 'Category is required'),
   message: z.string().min(1, 'Message is required'),
-  priority: z.number().min(1).max(4).default(1),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -41,22 +38,6 @@ interface NewConversationDialogProps {
   onSuccess?: () => void
 }
 
-const categories = [
-  { value: 'general', label: 'General Support' },
-  { value: 'counselling', label: 'Counselling' },
-  { value: 'prayer', label: 'Prayer Request' },
-  { value: 'spiritual', label: 'Spiritual Guidance' },
-  { value: 'pastoral', label: 'Pastoral Care' },
-  { value: 'technical', label: 'Technical Support' },
-]
-
-const priorities = [
-  { value: 1, label: 'Low' },
-  { value: 2, label: 'Medium' },
-  { value: 3, label: 'High' },
-  { value: 4, label: 'Urgent' },
-]
-
 export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConversationDialogProps) {
   const { user } = useAuth()
   const { toast } = useToast()
@@ -66,9 +47,7 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      category: '',
       message: '',
-      priority: 1,
     },
   })
 
@@ -162,61 +141,6 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
                 </FormItem>
               )}
             />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.value} value={category.value}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="priority"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Priority</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(parseInt(value))}
-                      value={field.value?.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select priority" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {priorities.map((priority) => (
-                          <SelectItem key={priority.value} value={priority.value.toString()}>
-                            {priority.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
             <FormField
               control={form.control}
