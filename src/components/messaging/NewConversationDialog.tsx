@@ -5,7 +5,7 @@ import * as z from 'zod'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
-import { CheckCircle2 } from 'lucide-react'
+
 import {
   Dialog,
   DialogContent,
@@ -61,7 +61,6 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
   const { user } = useAuth()
   const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -102,22 +101,16 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
 
       if (messageError) throw messageError
 
-      // Show success animation
-      setShowSuccess(true)
-      
-      // Wait for animation, then close
-      setTimeout(() => {
-        setShowSuccess(false)
-        onOpenChange(false)
-        form.reset()
-        
-        toast({
-          title: 'Thank You for Your Message!',
-          description: 'Our team will respond to you as soon as possible.',
-        })
+      // Close immediately on success
+      onOpenChange(false)
+      form.reset()
 
-        onSuccess?.()
-      }, 1500)
+      toast({
+        title: 'Message sent',
+        description: "Thanks for reaching out — we'll respond soon.",
+      })
+
+      onSuccess?.()
     } catch (error) {
       console.error('Error creating conversation:', error)
       toast({
@@ -132,128 +125,113 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        {showSuccess ? (
-          <div className="flex flex-col items-center justify-center py-12 animate-fade-in">
-            <div className="relative">
-              <CheckCircle2 className="w-20 h-20 text-green-500 animate-scale-in" />
-              <div className="absolute inset-0 w-20 h-20 rounded-full bg-green-500/20 animate-ping" />
+     <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Start New Conversation</DialogTitle>
+          <DialogDescription>
+            Send a message to connect with our counsellors and support staff
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Subject</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Brief description of your request" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.value} value={category.value}>
+                            {category.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Priority</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {priorities.map((priority) => (
+                          <SelectItem key={priority.value} value={priority.value.toString()}>
+                            {priority.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-            <h3 className="mt-6 text-xl font-semibold text-foreground">Message Sent!</h3>
-            <p className="mt-2 text-muted-foreground text-center">
-              Thank you for reaching out. We'll respond soon.
-            </p>
-          </div>
-        ) : (
-          <>
-            <DialogHeader>
-              <DialogTitle>Start New Conversation</DialogTitle>
-              <DialogDescription>
-                Send a message to connect with our counsellors and support staff
-              </DialogDescription>
-            </DialogHeader>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Subject</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Brief description of your request" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="category"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Category</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select category" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category.value} value={category.value}>
-                                {category.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <FormField
+              control={form.control}
+              name="message"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe your request or question in detail..."
+                      className="min-h-[120px]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                  <FormField
-                    control={form.control}
-                    name="priority"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Priority</FormLabel>
-                        <Select 
-                          onValueChange={(value) => field.onChange(parseInt(value))} 
-                          value={field.value?.toString()}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select priority" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {priorities.map((priority) => (
-                              <SelectItem key={priority.value} value={priority.value.toString()}>
-                                {priority.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Message</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Describe your request or question in detail..."
-                          className="min-h-[120px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex gap-2 pt-4">
-                  <Button type="submit" disabled={isSubmitting} className="flex-1">
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
-                  </Button>
-                  <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </>
-        )}
+            <div className="flex gap-2 pt-4">
+              <Button type="submit" disabled={isSubmitting} className="flex-1">
+                {isSubmitting ? 'Sending...' : 'Send Message'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )
