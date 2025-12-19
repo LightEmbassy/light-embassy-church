@@ -100,7 +100,7 @@ export function ChatBot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'Hello! I\'m here to help you with questions about faith, the Bible, and Light Embassy Church. How can I assist you today?',
+      content: "Hello! I'm Light Guide, your spiritual companion. I'm here to help you with questions about faith, the Bible, and Light Embassy Church. How can I assist you today?",
       role: 'assistant',
       timestamp: new Date()
     }
@@ -288,7 +288,7 @@ export function ChatBot() {
     setMessages([
       {
         id: '1',
-        content: 'Hello! I\'m here to help you with questions about faith, the Bible, and Light Embassy Church. How can I assist you today?',
+        content: "Hello! I'm Light Guide, your spiritual companion. I'm here to help you with questions about faith, the Bible, and Light Embassy Church. How can I assist you today?",
         role: 'assistant',
         timestamp: new Date()
       }
@@ -307,7 +307,7 @@ export function ChatBot() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-primary" />
-            Light Embassy Assistant
+            Light Guide
           </CardTitle>
           {messages.length > 1 && !isChatClosed && (
             <Button
