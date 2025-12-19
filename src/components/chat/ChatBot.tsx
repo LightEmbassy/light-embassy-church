@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Send, User, Loader2, RotateCcw, ChevronDown, ChevronUp } from "lucide-react"
+import { Send, User, Loader2, RotateCcw, ChevronDown, ChevronUp, LogOut } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { LightGuideIcon } from "./LightGuideIcon"
@@ -109,6 +109,7 @@ export function ChatBot() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [expandedMessages, setExpandedMessages] = useState<Set<string>>(new Set())
+  const [chatEnded, setChatEnded] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
@@ -215,6 +216,18 @@ export function ChatBot() {
       }
     ])
     setExpandedMessages(new Set())
+    setChatEnded(false)
+  }
+
+  const endChat = () => {
+    const farewellMessage: Message = {
+      id: Date.now().toString(),
+      content: "Thank you for chatting with Light Guide! 🙏\n\nIt was a blessing to connect with you today. May God's peace and grace be with you always.\n\nIf you ever need spiritual guidance or have questions about faith, I'm here for you. Until next time, go in peace!\n\n— Light Guide",
+      role: 'assistant',
+      timestamp: new Date()
+    }
+    setMessages(prev => [...prev, farewellMessage])
+    setChatEnded(true)
   }
 
   return (
@@ -227,18 +240,32 @@ export function ChatBot() {
             </div>
             Light Guide
           </CardTitle>
-          {messages.length > 1 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearConversation}
-              disabled={isLoading}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Clear
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {messages.length > 1 && !chatEnded && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={endChat}
+                disabled={isLoading}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                End Chat
+              </Button>
+            )}
+            {messages.length > 1 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={clearConversation}
+                disabled={isLoading}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <RotateCcw className="h-4 w-4 mr-1" />
+                {chatEnded ? 'New Chat' : 'Clear'}
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       
@@ -333,23 +360,33 @@ export function ChatBot() {
           </div>
         </ScrollArea>
         
-        <div className="flex gap-2">
-          <Input
-            placeholder="Ask me about faith, the Bible, or Light Embassy Church..."
-            value={input}
-            onChange={handleInputChange}
-            onKeyPress={handleKeyPress}
-            disabled={isLoading}
-            className="flex-1"
-          />
-          <Button 
-            onClick={handleSendMessage}
-            disabled={!input.trim() || isLoading}
-            size="icon"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
+        {chatEnded ? (
+          <div className="text-center py-4">
+            <p className="text-sm text-muted-foreground mb-2">Chat ended</p>
+            <Button onClick={clearConversation} variant="outline" size="sm">
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Start New Chat
+            </Button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <Input
+              placeholder="Ask me about faith, the Bible, or Light Embassy Church..."
+              value={input}
+              onChange={handleInputChange}
+              onKeyPress={handleKeyPress}
+              disabled={isLoading}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleSendMessage}
+              disabled={!input.trim() || isLoading}
+              size="icon"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
