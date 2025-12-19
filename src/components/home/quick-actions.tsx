@@ -46,7 +46,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
     {
       icon: MessageCircle,
       title: "Messages",
-      description: "Connect with church staff",
+      description: "Connect with like minded people",
       color: "bg-gradient-peace",
       textColor: "text-primary",
       tab: "messages",
