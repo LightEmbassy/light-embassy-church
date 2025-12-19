@@ -190,16 +190,10 @@ export function ChatBot() {
   }, [isChatClosed, isWaitingForContinueResponse, closeChat])
 
   const resetIdleTimer = useCallback(() => {
-    if (isChatClosed) return
+    if (isChatClosed || isWaitingForContinueResponse) return
     
-    // Clear existing timers
+    // Clear existing idle timer only
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-    if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
-    
-    // If we were waiting for continue response and user responded, cancel that
-    if (isWaitingForContinueResponse) {
-      setIsWaitingForContinueResponse(false)
-    }
     
     // Start new idle timer
     idleTimerRef.current = setTimeout(() => {
@@ -207,23 +201,42 @@ export function ChatBot() {
     }, IDLE_TIMEOUT_MS)
   }, [isChatClosed, isWaitingForContinueResponse, askToContinue])
 
-  // Reset idle timer on user activity
+  const handleUserActivity = useCallback(() => {
+    if (isChatClosed) return
+    
+    // If we were waiting for continue response and user responded, cancel that timer and reset
+    if (isWaitingForContinueResponse) {
+      if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
+      setIsWaitingForContinueResponse(false)
+    }
+    
+    // Clear and restart idle timer
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+    idleTimerRef.current = setTimeout(() => {
+      askToContinue()
+    }, IDLE_TIMEOUT_MS)
+  }, [isChatClosed, isWaitingForContinueResponse, askToContinue])
+
+  // Only start idle timer on initial load, don't reset on every message change
   useEffect(() => {
-    if (messages.length > 1 && !isChatClosed) {
-      resetIdleTimer()
+    if (messages.length === 1 && !isChatClosed) {
+      // Initial state - start idle timer
+      idleTimerRef.current = setTimeout(() => {
+        askToContinue()
+      }, IDLE_TIMEOUT_MS)
     }
     
     return () => {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
       if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
     }
-  }, [messages, isChatClosed, resetIdleTimer])
+  }, []) // Only run on mount
 
   // Reset timer when user types
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
     if (!isChatClosed) {
-      resetIdleTimer()
+      handleUserActivity()
     }
   }
 
@@ -259,7 +272,7 @@ export function ChatBot() {
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
-    resetIdleTimer()
+    handleUserActivity()
 
     try {
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
