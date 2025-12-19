@@ -66,7 +66,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
     {
       icon: BookOpen,
       title: "Take Another Quiz",
-      description: "Test your podcast knowledge!",
+      description: "Your chance to win prizes",
       color: "bg-accent",
       textColor: "text-primary",
       tab: "podcast-quiz",
