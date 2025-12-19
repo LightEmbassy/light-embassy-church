@@ -1,12 +1,26 @@
+import { useState } from "react"
 import { ForumSection } from "@/components/forum/ForumSection"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface LearnProps {
   onBack?: () => void
 }
 
+const topics = [
+  { id: "all", label: "All Topics" },
+  { id: "healing", label: "Healing" },
+  { id: "faith", label: "Faith" },
+  { id: "love", label: "Love" },
+  { id: "purpose", label: "Purpose" },
+  { id: "bible", label: "Bible Study" },
+  { id: "community", label: "Community" },
+]
+
 export default function Learn({ onBack }: LearnProps) {
+  const [selectedTopic, setSelectedTopic] = useState("all")
+
   return (
     <div className="min-h-screen bg-background pb-20 pt-16">
       <div className="container mx-auto px-6 py-8 max-w-4xl">
@@ -29,7 +43,24 @@ export default function Learn({ onBack }: LearnProps) {
           </p>
         </div>
 
-        <ForumSection />
+        {/* Topic Tabs */}
+        <div className="mb-8">
+          <Tabs value={selectedTopic} onValueChange={setSelectedTopic} className="w-full">
+            <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent justify-center p-0">
+              {topics.map((topic) => (
+                <TabsTrigger
+                  key={topic.id}
+                  value={topic.id}
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-muted/50 hover:bg-muted px-4 py-2 rounded-full text-sm font-medium transition-all"
+                >
+                  {topic.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
+        <ForumSection selectedTopic={selectedTopic} />
       </div>
     </div>
   )
