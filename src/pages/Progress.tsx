@@ -3,9 +3,11 @@ import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Medal, Award, Star, Crown, Play, Headphones, Calendar } from "lucide-react"
+import { Trophy, Medal, Award, Star, Crown, Play, Headphones, Calendar, Sparkles } from "lucide-react"
 import { format } from "date-fns"
 import { Confetti } from "@/components/quiz/Confetti"
+import { AchievementBadges } from "@/components/progress/AchievementBadges"
+import { useAchievements } from "@/hooks/useAchievements"
 
 interface MediaHistoryItem {
   id: string
@@ -28,6 +30,8 @@ export default function Progress() {
   const [loading, setLoading] = useState(true)
   const [showConfetti, setShowConfetti] = useState(false)
   const [celebratedMilestone, setCelebratedMilestone] = useState<number | null>(null)
+  const { getAllAchievements } = useAchievements()
+  const unlockedBadges = getAllAchievements().filter(a => a.unlocked).length
 
   useEffect(() => {
     if (user) {
@@ -114,26 +118,33 @@ export default function Progress() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-3 mb-8">
           <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="p-4 text-center">
-              <Play className="h-8 w-8 text-red-400 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-white">{totalVideos}</div>
-              <div className="text-white/70 text-sm">Videos</div>
+            <CardContent className="p-3 text-center">
+              <Play className="h-6 w-6 text-red-400 mx-auto mb-1" />
+              <div className="text-2xl font-bold text-white">{totalVideos}</div>
+              <div className="text-white/70 text-xs">Videos</div>
             </CardContent>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="p-4 text-center">
-              <Headphones className="h-8 w-8 text-green-400 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-white">{totalPodcasts}</div>
-              <div className="text-white/70 text-sm">Podcasts</div>
+            <CardContent className="p-3 text-center">
+              <Headphones className="h-6 w-6 text-green-400 mx-auto mb-1" />
+              <div className="text-2xl font-bold text-white">{totalPodcasts}</div>
+              <div className="text-white/70 text-xs">Podcasts</div>
             </CardContent>
           </Card>
           <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-            <CardContent className="p-4 text-center">
-              <Medal className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-white">{currentMilestone}</div>
-              <div className="text-white/70 text-sm">Milestones</div>
+            <CardContent className="p-3 text-center">
+              <Medal className="h-6 w-6 text-yellow-400 mx-auto mb-1" />
+              <div className="text-2xl font-bold text-white">{currentMilestone}</div>
+              <div className="text-white/70 text-xs">Milestones</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <CardContent className="p-3 text-center">
+              <Sparkles className="h-6 w-6 text-purple-400 mx-auto mb-1" />
+              <div className="text-2xl font-bold text-white">{unlockedBadges}</div>
+              <div className="text-white/70 text-xs">Badges</div>
             </CardContent>
           </Card>
         </div>
@@ -181,6 +192,11 @@ export default function Progress() {
             </CardContent>
           </Card>
         )}
+
+        {/* Achievement Badges */}
+        <div className="mb-8">
+          <AchievementBadges />
+        </div>
 
         {/* History List */}
         <div className="space-y-4">
