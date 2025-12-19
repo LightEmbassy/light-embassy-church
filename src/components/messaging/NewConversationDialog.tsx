@@ -1,11 +1,9 @@
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
-import { Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -41,7 +39,6 @@ interface NewConversationDialogProps {
 export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConversationDialogProps) {
   const { user } = useAuth()
   const { toast } = useToast()
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -54,7 +51,10 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
   const onSubmit = async (data: FormData) => {
     if (!user) return
 
-    setIsSubmitting(true)
+    // Close immediately
+    onOpenChange(false)
+    form.reset()
+
     try {
       // Create conversation
       const { data: conversation, error: conversationError } = await supabase
@@ -80,10 +80,6 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
 
       if (messageError) throw messageError
 
-      // Close immediately on success
-      onOpenChange(false)
-      form.reset()
-
       toast({
         title: 'Message sent',
         description: "Thanks for reaching out — we'll respond soon.",
@@ -94,31 +90,15 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
       console.error('Error creating conversation:', error)
       toast({
         title: 'Error',
-        description: 'Failed to create conversation. Please try again.',
+        description: 'Failed to send message. Please try again.',
         variant: 'destructive',
       })
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
-  const handleOpenChange = (open: boolean) => {
-    if (isSubmitting) return // Prevent closing while submitting
-    onOpenChange(open)
-  }
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl relative max-h-[90vh] overflow-y-auto">
-        {/* Loading overlay */}
-        {isSubmitting && (
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
-            <div className="flex flex-col items-center gap-3">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Sending message...</p>
-            </div>
-          </div>
-        )}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Start New Conversation</DialogTitle>
           <DialogDescription>
@@ -161,10 +141,10 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
             />
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting ? 'Sending...' : 'Send Message'}
+              <Button type="submit" className="flex-1">
+                Send Message
               </Button>
-              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isSubmitting}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
             </div>
