@@ -54,9 +54,11 @@ const generateCaptcha = () => {
 
 interface ForumSectionProps {
   selectedTopic?: string
+  prefillTitle?: string
+  onPrefillUsed?: () => void
 }
 
-export function ForumSection({ selectedTopic: topicFilter = "all" }: ForumSectionProps) {
+export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle, onPrefillUsed }: ForumSectionProps) {
   const { user } = useAuth()
   const [topics, setTopics] = useState<ForumTopic[]>([])
   const [loading, setLoading] = useState(true)
@@ -98,6 +100,15 @@ export function ForumSection({ selectedTopic: topicFilter = "all" }: ForumSectio
       supabase.removeChannel(channel)
     }
   }, [])
+
+  // Handle prefill title from parent
+  useEffect(() => {
+    if (prefillTitle) {
+      setNewTitle(prefillTitle)
+      setIsDialogOpen(true)
+      onPrefillUsed?.()
+    }
+  }, [prefillTitle, onPrefillUsed])
 
   // Reset captcha when dialog opens
   useEffect(() => {
