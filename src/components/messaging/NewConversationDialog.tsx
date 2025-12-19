@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -101,8 +102,8 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
       if (messageError) throw messageError
 
       toast({
-        title: 'Conversation Created',
-        description: 'Your message has been sent to our support team.',
+        title: 'Thank You for Your Message!',
+        description: 'Our team will respond to you as soon as possible.',
       })
 
       form.reset()
@@ -124,6 +125,9 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Start New Conversation</DialogTitle>
+          <DialogDescription>
+            Send a message to connect with our counsellors and support staff
+          </DialogDescription>
         </DialogHeader>
         
         <Form {...form}>
