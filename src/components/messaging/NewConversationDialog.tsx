@@ -101,12 +101,15 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
 
       if (messageError) throw messageError
 
+      // Close the dialog immediately
+      onOpenChange(false)
+      form.reset()
+      
       toast({
         title: 'Thank You for Your Message!',
         description: 'Our team will respond to you as soon as possible.',
       })
 
-      form.reset()
       onSuccess?.()
     } catch (error) {
       console.error('Error creating conversation:', error)

@@ -15,12 +15,10 @@ import { NewConversationDialog } from './NewConversationDialog'
 
 interface Conversation {
   id: string
-  title: string
+  subject: string
   status: string
-  priority: number
-  category: string
   created_at: string
-  last_message_at: string
+  updated_at: string
   user_id: string
   staff_id?: string
   profiles?: {
@@ -108,14 +106,14 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
         .from('conversations')
         .select('*')
         .or(`user_id.eq.${user.id},staff_id.eq.${user.id}`)
-        .order('last_message_at', { ascending: false })
+        .order('updated_at', { ascending: false })
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter as any)
       }
 
       if (searchQuery.trim()) {
-        query = query.ilike('title', `%${searchQuery}%`)
+        query = query.ilike('subject', `%${searchQuery}%`)
       }
 
       const { data: conversationData, error: conversationError } = await query
@@ -150,24 +148,6 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
       })
     } finally {
       setLoading(false)
-    }
-  }
-
-  const getPriorityColor = (priority: number) => {
-    switch (priority) {
-      case 4: return 'bg-red-100 text-red-800'
-      case 3: return 'bg-orange-100 text-orange-800'
-      case 2: return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
-  }
-
-  const getPriorityLabel = (priority: number) => {
-    switch (priority) {
-      case 4: return 'Urgent'
-      case 3: return 'High'
-      case 2: return 'Medium'
-      default: return 'Low'
     }
   }
 
@@ -286,8 +266,8 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         {getStatusIcon(conversation.status)}
-                        <h3 className="font-medium">{conversation.title}</h3>
-                        {conversation.unread_count > 0 && (
+                        <h3 className="font-medium">{conversation.subject}</h3>
+                        {conversation.unread_count && conversation.unread_count > 0 && (
                           <Badge variant="destructive" className="rounded-full px-2 py-1 text-xs">
                             {conversation.unread_count}
                           </Badge>
@@ -295,9 +275,7 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
                       </div>
                       
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                        <span>Category: {conversation.category}</span>
-                        <span>•</span>
-                        <span>{formatDistanceToNow(new Date(conversation.last_message_at), { addSuffix: true })}</span>
+                        <span>{formatDistanceToNow(new Date(conversation.updated_at), { addSuffix: true })}</span>
                       </div>
 
                       {conversation.staff_profile && (
@@ -308,9 +286,6 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
                     </div>
                     
                     <div className="flex flex-col items-end gap-2">
-                      <Badge className={getPriorityColor(conversation.priority)}>
-                        {getPriorityLabel(conversation.priority)}
-                      </Badge>
                       <Badge variant="outline">
                         {conversation.status.replace('_', ' ').toUpperCase()}
                       </Badge>
