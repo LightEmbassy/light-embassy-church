@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -22,10 +23,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const formSchema = z.object({
   title: z.string().min(1, 'Subject is required').max(100, 'Subject must be less than 100 characters'),
   message: z.string().min(1, 'Message is required'),
+  isHuman: z.boolean().refine(val => val === true, {
+    message: 'Please confirm you are human',
+  }),
 })
 
 type FormData = z.infer<typeof formSchema>
@@ -39,21 +44,35 @@ interface NewConversationDialogProps {
 export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConversationDialogProps) {
   const { user } = useAuth()
   const { toast } = useToast()
+  // Honeypot field - should remain empty (bots will fill it)
+  const [honeypot, setHoneypot] = useState('')
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
       message: '',
+      isHuman: false,
     },
   })
 
   const onSubmit = async (data: FormData) => {
     if (!user) return
 
+    // Spam check: if honeypot is filled, it's likely a bot
+    if (honeypot) {
+      toast({
+        title: 'Error',
+        description: 'Spam detected. Please try again.',
+        variant: 'destructive',
+      })
+      return
+    }
+
     // Close immediately
     onOpenChange(false)
     form.reset()
+    setHoneypot('')
 
     try {
       // Create conversation
@@ -136,6 +155,42 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
                     />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Honeypot field - hidden from users, bots will fill it */}
+            <div className="absolute -left-[9999px] opacity-0 h-0 overflow-hidden" aria-hidden="true">
+              <label htmlFor="website">Website</label>
+              <input
+                type="text"
+                id="website"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
+
+            {/* Human verification checkbox */}
+            <FormField
+              control={form.control}
+              name="isHuman"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel className="cursor-pointer">
+                      I confirm that I am a human
+                    </FormLabel>
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
