@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -10,12 +10,9 @@ import { supabase } from "@/integrations/supabase/client"
 import { LightGuideIcon } from "./LightGuideIcon"
 
 const MAX_PREVIEW_LENGTH = 300
-const IDLE_TIMEOUT_MS = 30000 // 30 seconds
-const RESPONSE_TIMEOUT_MS = 15000 // 15 seconds to respond to continue prompt
 
 // Core profanity list - only words that should be blocked as standalone
 const PROFANITY_EXACT = [
-  // Severe profanity (exact match only)
   'fuck', 'fucker', 'fucking', 'fucked', 'fucks',
   'shit', 'shits', 'shitting', 'shitty',
   'bitch', 'bitches', 'bitching',
@@ -27,24 +24,20 @@ const PROFANITY_EXACT = [
   'bastard', 'bastards',
   'whore', 'whores',
   'slut', 'sluts',
-  // Compound profanity
   'motherfucker', 'motherfucking', 'motherfuckers',
   'bullshit', 'horseshit',
   'jackass', 'dumbass', 'smartass', 'badass',
-  // Slurs (always block)
   'nigger', 'niggers', 'nigga', 'niggas',
   'faggot', 'faggots',
   'retard', 'retards', 'retarded',
   'spic', 'spics',
   'chink', 'chinks',
   'kike', 'kikes',
-  // Other explicit
   'wanker', 'wankers', 'twat', 'twats',
   'douche', 'douchebag', 'douchebags',
   'bollocks',
 ]
 
-// Abbreviated/leetspeak variations (exact match)
 const PROFANITY_ABBREVIATIONS = [
   'wtf', 'stfu', 'gtfo', 'lmfao', 'ffs',
   'fck', 'fuk', 'phuck', 'phuk',
@@ -54,7 +47,6 @@ const PROFANITY_ABBREVIATIONS = [
   'n1gger', 'n1gga',
 ]
 
-// Phrases that should be blocked
 const PROFANITY_PHRASES = [
   'screw you',
   'fuck you',
@@ -66,36 +58,27 @@ const PROFANITY_PHRASES = [
 const containsProfanity = (text: string): boolean => {
   const lowerText = text.toLowerCase().trim()
   
-  // Check exact phrases first
   for (const phrase of PROFANITY_PHRASES) {
     if (lowerText.includes(phrase)) return true
   }
   
-  // Normalize leetspeak for checking
   const leetMap: Record<string, string> = {
     '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '@': 'a', '$': 's'
   }
   const normalizedText = lowerText.split('').map(char => leetMap[char] || char).join('')
   
-  // Check for exact word matches (with word boundaries)
   const allExactWords = [...PROFANITY_EXACT, ...PROFANITY_ABBREVIATIONS]
   
   for (const word of allExactWords) {
-    // Create regex with word boundaries
     const regex = new RegExp(`\\b${word}\\b`, 'i')
     if (regex.test(lowerText) || regex.test(normalizedText)) {
       return true
     }
   }
   
-  // Check for obfuscated versions (f.u.c.k, f-u-c-k, f_u_c_k) - only for longer words
   const longProfanity = PROFANITY_EXACT.filter(w => w.length >= 4)
-  const textWithoutSeparators = lowerText.replace(/[\s\-_.]/g, '')
-  const normalizedWithoutSeparators = normalizedText.replace(/[\s\-_.]/g, '')
   
   for (const word of longProfanity) {
-    // Check if letters appear consecutively after removing separators
-    // but only if the original had separators between letters
     const obfuscatedPattern = word.split('').join('[\\s\\-_.*]*')
     const obfuscatedRegex = new RegExp(`\\b${obfuscatedPattern}\\b`, 'i')
     
@@ -126,11 +109,7 @@ export function ChatBot() {
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [expandedMessages, setExpandedMessages] = useState<Set<string>>(new Set())
-  const [isChatClosed, setIsChatClosed] = useState(false)
-  const [isWaitingForContinueResponse, setIsWaitingForContinueResponse] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const idleTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const continueResponseTimerRef = useRef<NodeJS.Timeout | null>(null)
   const { toast } = useToast()
 
   const toggleExpanded = (messageId: string) => {
@@ -153,95 +132,12 @@ export function ChatBot() {
     scrollToBottom()
   }, [messages])
 
-  const closeChat = useCallback(() => {
-    // Clear all timers
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-    if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
-    
-    const closingMessage: Message = {
-      id: Date.now().toString(),
-      content: 'Thank you for chatting with us! Feel free to start a new conversation anytime by clicking "Start New Chat" below. God bless you! 🙏',
-      role: 'assistant',
-      timestamp: new Date()
-    }
-    
-    setMessages(prev => [...prev, closingMessage])
-    setIsChatClosed(true)
-    setIsWaitingForContinueResponse(false)
-  }, [])
-
-  const askToContinue = useCallback(() => {
-    if (isChatClosed || isWaitingForContinueResponse) return
-    
-    const continueMessage: Message = {
-      id: Date.now().toString(),
-      content: 'Are you still there? Would you like to continue our conversation? Please respond within 15 seconds or the chat will close.',
-      role: 'assistant',
-      timestamp: new Date()
-    }
-    
-    setMessages(prev => [...prev, continueMessage])
-    setIsWaitingForContinueResponse(true)
-    
-    // Start timer for response
-    continueResponseTimerRef.current = setTimeout(() => {
-      closeChat()
-    }, RESPONSE_TIMEOUT_MS)
-  }, [isChatClosed, isWaitingForContinueResponse, closeChat])
-
-  const resetIdleTimer = useCallback(() => {
-    if (isChatClosed || isWaitingForContinueResponse) return
-    
-    // Clear existing idle timer only
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-    
-    // Start new idle timer
-    idleTimerRef.current = setTimeout(() => {
-      askToContinue()
-    }, IDLE_TIMEOUT_MS)
-  }, [isChatClosed, isWaitingForContinueResponse, askToContinue])
-
-  const handleUserActivity = useCallback(() => {
-    if (isChatClosed) return
-    
-    // If we were waiting for continue response and user responded, cancel that timer and reset
-    if (isWaitingForContinueResponse) {
-      if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
-      setIsWaitingForContinueResponse(false)
-    }
-    
-    // Clear and restart idle timer
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-    idleTimerRef.current = setTimeout(() => {
-      askToContinue()
-    }, IDLE_TIMEOUT_MS)
-  }, [isChatClosed, isWaitingForContinueResponse, askToContinue])
-
-  // Only start idle timer on initial load, don't reset on every message change
-  useEffect(() => {
-    if (messages.length === 1 && !isChatClosed) {
-      // Initial state - start idle timer
-      idleTimerRef.current = setTimeout(() => {
-        askToContinue()
-      }, IDLE_TIMEOUT_MS)
-    }
-    
-    return () => {
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-      if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
-    }
-  }, []) // Only run on mount
-
-  // Reset timer when user types
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value)
-    if (!isChatClosed) {
-      handleUserActivity()
-    }
   }
 
   const handleSendMessage = async () => {
-    if (!input.trim() || isLoading || isChatClosed) return
+    if (!input.trim() || isLoading) return
 
     // Check for profanity
     if (containsProfanity(input)) {
@@ -261,9 +157,8 @@ export function ChatBot() {
     }
 
     // Build conversation history excluding the initial greeting (id='1')
-    // and include all actual conversation messages
     const conversationHistory = messages
-      .filter(m => m.id !== '1') // Exclude static greeting
+      .filter(m => m.id !== '1')
       .map(m => ({
         role: m.role,
         content: m.content
@@ -272,7 +167,6 @@ export function ChatBot() {
     setMessages(prev => [...prev, userMessage])
     setInput('')
     setIsLoading(true)
-    handleUserActivity()
 
     try {
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
@@ -311,11 +205,7 @@ export function ChatBot() {
     }
   }
 
-  const startNewChat = () => {
-    // Clear all timers
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
-    if (continueResponseTimerRef.current) clearTimeout(continueResponseTimerRef.current)
-    
+  const clearConversation = () => {
     setMessages([
       {
         id: '1',
@@ -324,12 +214,7 @@ export function ChatBot() {
         timestamp: new Date()
       }
     ])
-    setIsChatClosed(false)
-    setIsWaitingForContinueResponse(false)
-  }
-
-  const clearConversation = () => {
-    startNewChat()
+    setExpandedMessages(new Set())
   }
 
   return (
@@ -342,7 +227,7 @@ export function ChatBot() {
             </div>
             Light Guide
           </CardTitle>
-          {messages.length > 1 && !isChatClosed && (
+          {messages.length > 1 && (
             <Button
               variant="ghost"
               size="sm"
@@ -448,30 +333,23 @@ export function ChatBot() {
           </div>
         </ScrollArea>
         
-        {isChatClosed ? (
-          <Button onClick={startNewChat} className="w-full">
-            <RotateCcw className="h-4 w-4 mr-2" />
-            Start New Chat
+        <div className="flex gap-2">
+          <Input
+            placeholder="Ask me about faith, the Bible, or Light Embassy Church..."
+            value={input}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+            className="flex-1"
+          />
+          <Button 
+            onClick={handleSendMessage}
+            disabled={!input.trim() || isLoading}
+            size="icon"
+          >
+            <Send className="h-4 w-4" />
           </Button>
-        ) : (
-          <div className="flex gap-2">
-            <Input
-              placeholder="Ask me about faith, the Bible, or Light Embassy Church..."
-              value={input}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-              disabled={isLoading}
-              className="flex-1"
-            />
-            <Button 
-              onClick={handleSendMessage}
-              disabled={!input.trim() || isLoading}
-              size="icon"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
+        </div>
       </CardContent>
     </Card>
   )
