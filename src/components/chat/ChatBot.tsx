@@ -13,81 +13,98 @@ const MAX_PREVIEW_LENGTH = 300
 const IDLE_TIMEOUT_MS = 30000 // 30 seconds
 const RESPONSE_TIMEOUT_MS = 15000 // 15 seconds to respond to continue prompt
 
-// Comprehensive profanity list with common variations
-const PROFANITY_LIST = [
-  // F-word variations
-  'fuck', 'fucker', 'fucking', 'fucked', 'fck', 'fuk', 'fuc', 'phuck', 'phuk', 'f\\*ck', 'f\\*\\*k',
-  // S-word variations
-  'shit', 'shite', 'shitting', 'sht', 'sh1t', 'shiit', 's\\*\\*t',
-  // A-word variations
-  'ass', 'arse', 'asshole', 'arsehole', 'a\\*\\*', 'a\\$\\$',
-  // B-word variations
-  'bitch', 'btch', 'b1tch', 'biatch', 'b\\*tch',
-  // C-word variations
-  'cunt', 'cnt', 'c\\*nt',
-  // D-word variations
-  'damn', 'dammit', 'damned', 'dick', 'd1ck', 'dck',
-  // Other explicit terms
-  'cock', 'cok', 'c0ck', 'pussy', 'puss', 'p\\*ssy',
-  'whore', 'wh0re', 'hoe', 'slut', 'sl\\*t',
-  'bastard', 'b\\*stard',
-  // Slurs and hate speech
-  'fag', 'faggot', 'f\\*g', 'f\\*ggot',
-  'nigger', 'n1gger', 'nigga', 'n\\*gger', 'n\\*gga',
-  'retard', 'retarded', 'r\\*tard',
-  'spic', 'sp1c', 'chink', 'ch1nk', 'kike', 'k1ke',
+// Core profanity list - only words that should be blocked as standalone
+const PROFANITY_EXACT = [
+  // Severe profanity (exact match only)
+  'fuck', 'fucker', 'fucking', 'fucked', 'fucks',
+  'shit', 'shits', 'shitting', 'shitty',
+  'bitch', 'bitches', 'bitching',
+  'cunt', 'cunts',
+  'cock', 'cocks',
+  'dick', 'dicks',
+  'pussy', 'pussies',
+  'asshole', 'assholes', 'arsehole',
+  'bastard', 'bastards',
+  'whore', 'whores',
+  'slut', 'sluts',
   // Compound profanity
-  'motherfucker', 'mf', 'mofo', 'motherfucking',
-  'bullshit', 'bs', 'b\\.s\\.',
-  'jackass', 'dumbass', 'smartass',
-  // Abbreviations
-  'wtf', 'stfu', 'gtfo', 'lmfao', 'ffs', 'af',
-  // Additional terms
-  'piss', 'pissed', 'crap', 'crappy',
-  'wanker', 'wank', 'twat', 'tosser',
-  'douche', 'douchebag', 'screw you', 'screwed',
-  'bloody hell', 'bugger', 'bollocks'
+  'motherfucker', 'motherfucking', 'motherfuckers',
+  'bullshit', 'horseshit',
+  'jackass', 'dumbass', 'smartass', 'badass',
+  // Slurs (always block)
+  'nigger', 'niggers', 'nigga', 'niggas',
+  'faggot', 'faggots',
+  'retard', 'retards', 'retarded',
+  'spic', 'spics',
+  'chink', 'chinks',
+  'kike', 'kikes',
+  // Other explicit
+  'wanker', 'wankers', 'twat', 'twats',
+  'douche', 'douchebag', 'douchebags',
+  'bollocks',
 ]
 
-// Patterns for leetspeak and symbol substitution
-const LEET_MAP: Record<string, string> = {
-  '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '@': 'a', '$': 's', '!': 'i'
-}
+// Abbreviated/leetspeak variations (exact match)
+const PROFANITY_ABBREVIATIONS = [
+  'wtf', 'stfu', 'gtfo', 'lmfao', 'ffs',
+  'fck', 'fuk', 'phuck', 'phuk',
+  'sht', 'sh1t',
+  'b1tch', 'biatch',
+  'd1ck', 'c0ck',
+  'n1gger', 'n1gga',
+]
 
-const normalizeLeetspeak = (text: string): string => {
-  return text.split('').map(char => LEET_MAP[char] || char).join('')
-}
+// Phrases that should be blocked
+const PROFANITY_PHRASES = [
+  'screw you',
+  'fuck you',
+  'fuck off',
+  'piss off',
+  'go to hell',
+]
 
 const containsProfanity = (text: string): boolean => {
-  const lowerText = text.toLowerCase()
-  const normalizedText = normalizeLeetspeak(lowerText)
+  const lowerText = text.toLowerCase().trim()
   
-  // Remove common separators used to evade filters
-  const cleanedText = normalizedText.replace(/[\s\-_.!@#$%^&*()+=\[\]{}|\\:;"'<>,?/~`]/g, '')
-  const spacedText = lowerText.replace(/[\s\-_.]/g, '')
+  // Check exact phrases first
+  for (const phrase of PROFANITY_PHRASES) {
+    if (lowerText.includes(phrase)) return true
+  }
   
-  return PROFANITY_LIST.some(word => {
-    // Escape special regex characters in the word
-    const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  // Normalize leetspeak for checking
+  const leetMap: Record<string, string> = {
+    '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '@': 'a', '$': 's'
+  }
+  const normalizedText = lowerText.split('').map(char => leetMap[char] || char).join('')
+  
+  // Check for exact word matches (with word boundaries)
+  const allExactWords = [...PROFANITY_EXACT, ...PROFANITY_ABBREVIATIONS]
+  
+  for (const word of allExactWords) {
+    // Create regex with word boundaries
+    const regex = new RegExp(`\\b${word}\\b`, 'i')
+    if (regex.test(lowerText) || regex.test(normalizedText)) {
+      return true
+    }
+  }
+  
+  // Check for obfuscated versions (f.u.c.k, f-u-c-k, f_u_c_k) - only for longer words
+  const longProfanity = PROFANITY_EXACT.filter(w => w.length >= 4)
+  const textWithoutSeparators = lowerText.replace(/[\s\-_.]/g, '')
+  const normalizedWithoutSeparators = normalizedText.replace(/[\s\-_.]/g, '')
+  
+  for (const word of longProfanity) {
+    // Check if letters appear consecutively after removing separators
+    // but only if the original had separators between letters
+    const obfuscatedPattern = word.split('').join('[\\s\\-_.*]*')
+    const obfuscatedRegex = new RegExp(`\\b${obfuscatedPattern}\\b`, 'i')
     
-    // Check exact word boundaries
-    const exactRegex = new RegExp(`\\b${escapedWord}\\b`, 'i')
-    if (exactRegex.test(lowerText)) return true
-    
-    // Check normalized leetspeak version
-    if (exactRegex.test(normalizedText)) return true
-    
-    // Check without separators (catches f.u.c.k, f-u-c-k, etc.)
-    const cleanWord = word.replace(/[^a-z0-9]/gi, '')
-    if (cleanWord.length >= 3 && cleanedText.includes(cleanWord)) return true
-    if (cleanWord.length >= 3 && spacedText.includes(cleanWord)) return true
-    
-    // Check for repeated letters (fuuuck, shiiit)
-    const repeatedRegex = new RegExp(cleanWord.split('').join('+'), 'i')
-    if (repeatedRegex.test(cleanedText)) return true
-    
-    return false
-  })
+    if (obfuscatedRegex.test(lowerText) || obfuscatedRegex.test(normalizedText)) {
+      return true
+    }
+  }
+  
+  return false
 }
 
 interface Message {
