@@ -1,15 +1,31 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { useAchievements, ACHIEVEMENTS, AchievementType } from "@/hooks/useAchievements"
 import { format } from "date-fns"
-import { Lock, Sparkles } from "lucide-react"
+import { Lock, Sparkles, Share2 } from "lucide-react"
 import { Confetti } from "@/components/quiz/Confetti"
+import { Button } from "@/components/ui/button"
+import { useSharing, ShareContent } from "@/hooks/useSharing"
+import { useState } from "react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export function AchievementBadges() {
   const { getAllAchievements, loading, newAchievement, clearNewAchievement } = useAchievements()
+  const { shareToWhatsApp, shareToFacebook, shareToTwitter, shareToInstagram, copyToClipboard } = useSharing()
   
   const allAchievements = getAllAchievements()
   const unlockedCount = allAchievements.filter(a => a.unlocked).length
   const totalCount = allAchievements.length
+
+  const getShareContent = (achievement: typeof allAchievements[0]): ShareContent => ({
+    title: `🏆 I earned the "${achievement.name}" badge!`,
+    text: `${achievement.icon} ${achievement.description} - Join me on Light Embassy App!`,
+    url: window.location.origin,
+  })
 
   if (loading) {
     return (
@@ -72,6 +88,40 @@ export function AchievementBadges() {
                 <p className="text-white/40 text-[10px] mt-1 line-clamp-2">
                   {achievement.description}
                 </p>
+              )}
+              
+              {/* Share button for unlocked achievements */}
+              {achievement.unlocked && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-2 h-6 px-2 text-[10px] text-white/70 hover:text-white hover:bg-white/20"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Share2 className="h-3 w-3 mr-1" />
+                      Share
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-40">
+                    <DropdownMenuItem onClick={() => shareToWhatsApp(getShareContent(achievement))}>
+                      WhatsApp
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => shareToFacebook(getShareContent(achievement))}>
+                      Facebook
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => shareToTwitter(getShareContent(achievement))}>
+                      X (Twitter)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => shareToInstagram(getShareContent(achievement))}>
+                      Instagram
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => copyToClipboard(getShareContent(achievement))}>
+                      Copy Link
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </CardContent>
             
