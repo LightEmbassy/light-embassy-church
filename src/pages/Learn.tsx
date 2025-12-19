@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { ForumSection } from "@/components/forum/ForumSection"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -54,8 +54,17 @@ const topicPrompts: Record<string, string[]> = {
 
 export default function Learn({ onBack }: LearnProps) {
   const [selectedTopic, setSelectedTopic] = useState("all")
+  const [prefillTitle, setPrefillTitle] = useState<string | undefined>()
 
   const currentPrompts = selectedTopic !== "all" ? topicPrompts[selectedTopic] : null
+
+  const handlePromptClick = (prompt: string) => {
+    setPrefillTitle(prompt)
+  }
+
+  const handlePrefillUsed = useCallback(() => {
+    setPrefillTitle(undefined)
+  }, [])
 
   return (
     <div className="min-h-screen bg-background pb-20 pt-16">
@@ -103,12 +112,17 @@ export default function Learn({ onBack }: LearnProps) {
               <div className="flex items-center gap-2 mb-3">
                 <Lightbulb className="h-4 w-4 text-primary" />
                 <span className="font-medium text-sm text-primary">Discussion Starters</span>
+                <span className="text-xs text-muted-foreground">(click to start a discussion)</span>
               </div>
               <ul className="space-y-2">
                 {currentPrompts.map((prompt, index) => (
-                  <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <span className="text-primary/60">•</span>
-                    {prompt}
+                  <li 
+                    key={index} 
+                    className="text-sm text-muted-foreground flex items-start gap-2 cursor-pointer hover:text-primary transition-colors group"
+                    onClick={() => handlePromptClick(prompt)}
+                  >
+                    <span className="text-primary/60 group-hover:text-primary">•</span>
+                    <span className="hover:underline">{prompt}</span>
                   </li>
                 ))}
               </ul>
@@ -116,7 +130,11 @@ export default function Learn({ onBack }: LearnProps) {
           </Card>
         )}
 
-        <ForumSection selectedTopic={selectedTopic} />
+        <ForumSection 
+          selectedTopic={selectedTopic} 
+          prefillTitle={prefillTitle}
+          onPrefillUsed={handlePrefillUsed}
+        />
       </div>
     </div>
   )
