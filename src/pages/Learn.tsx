@@ -2,7 +2,7 @@ import { useState, useCallback } from "react"
 import { ForumSection } from "@/components/forum/ForumSection"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { ArrowLeft, Lightbulb } from "lucide-react"
+import { ArrowLeft, Lightbulb, LayoutGrid, Heart, Sparkles, Hand, Target, BookOpen, Users } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface LearnProps {
@@ -10,13 +10,13 @@ interface LearnProps {
 }
 
 const topics = [
-  { id: "all", label: "All Topics" },
-  { id: "healing", label: "Healing" },
-  { id: "faith", label: "Faith" },
-  { id: "love", label: "Love" },
-  { id: "purpose", label: "Purpose" },
-  { id: "bible", label: "Bible Study" },
-  { id: "community", label: "Community" },
+  { id: "all", label: "All Topics", icon: LayoutGrid },
+  { id: "healing", label: "Healing", icon: Heart },
+  { id: "faith", label: "Faith", icon: Sparkles },
+  { id: "love", label: "Love", icon: Hand },
+  { id: "purpose", label: "Purpose", icon: Target },
+  { id: "bible", label: "Bible Study", icon: BookOpen },
+  { id: "community", label: "Community", icon: Users },
 ]
 
 const topicPrompts: Record<string, string[]> = {
@@ -92,15 +92,19 @@ export default function Learn({ onBack }: LearnProps) {
         <div className="mb-6">
           <Tabs value={selectedTopic} onValueChange={setSelectedTopic} className="w-full">
             <TabsList className="flex flex-wrap h-auto gap-2 bg-transparent justify-center p-0">
-              {topics.map((topic) => (
-                <TabsTrigger
-                  key={topic.id}
-                  value={topic.id}
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-muted/50 hover:bg-muted px-4 py-2 rounded-full text-sm font-medium transition-all"
-                >
-                  {topic.label}
-                </TabsTrigger>
-              ))}
+              {topics.map((topic) => {
+                const Icon = topic.icon
+                return (
+                  <TabsTrigger
+                    key={topic.id}
+                    value={topic.id}
+                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground bg-muted/50 hover:bg-muted px-4 py-2 rounded-full text-sm font-medium transition-all gap-2"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {topic.label}
+                  </TabsTrigger>
+                )
+              })}
             </TabsList>
           </Tabs>
         </div>
