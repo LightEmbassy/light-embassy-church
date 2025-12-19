@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Send, Bot, User, Loader2, RotateCcw, ChevronDown, ChevronUp } from "lucide-react"
+import { Send, User, Loader2, RotateCcw, ChevronDown, ChevronUp } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import { LightGuideIcon } from "./LightGuideIcon"
 
 const MAX_PREVIEW_LENGTH = 300
 const IDLE_TIMEOUT_MS = 30000 // 30 seconds
@@ -306,7 +307,9 @@ export function ChatBot() {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-primary" />
+            <div className="p-1.5 rounded-full bg-gradient-to-br from-amber-400 to-orange-500">
+              <LightGuideIcon className="text-white" size="sm" />
+            </div>
             Light Guide
           </CardTitle>
           {messages.length > 1 && !isChatClosed && (
@@ -342,9 +345,9 @@ export function ChatBot() {
                   }`}
                 >
                   {message.role === 'assistant' && (
-                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0">
-                      <AvatarFallback className="bg-primary/10">
-                        <Bot className="h-4 w-4 text-primary" />
+                    <Avatar className="h-8 w-8 mt-1 flex-shrink-0 bg-gradient-to-br from-amber-400 to-orange-500">
+                      <AvatarFallback className="bg-transparent">
+                        <LightGuideIcon className="text-white" size="sm" />
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -397,9 +400,9 @@ export function ChatBot() {
             
             {isLoading && (
               <div className="flex gap-3">
-                <Avatar className="h-8 w-8 mt-1">
-                  <AvatarFallback className="bg-primary/10">
-                    <Bot className="h-4 w-4 text-primary" />
+                <Avatar className="h-8 w-8 mt-1 bg-gradient-to-br from-amber-400 to-orange-500">
+                  <AvatarFallback className="bg-transparent">
+                    <LightGuideIcon className="text-white" size="sm" />
                   </AvatarFallback>
                 </Avatar>
                 <div className="bg-muted rounded-lg px-3 py-2">
