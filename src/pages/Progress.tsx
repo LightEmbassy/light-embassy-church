@@ -3,11 +3,16 @@ import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Medal, Award, Star, Crown, Play, Headphones, Calendar, Sparkles } from "lucide-react"
+import { Trophy, Medal, Award, Star, Crown, Play, Headphones, Calendar, Sparkles, ArrowLeft } from "lucide-react"
 import { format } from "date-fns"
 import { Confetti } from "@/components/quiz/Confetti"
 import { AchievementBadges } from "@/components/progress/AchievementBadges"
 import { useAchievements } from "@/hooks/useAchievements"
+import { Button } from "@/components/ui/button"
+
+interface ProgressProps {
+  onBack?: () => void
+}
 
 interface MediaHistoryItem {
   id: string
@@ -24,7 +29,7 @@ const milestoneIcons = [
   { icon: Award, color: "text-rose-500", bg: "bg-rose-500/20" },
 ]
 
-export default function Progress() {
+export default function Progress({ onBack }: ProgressProps) {
   const { user } = useAuth()
   const [history, setHistory] = useState<MediaHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -103,6 +108,18 @@ export default function Progress() {
       {showConfetti && <Confetti />}
       
       <div className="max-w-4xl mx-auto px-4">
+        {/* Back Button */}
+        {onBack && (
+          <Button 
+            variant="ghost" 
+            onClick={onBack}
+            className="mb-4 gap-2 text-white hover:bg-white/10"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        )}
+
         {/* Header with celebration style */}
         <div className="text-center py-8">
           <div className="flex items-center justify-center gap-4 mb-4">

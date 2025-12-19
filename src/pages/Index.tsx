@@ -50,7 +50,7 @@ const Index = () => {
       case 'radio':
         return <Radio onBack={goBack} />
       case 'progress':
-        return <Progress />
+        return <Progress onBack={goBack} />
       case 'podcast-quiz':
         return <PodcastQuiz onBack={goBack} />
       case 'events':
