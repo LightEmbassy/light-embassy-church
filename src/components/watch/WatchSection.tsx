@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Play, Clock, ExternalLink, Share2, ArrowLeft, Search, X } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import { useMediaHistory } from "@/hooks/useMediaHistory"
 
 interface VideoItem {
   id: string
@@ -29,6 +30,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const { toast } = useToast()
+  const { trackMedia } = useMediaHistory()
 
   const filteredVideos = useMemo(() => {
     if (!searchQuery.trim()) return videos
@@ -76,10 +78,15 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     return `https://www.youtube.com/watch?v=${embedId}`
   }
 
+  const handlePlayVideo = (video: VideoItem) => {
+    setPlayingVideo(video)
+    trackMedia('video', video.id, video.title)
+  }
+
   const VideoCard = ({ video }: { video: VideoItem }) => (
     <Card 
       className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden relative"
-      onClick={() => setPlayingVideo(video)}
+      onClick={() => handlePlayVideo(video)}
     >
       <CardContent className="p-0">
         <AspectRatio ratio={16 / 9}>

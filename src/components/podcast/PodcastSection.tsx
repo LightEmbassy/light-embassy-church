@@ -6,6 +6,7 @@ import { ShareDialog } from "@/components/sharing/ShareDialog"
 import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2, Volume2, X, Download } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { Slider } from "@/components/ui/slider"
+import { useMediaHistory } from "@/hooks/useMediaHistory"
 
 interface Episode {
   id: string
@@ -30,6 +31,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
   const [currentTime, setCurrentTime] = useState(0)
   const [audioDuration, setAudioDuration] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const { trackMedia } = useMediaHistory()
 
   useEffect(() => {
     fetchEpisodes()
@@ -61,6 +63,8 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
       setCurrentEpisode(episode)
       setIsPlaying(true)
       setCurrentTime(0)
+      // Track podcast play
+      trackMedia('podcast', episode.id, episode.title)
     }
   }
 
