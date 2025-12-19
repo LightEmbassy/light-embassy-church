@@ -5,7 +5,7 @@ import * as z from 'zod'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
-
+import { Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -123,9 +123,23 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
     }
   }
 
+  const handleOpenChange = (open: boolean) => {
+    if (isSubmitting) return // Prevent closing while submitting
+    onOpenChange(open)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-     <DialogContent className="max-w-2xl">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-2xl relative">
+        {/* Loading overlay */}
+        {isSubmitting && (
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
+            <div className="flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Sending message...</p>
+            </div>
+          </div>
+        )}
         <DialogHeader>
           <DialogTitle>Start New Conversation</DialogTitle>
           <DialogDescription>
@@ -226,7 +240,7 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
               <Button type="submit" disabled={isSubmitting} className="flex-1">
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} disabled={isSubmitting}>
                 Cancel
               </Button>
             </div>
