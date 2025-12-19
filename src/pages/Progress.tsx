@@ -89,6 +89,17 @@ export default function Progress({ onBack }: ProgressProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-rose-900 pb-24 pt-4">
         <div className="max-w-4xl mx-auto px-4">
+          {/* Back Button */}
+          {onBack && (
+            <Button 
+              variant="ghost" 
+              onClick={onBack}
+              className="mb-4 gap-2 text-white hover:bg-white/10"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Button>
+          )}
           <div className="text-center py-16">
             <Trophy className="h-16 w-16 text-yellow-400 mx-auto mb-4 animate-bounce" />
             <h1 className="font-playfair text-3xl font-bold text-white mb-4">
