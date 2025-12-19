@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { MessageSquare, Plus, Eye, Clock, Pin, Search, ArrowLeft, Send, ShieldCheck } from "lucide-react"
+import { MessageSquare, Plus, Eye, Clock, Pin, Search, ArrowLeft, Send, ShieldCheck, Star, TrendingUp } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
 import { toast } from "sonner"
@@ -656,56 +656,130 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
-          {filteredTopics.map((topic) => (
-            <Card 
-              key={topic.id} 
-              className="hover:border-primary/50 transition-colors cursor-pointer"
-              onClick={() => openTopic(topic)}
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-10 w-10 shrink-0">
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {getInitials(topic)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {topic.is_pinned && (
-                        <Badge variant="secondary" className="gap-1 text-xs">
-                          <Pin className="h-3 w-3" />
-                          Pinned
-                        </Badge>
-                      )}
-                      <h3 className="font-semibold text-foreground truncate">
-                        {topic.title}
-                      </h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                      {topic.content}
-                    </p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                      <span>{getDisplayName(topic)}</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(topic.created_at), { addSuffix: true })}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3" />
-                        {topic.replies_count}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        {topic.views_count}
-                      </span>
-                    </div>
+        <>
+          {/* Featured Discussions Section */}
+          {topicFilter === "all" && (
+            (() => {
+              const pinnedTopics = filteredTopics.filter(t => t.is_pinned)
+              const popularTopics = filteredTopics
+                .filter(t => !t.is_pinned && t.views_count >= 5)
+                .sort((a, b) => b.views_count - a.views_count)
+                .slice(0, 3)
+              
+              const featuredTopics = [...pinnedTopics, ...popularTopics]
+              
+              if (featuredTopics.length === 0) return null
+              
+              return (
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Star className="h-4 w-4 text-amber-500" />
+                    <h3 className="font-semibold text-sm text-foreground">Featured Discussions</h3>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {featuredTopics.slice(0, 4).map((topic) => (
+                      <Card 
+                        key={topic.id}
+                        className="hover:border-primary/50 transition-colors cursor-pointer bg-gradient-to-br from-primary/5 to-transparent border-primary/20"
+                        onClick={() => openTopic(topic)}
+                      >
+                        <CardContent className="p-4">
+                          <div className="flex items-start gap-2 mb-2">
+                            {topic.is_pinned ? (
+                              <Badge variant="secondary" className="gap-1 text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                                <Pin className="h-3 w-3" />
+                                Pinned
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="gap-1 text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                <TrendingUp className="h-3 w-3" />
+                                Popular
+                              </Badge>
+                            )}
+                          </div>
+                          <h4 className="font-medium text-sm text-foreground line-clamp-2 mb-2">
+                            {topic.title}
+                          </h4>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <MessageSquare className="h-3 w-3" />
+                              {topic.replies_count}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Eye className="h-3 w-3" />
+                              {topic.views_count}
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              )
+            })()
+          )}
+
+          {/* All Discussions */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+              <h3 className="font-semibold text-sm text-foreground">
+                {topicFilter === "all" ? "All Discussions" : "Discussions"}
+              </h3>
+              <span className="text-xs text-muted-foreground">({filteredTopics.length})</span>
+            </div>
+            <div className="space-y-3">
+              {filteredTopics.map((topic) => (
+                <Card 
+                  key={topic.id} 
+                  className="hover:border-primary/50 transition-colors cursor-pointer"
+                  onClick={() => openTopic(topic)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <Avatar className="h-10 w-10 shrink-0">
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {getInitials(topic)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {topic.is_pinned && (
+                            <Badge variant="secondary" className="gap-1 text-xs">
+                              <Pin className="h-3 w-3" />
+                              Pinned
+                            </Badge>
+                          )}
+                          <h3 className="font-semibold text-foreground truncate">
+                            {topic.title}
+                          </h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                          {topic.content}
+                        </p>
+                        <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                          <span>{getDisplayName(topic)}</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {formatDistanceToNow(new Date(topic.created_at), { addSuffix: true })}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MessageSquare className="h-3 w-3" />
+                            {topic.replies_count}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Eye className="h-3 w-3" />
+                            {topic.views_count}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   )
