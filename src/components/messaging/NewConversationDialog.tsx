@@ -130,7 +130,7 @@ export function NewConversationDialog({ open, onOpenChange, onSuccess }: NewConv
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-2xl relative">
+      <DialogContent className="max-w-2xl relative max-h-[90vh] overflow-y-auto">
         {/* Loading overlay */}
         {isSubmitting && (
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
