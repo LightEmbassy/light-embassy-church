@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -7,6 +7,7 @@ import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader
 import { supabase } from "@/integrations/supabase/client"
 import { Slider } from "@/components/ui/slider"
 import { useMediaHistory } from "@/hooks/useMediaHistory"
+import { format, parseISO } from "date-fns"
 
 interface Episode {
   id: string
@@ -32,6 +33,57 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
   const [audioDuration, setAudioDuration] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const { trackMedia } = useMediaHistory()
+
+  // Group episodes by month
+  const groupedEpisodes = useMemo(() => {
+    const groups: Record<string, Episode[]> = {}
+    
+    episodes.forEach(episode => {
+      try {
+        // Try to parse the date - handle various formats
+        let date: Date
+        const publishedAt = episode.publishedAt
+        
+        // Check if it's already a relative date like "2 days ago"
+        if (publishedAt.includes('ago') || publishedAt.includes('Today') || publishedAt.includes('Yesterday')) {
+          // Use current date for relative dates
+          date = new Date()
+        } else {
+          // Try parsing as ISO date or other formats
+          date = parseISO(publishedAt)
+          if (isNaN(date.getTime())) {
+            date = new Date(publishedAt)
+          }
+        }
+        
+        if (isNaN(date.getTime())) {
+          // Fallback to "Other" group if date parsing fails
+          const key = "Other"
+          if (!groups[key]) groups[key] = []
+          groups[key].push(episode)
+        } else {
+          const monthYear = format(date, 'MMMM yyyy')
+          if (!groups[monthYear]) groups[monthYear] = []
+          groups[monthYear].push(episode)
+        }
+      } catch {
+        const key = "Other"
+        if (!groups[key]) groups[key] = []
+        groups[key].push(episode)
+      }
+    })
+    
+    // Sort groups by date (most recent first)
+    const sortedGroups = Object.entries(groups).sort((a, b) => {
+      if (a[0] === "Other") return 1
+      if (b[0] === "Other") return -1
+      const dateA = new Date(a[0])
+      const dateB = new Date(b[0])
+      return dateB.getTime() - dateA.getTime()
+    })
+    
+    return sortedGroups
+  }, [episodes])
 
   useEffect(() => {
     fetchEpisodes()
@@ -279,9 +331,9 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
 
       {/* Episodes */}
       <div className="px-6">
-        <div className="space-y-4">
+        <div className="space-y-6">
           <h2 className="font-playfair text-xl font-semibold text-foreground">
-            Latest Episodes
+            All Episodes
           </h2>
           {loading ? (
             <div className="flex items-center justify-center py-8">
@@ -293,9 +345,18 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
               No episodes available at this time.
             </p>
           ) : (
-            <div className="space-y-3">
-              {episodes.map((episode) => (
-                <EpisodeCard key={episode.id} episode={episode} />
+            <div className="space-y-8">
+              {groupedEpisodes.map(([monthYear, monthEpisodes]) => (
+                <div key={monthYear} className="space-y-3">
+                  <h3 className="font-inter font-semibold text-lg text-primary border-b border-border pb-2">
+                    {monthYear}
+                  </h3>
+                  <div className="space-y-3">
+                    {monthEpisodes.map((episode) => (
+                      <EpisodeCard key={episode.id} episode={episode} />
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
           )}
