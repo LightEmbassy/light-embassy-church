@@ -104,19 +104,19 @@ export function WatchSection({ onBack }: WatchSectionProps) {
           
           {/* Play button - centered */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-white/95 rounded-full p-4 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
-              <Play className="h-8 w-8 text-primary fill-primary" />
+            <div className="bg-white/95 rounded-full p-2 sm:p-3 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
+              <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" />
             </div>
           </div>
           
           {/* Title and info overlay at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="font-inter font-bold text-white line-clamp-2 mb-2 text-sm drop-shadow-lg">
+          <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
+            <h3 className="font-inter font-bold text-white line-clamp-2 mb-1 text-xs drop-shadow-lg">
               {video.title}
             </h3>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1 text-xs text-white/80">
-                <Clock className="h-3 w-3" />
+            <div className="flex items-center justify-between gap-1">
+              <div className="flex items-center gap-1 text-[10px] text-white/80 truncate">
+                <Clock className="h-2.5 w-2.5 flex-shrink-0" />
                 {video.publishedAt}
               </div>
               <ShareDialog
@@ -126,13 +126,13 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                   url: getYouTubeWatchUrl(video.embedId)
                 }}
               >
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
-                  className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                  className="h-6 w-6 p-0 text-white hover:bg-white/20 flex-shrink-0"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <Share2 className="h-4 w-4" />
+                  <Share2 className="h-3 w-3" />
                 </Button>
               </ShareDialog>
             </div>
@@ -214,8 +214,8 @@ export function WatchSection({ onBack }: WatchSectionProps) {
       {/* Video Grid */}
       <div className="px-6 mt-4">
         {loading ? (
-          <div className="grid grid-cols-2 gap-4">
-            {[1, 2, 3, 4, 5, 6].map(i => <VideoSkeleton key={i} />)}
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => <VideoSkeleton key={i} />)}
           </div>
         ) : videos.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
@@ -235,7 +235,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
             {filteredVideos.map((video) => (
               <VideoCard key={video.id} video={video} />
             ))}
