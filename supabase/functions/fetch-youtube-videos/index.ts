@@ -76,8 +76,8 @@ async function parseYouTubeRSS(channelId: string, maxResults: number): Promise<V
         description = descMatch ? descMatch[1] : '';
       }
       
-      // Use high quality thumbnail
-      const thumbnail = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+      // Use mqdefault which is reliably available for all videos
+      const thumbnail = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
       
       if (videoId) {
         videos.push({

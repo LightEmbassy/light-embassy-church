@@ -96,7 +96,13 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             alt={video.title}
             className="object-cover w-full h-full"
             onError={(e) => {
-              e.currentTarget.src = `https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`
+              // Try hqdefault first, then sddefault as final fallback
+              const target = e.currentTarget;
+              if (target.src.includes('mqdefault')) {
+                target.src = `https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`;
+              } else if (target.src.includes('hqdefault')) {
+                target.src = `https://i.ytimg.com/vi/${video.embedId}/sddefault.jpg`;
+              }
             }}
           />
           {/* Dark gradient overlay for text visibility */}
