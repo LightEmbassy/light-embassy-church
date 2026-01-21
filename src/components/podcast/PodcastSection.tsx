@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
-import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2, Volume2, X, Download } from "lucide-react"
+import { Play, Pause, Clock, ExternalLink, Headphones, Share2, ArrowLeft, Loader2, Volume2, X, Download, ArrowUpDown } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { Slider } from "@/components/ui/slider"
 import { useMediaHistory } from "@/hooks/useMediaHistory"
@@ -33,6 +33,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
   const [audioDuration, setAudioDuration] = useState(0)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const { trackMedia } = useMediaHistory()
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
 
   // Group episodes by month
   const groupedEpisodes = useMemo(() => {
@@ -73,17 +74,19 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
       }
     })
     
-    // Sort groups by date (most recent first)
+    // Sort groups by date based on sortOrder
     const sortedGroups = Object.entries(groups).sort((a, b) => {
       if (a[0] === "Other") return 1
       if (b[0] === "Other") return -1
       const dateA = new Date(a[0])
       const dateB = new Date(b[0])
-      return dateB.getTime() - dateA.getTime()
+      return sortOrder === 'newest' 
+        ? dateB.getTime() - dateA.getTime()
+        : dateA.getTime() - dateB.getTime()
     })
     
     return sortedGroups
-  }, [episodes])
+  }, [episodes, sortOrder])
 
   useEffect(() => {
     fetchEpisodes()
@@ -332,9 +335,20 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
       {/* Episodes */}
       <div className="px-6">
         <div className="space-y-6">
-          <h2 className="font-playfair text-xl font-semibold text-foreground">
-            All Episodes
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-playfair text-xl font-semibold text-foreground">
+              All Episodes
+            </h2>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2"
+              onClick={() => setSortOrder(sortOrder === 'newest' ? 'oldest' : 'newest')}
+            >
+              <ArrowUpDown className="h-4 w-4" />
+              {sortOrder === 'newest' ? 'Newest First' : 'Oldest First'}
+            </Button>
+          </div>
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
