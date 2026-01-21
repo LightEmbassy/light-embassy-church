@@ -158,12 +158,12 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     
     return (
       <Card 
-        className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden relative"
+        className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden"
         onClick={() => handlePlayVideo(video)}
       >
         <CardContent className="p-0">
-          <AspectRatio ratio={16 / 9}>
-            {/* Background thumbnail - use AI generated or YouTube fallback */}
+          {/* Thumbnail */}
+          <AspectRatio ratio={16 / 9} className="relative">
             {isGenerating ? (
               <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse flex items-center justify-center">
                 <div className="text-xs text-muted-foreground">Generating...</div>
@@ -174,7 +174,6 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                 alt={video.title}
                 className="object-cover w-full h-full"
                 onError={(e) => {
-                  // Fallback to YouTube thumbnails if AI thumbnail fails
                   const target = e.currentTarget;
                   if (!target.src.includes('ytimg.com')) {
                     target.src = `https://i.ytimg.com/vi/${video.embedId}/mqdefault.jpg`;
@@ -184,45 +183,45 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                 }}
               />
             )}
-            {/* Dark gradient overlay for text visibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:from-black/70 group-hover:via-black/20 transition-divine" />
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
             
             {/* Play button - centered */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="bg-white/95 rounded-full p-2 sm:p-3 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
                 <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" />
               </div>
             </div>
-            
-            {/* Title and info overlay at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
-              <h3 className="font-inter font-bold text-white line-clamp-2 mb-1 text-xs drop-shadow-lg">
-                {video.title}
-              </h3>
-              <div className="flex items-center justify-between gap-1">
-                <div className="flex items-center gap-1 text-[10px] text-white/80 truncate">
-                  <Clock className="h-2.5 w-2.5 flex-shrink-0" />
-                  {video.publishedAt}
-                </div>
-                <ShareDialog
-                  content={{
-                    title: video.title,
-                    text: `Watch: ${video.title}`,
-                    url: getYouTubeWatchUrl(video.embedId)
-                  }}
-                >
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0 text-white hover:bg-white/20 flex-shrink-0"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Share2 className="h-3 w-3" />
-                  </Button>
-                </ShareDialog>
-              </div>
-            </div>
           </AspectRatio>
+          
+          {/* Title and details below thumbnail */}
+          <div className="p-2 sm:p-3">
+            <h3 className="font-inter font-semibold text-foreground line-clamp-2 text-xs sm:text-sm leading-tight">
+              {video.title}
+            </h3>
+            <div className="flex items-center justify-between gap-1 mt-1.5">
+              <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
+                <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
+                {video.publishedAt}
+              </div>
+              <ShareDialog
+                content={{
+                  title: video.title,
+                  text: `Watch: ${video.title}`,
+                  url: getYouTubeWatchUrl(video.embedId)
+                }}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Share2 className="h-3 w-3" />
+                </Button>
+              </ShareDialog>
+            </div>
+          </div>
         </CardContent>
       </Card>
     )
