@@ -18,13 +18,42 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Create a prompt for a church/spiritual themed thumbnail based on the title
-    const prompt = `Create a beautiful, inspiring thumbnail image for a Christian church sermon video titled "${videoTitle}". 
-    Style: Warm, spiritual, peaceful atmosphere with soft golden or blue lighting. 
-    Elements: Could include abstract light rays, peaceful landscapes, cross silhouettes, sunrise/sunset, or spiritual imagery.
-    The image should evoke hope, faith, and inspiration. No text in the image.
-    Aspect ratio: 16:9 landscape orientation.
-    Ultra high resolution.`;
+    // Create varied visual styles for different thumbnails
+    const visualStyles = [
+      "dramatic sunset with golden rays piercing through clouds over mountains",
+      "serene ocean waves at dawn with soft pink and purple sky",
+      "majestic forest with light beams streaming through tall trees",
+      "peaceful meadow with wildflowers under a starlit night sky",
+      "abstract ethereal light patterns with deep blues and golds",
+      "silhouette of a person with arms raised against a vibrant sunrise",
+      "calm lake reflecting a colorful aurora in the night sky",
+      "rolling hills covered in morning mist with warm sunlight",
+      "dramatic storm clouds with a single ray of light breaking through",
+      "ancient olive tree on a hillside at golden hour",
+      "minimalist cross silhouette against a fiery orange sunset",
+      "crystal clear waterfall in a lush green paradise",
+      "desert landscape with dramatic rock formations at twilight",
+      "snow-capped mountains with dramatic cloud formations",
+      "vineyard rows leading to a distant horizon at sunset",
+      "lighthouse beam cutting through fog over dark waters",
+      "field of wheat swaying in golden afternoon light",
+      "canyon walls glowing red and orange at sunset",
+      "tropical beach with palm trees silhouetted against pastel sky",
+      "northern lights dancing over a frozen landscape"
+    ];
+    
+    // Use video ID to deterministically pick a style (consistent for same video)
+    const styleIndex = videoId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % visualStyles.length;
+    const selectedStyle = visualStyles[styleIndex];
+
+    const prompt = `Create a stunning, unique thumbnail image. 
+    Scene: ${selectedStyle}
+    Theme inspiration from: "${videoTitle}"
+    Style: Cinematic, high contrast, emotionally evocative, professional photography quality.
+    Mood: Inspiring, peaceful, hopeful, spiritual.
+    No text, no words, no letters in the image.
+    Aspect ratio: 16:9 landscape.
+    Ultra high resolution, 4K quality.`;
 
     console.log(`Generating thumbnail for video: ${videoId} - ${videoTitle}`);
 
