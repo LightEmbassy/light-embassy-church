@@ -89,11 +89,11 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     }
   }, [thumbnailCache, generatingThumbnails])
 
-  // Generate thumbnails for visible videos
+  // Generate thumbnails for all videos
   useEffect(() => {
     if (videos.length > 0) {
-      // Generate thumbnails for first 6 videos initially
-      videos.slice(0, 6).forEach(video => {
+      // Generate thumbnails for all videos
+      videos.forEach(video => {
         if (!thumbnailCache[video.id]) {
           generateThumbnail(video)
         }
