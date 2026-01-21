@@ -25,11 +25,14 @@ export function HeroSection() {
       
       {/* Content */}
       <div className="relative z-10 flex flex-col justify-end h-full p-6 text-white">
-        <div className="space-y-4">
+        <div className="space-y-3">
           <h1 className="font-playfair text-3xl font-bold leading-tight">
             Light Embassy Church
           </h1>
-          <p className="text-white/90 text-lg font-inter">
+          <p className="text-white font-medium text-base font-inter">
+            A safe and welcoming community of Followers of Christ growing together
+          </p>
+          <p className="text-white/80 text-sm font-inter italic">
             Revealing the Bible, discovering the truth, living the best life!
           </p>
           
