@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,13 +24,82 @@ interface WatchSectionProps {
   onBack?: () => void
 }
 
+const THUMBNAIL_CACHE_KEY = 'video_thumbnails_cache'
+
 export function WatchSection({ onBack }: WatchSectionProps) {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
   const [videos, setVideos] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [thumbnailCache, setThumbnailCache] = useState<Record<string, string>>({})
+  const [generatingThumbnails, setGeneratingThumbnails] = useState<Set<string>>(new Set())
   const { toast } = useToast()
   const { trackMedia } = useMediaHistory()
+
+  // Load cached thumbnails from localStorage
+  useEffect(() => {
+    try {
+      const cached = localStorage.getItem(THUMBNAIL_CACHE_KEY)
+      if (cached) {
+        setThumbnailCache(JSON.parse(cached))
+      }
+    } catch (e) {
+      console.error('Error loading thumbnail cache:', e)
+    }
+  }, [])
+
+  // Generate AI thumbnail for a video
+  const generateThumbnail = useCallback(async (video: VideoItem) => {
+    if (thumbnailCache[video.id] || generatingThumbnails.has(video.id)) {
+      return
+    }
+
+    setGeneratingThumbnails(prev => new Set(prev).add(video.id))
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-video-thumbnail', {
+        body: { videoTitle: video.title, videoId: video.id }
+      })
+
+      if (error) {
+        console.error('Error generating thumbnail:', error)
+        return
+      }
+
+      if (data?.thumbnailUrl) {
+        setThumbnailCache(prev => {
+          const newCache = { ...prev, [video.id]: data.thumbnailUrl }
+          // Save to localStorage
+          try {
+            localStorage.setItem(THUMBNAIL_CACHE_KEY, JSON.stringify(newCache))
+          } catch (e) {
+            console.error('Error saving thumbnail cache:', e)
+          }
+          return newCache
+        })
+      }
+    } catch (error) {
+      console.error('Failed to generate thumbnail:', error)
+    } finally {
+      setGeneratingThumbnails(prev => {
+        const next = new Set(prev)
+        next.delete(video.id)
+        return next
+      })
+    }
+  }, [thumbnailCache, generatingThumbnails])
+
+  // Generate thumbnails for visible videos
+  useEffect(() => {
+    if (videos.length > 0) {
+      // Generate thumbnails for first 6 videos initially
+      videos.slice(0, 6).forEach(video => {
+        if (!thumbnailCache[video.id]) {
+          generateThumbnail(video)
+        }
+      })
+    }
+  }, [videos, thumbnailCache, generateThumbnail])
 
   const filteredVideos = useMemo(() => {
     if (!searchQuery.trim()) return videos
@@ -83,70 +152,81 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     trackMedia('video', video.id, video.title)
   }
 
-  const VideoCard = ({ video }: { video: VideoItem }) => (
-    <Card 
-      className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden relative"
-      onClick={() => handlePlayVideo(video)}
-    >
-      <CardContent className="p-0">
-        <AspectRatio ratio={16 / 9}>
-          {/* Background thumbnail */}
-          <img
-            src={video.thumbnail}
-            alt={video.title}
-            className="object-cover w-full h-full"
-            onError={(e) => {
-              // Try hqdefault first, then sddefault as final fallback
-              const target = e.currentTarget;
-              if (target.src.includes('mqdefault')) {
-                target.src = `https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`;
-              } else if (target.src.includes('hqdefault')) {
-                target.src = `https://i.ytimg.com/vi/${video.embedId}/sddefault.jpg`;
-              }
-            }}
-          />
-          {/* Dark gradient overlay for text visibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:from-black/70 group-hover:via-black/20 transition-divine" />
-          
-          {/* Play button - centered */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-white/95 rounded-full p-2 sm:p-3 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
-              <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" />
-            </div>
-          </div>
-          
-          {/* Title and info overlay at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
-            <h3 className="font-inter font-bold text-white line-clamp-2 mb-1 text-xs drop-shadow-lg">
-              {video.title}
-            </h3>
-            <div className="flex items-center justify-between gap-1">
-              <div className="flex items-center gap-1 text-[10px] text-white/80 truncate">
-                <Clock className="h-2.5 w-2.5 flex-shrink-0" />
-                {video.publishedAt}
+  const VideoCard = ({ video }: { video: VideoItem }) => {
+    const aiThumbnail = thumbnailCache[video.id]
+    const isGenerating = generatingThumbnails.has(video.id)
+    
+    return (
+      <Card 
+        className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden relative"
+        onClick={() => handlePlayVideo(video)}
+      >
+        <CardContent className="p-0">
+          <AspectRatio ratio={16 / 9}>
+            {/* Background thumbnail - use AI generated or YouTube fallback */}
+            {isGenerating ? (
+              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse flex items-center justify-center">
+                <div className="text-xs text-muted-foreground">Generating...</div>
               </div>
-              <ShareDialog
-                content={{
-                  title: video.title,
-                  text: `Watch: ${video.title}`,
-                  url: getYouTubeWatchUrl(video.embedId)
+            ) : (
+              <img
+                src={aiThumbnail || video.thumbnail}
+                alt={video.title}
+                className="object-cover w-full h-full"
+                onError={(e) => {
+                  // Fallback to YouTube thumbnails if AI thumbnail fails
+                  const target = e.currentTarget;
+                  if (!target.src.includes('ytimg.com')) {
+                    target.src = `https://i.ytimg.com/vi/${video.embedId}/mqdefault.jpg`;
+                  } else if (target.src.includes('mqdefault')) {
+                    target.src = `https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`;
+                  }
                 }}
-              >
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 text-white hover:bg-white/20 flex-shrink-0"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <Share2 className="h-3 w-3" />
-                </Button>
-              </ShareDialog>
+              />
+            )}
+            {/* Dark gradient overlay for text visibility */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:from-black/70 group-hover:via-black/20 transition-divine" />
+            
+            {/* Play button - centered */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/95 rounded-full p-2 sm:p-3 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
+                <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" />
+              </div>
             </div>
-          </div>
-        </AspectRatio>
-      </CardContent>
-    </Card>
-  )
+            
+            {/* Title and info overlay at bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-3">
+              <h3 className="font-inter font-bold text-white line-clamp-2 mb-1 text-xs drop-shadow-lg">
+                {video.title}
+              </h3>
+              <div className="flex items-center justify-between gap-1">
+                <div className="flex items-center gap-1 text-[10px] text-white/80 truncate">
+                  <Clock className="h-2.5 w-2.5 flex-shrink-0" />
+                  {video.publishedAt}
+                </div>
+                <ShareDialog
+                  content={{
+                    title: video.title,
+                    text: `Watch: ${video.title}`,
+                    url: getYouTubeWatchUrl(video.embedId)
+                  }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0 text-white hover:bg-white/20 flex-shrink-0"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Share2 className="h-3 w-3" />
+                  </Button>
+                </ShareDialog>
+              </div>
+            </div>
+          </AspectRatio>
+        </CardContent>
+      </Card>
+    )
+  }
 
   const VideoSkeleton = () => (
     <Card className="overflow-hidden">
