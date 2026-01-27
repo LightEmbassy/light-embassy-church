@@ -14,50 +14,51 @@ interface RadioStation {
   name: string
   frequency: string
   schedule: string
+  description: string
   websiteUrl?: string
 }
 
 const nigeriaStations: RadioStation[] = [
-  { name: "DARLING FM, OWERRI", frequency: "107.3", schedule: "SUN 9AM – 9:30AM", websiteUrl: "https://www.darlingfm.ng/" },
-  { name: "RHYTHM FM, BAYELSA", frequency: "94.7", schedule: "SUN 8:30AM – 9AM", websiteUrl: "https://onlineradiobox.com/ng/rhythm947/" },
-  { name: "BROTHERS FM, MAKURDI", frequency: "90.5", schedule: "WED 10:30AM – 11AM" },
-  { name: "TOAST FM, OWERRI", frequency: "90.3", schedule: "SUN 7AM – 7:30AM", websiteUrl: "https://www.facebook.com/903toastfm/" },
-  { name: "BLAZE FM, ANAMBRA", frequency: "91.5", schedule: "SUN 5:45PM – 6:15PM", websiteUrl: "https://www.facebook.com/blaze915fm/" },
-  { name: "JOY FM, MAKURDI", frequency: "96.5", schedule: "SUN 5:30PM – 6PM", websiteUrl: "https://www.facebook.com/Joyfm96.5/" },
-  { name: "VISION FM, KADUNA", frequency: "92.5", schedule: "SUN 4:30PM – 5PM", websiteUrl: "https://onlineradiobox.com/ng/visionfmkaduna/" },
-  { name: "JATTO FM, KOGI", frequency: "102.7", schedule: "FRI 7:30PM – 8PM", websiteUrl: "https://www.facebook.com/jattofmradio/" },
-  { name: "EBSU FM, EBONYI", frequency: "93.3", schedule: "TUES 10AM – 10:30AM", websiteUrl: "https://www.facebook.com/ebsu.edu.ng/" },
-  { name: "HIT FM, CALABAR", frequency: "95.9", schedule: "WED 7:30PM – 8PM", websiteUrl: "https://hitfmcalabar.com/" },
-  { name: "PEOPLES FM, BAYELSA", frequency: "93.1", schedule: "MON 4:30PM – 5PM", websiteUrl: "https://radio.org.ng/people-s-93-1-fm/" },
-  { name: "CARITAS FM, ENUGU", frequency: "98.7", schedule: "FRI 8:20PM – 8:40PM", websiteUrl: "https://www.facebook.com/caritasfm987/" },
-  { name: "SPEED FM, BENIN", frequency: "96.9", schedule: "FRI 11:05AM – 11:35AM", websiteUrl: "https://x.com/speedfm969" },
-  { name: "SUPER FM, BENIN", frequency: "88.1", schedule: "SUN 3:30PM – 4PM", websiteUrl: "https://superfm.online/ph/" },
-  { name: "INVICTA FM, KADUNA", frequency: "98.9", schedule: "SUN 5:30PM – 6PM", websiteUrl: "https://onlineradiobox.com/ng/invictafm/" },
-  { name: "SUPER FM, IJEBU", frequency: "96.3", schedule: "SUN 9:30AM – 10AM", websiteUrl: "https://www.superfm963.com/" },
-  { name: "DIAMOND FM, OSUN", frequency: "88.5", schedule: "WED 5:30PM – 6PM", websiteUrl: "https://www.facebook.com/Diamond885fm/" },
-  { name: "DIAMOND FM, KWARA", frequency: "88.7", schedule: "SUN 9:30AM – 10AM", websiteUrl: "https://www.facebook.com/Diamond887FM/" },
-  { name: "XL FM, AKWA IBOM", frequency: "106.9", schedule: "TUES 9:15PM – 9:45PM", websiteUrl: "https://www.facebook.com/xl1069fm/" },
-  { name: "ROYAL FM, ILORIN", frequency: "95.1", schedule: "WED 6:30PM – 7PM", websiteUrl: "http://www.royalfm.net" },
-  { name: "ROYAL FM, KADUNA", frequency: "93.3", schedule: "WED 6:30PM – 7PM", websiteUrl: "https://royalfm933.net.ng/" },
-  { name: "HERITAGE FM, AKWA IBOM", frequency: "104.9", schedule: "FRI 6:30PM – 7PM", websiteUrl: "https://www.facebook.com/HeritageRadio104.9/" },
-  { name: "INSPIRATION FM, UYO", frequency: "105.9", schedule: "SUN 4PM – 4:30PM", websiteUrl: "https://inspirationfm.ng/" },
-  { name: "SPARKLING FM, CALABAR", frequency: "92.3", schedule: "SUN 9AM – 9:30AM", websiteUrl: "https://sparkling923fm.com/" },
-  { name: "SUPER FM, PORTHARCOURT", frequency: "93.3", schedule: "SUN 10AM – 10:30AM", websiteUrl: "https://superfm.online/station/?id=superfm933" },
-  { name: "HARVEST FM, MAKURDI", frequency: "103.5", schedule: "TUES 10AM – 10:30AM", websiteUrl: "https://twitter.com/harvest1035fm" },
+  { name: "DARLING FM, OWERRI", frequency: "107.3", schedule: "SUN 9AM – 9:30AM", description: "Edu-attainment station focusing on Christian lifestyle, urban contemporary music, and intelligent talk shows.", websiteUrl: "https://www.darlingfm.ng/" },
+  { name: "RHYTHM FM, BAYELSA", frequency: "94.7", schedule: "SUN 8:30AM – 9AM", description: "Urban contemporary station with steady music rotation including Reggae, Gospel, Jazz and educational programs.", websiteUrl: "https://onlineradiobox.com/ng/rhythm947/" },
+  { name: "BROTHERS FM, MAKURDI", frequency: "90.5", schedule: "WED 10:30AM – 11AM", description: "Community-focused station serving Benue State with local news, talk shows, and family programming." },
+  { name: "TOAST FM, OWERRI", frequency: "90.3", schedule: "SUN 7AM – 7:30AM", description: "Popular Owerri station offering a blend of news, entertainment, and community-focused programming.", websiteUrl: "https://www.facebook.com/903toastfm/" },
+  { name: "BLAZE FM, ANAMBRA", frequency: "91.5", schedule: "SUN 5:45PM – 6:15PM", description: "Dynamic station serving Anambra with contemporary music, news, and youth-oriented content.", websiteUrl: "https://www.facebook.com/blaze915fm/" },
+  { name: "JOY FM, MAKURDI", frequency: "96.5", schedule: "SUN 5:30PM – 6PM", description: "Benue State's beloved station featuring uplifting content, local news, and family entertainment.", websiteUrl: "https://www.facebook.com/Joyfm96.5/" },
+  { name: "VISION FM, KADUNA", frequency: "92.5", schedule: "SUN 4:30PM – 5PM", description: "Multi-city network focusing on authoritative news, talk shows, and community-centric discussions.", websiteUrl: "https://onlineradiobox.com/ng/visionfmkaduna/" },
+  { name: "JATTO FM, KOGI", frequency: "102.7", schedule: "FRI 7:30PM – 8PM", description: "Kogi State's community station delivering local news, cultural programming, and entertainment.", websiteUrl: "https://www.facebook.com/jattofmradio/" },
+  { name: "EBSU FM, EBONYI", frequency: "93.3", schedule: "TUES 10AM – 10:30AM", description: "University-based station providing educational content, news, and cultural programming for Ebonyi.", websiteUrl: "https://www.facebook.com/ebsu.edu.ng/" },
+  { name: "HIT FM, CALABAR", frequency: "95.9", schedule: "WED 7:30PM – 8PM", description: "Cross River's first private urban music station focusing on lifestyle, hit music, and youth entertainment.", websiteUrl: "https://hitfmcalabar.com/" },
+  { name: "PEOPLES FM, BAYELSA", frequency: "93.1", schedule: "MON 4:30PM – 5PM", description: "Voice of the Niger Delta with hourly news, current affairs, and regional developmental discourse.", websiteUrl: "https://radio.org.ng/people-s-93-1-fm/" },
+  { name: "CARITAS FM, ENUGU", frequency: "98.7", schedule: "FRI 8:20PM – 8:40PM", description: "Catholic-owned station promoting faith, family values, and community development in Enugu.", websiteUrl: "https://www.facebook.com/caritasfm987/" },
+  { name: "SPEED FM, BENIN", frequency: "96.9", schedule: "FRI 11:05AM – 11:35AM", description: "Grassroots station broadcasting in Pidgin English, covering news and social justice issues.", websiteUrl: "https://x.com/speedfm969" },
+  { name: "SUPER FM, BENIN", frequency: "88.1", schedule: "SUN 3:30PM – 4PM", description: "Family-oriented station promoting programs that inform, inspire, and foster positive family values.", websiteUrl: "https://superfm.online/ph/" },
+  { name: "INVICTA FM, KADUNA", frequency: "98.9", schedule: "SUN 5:30PM – 6PM", description: "Kaduna's premier station offering balanced news, current affairs, and entertainment programming.", websiteUrl: "https://onlineradiobox.com/ng/invictafm/" },
+  { name: "SUPER FM, IJEBU", frequency: "96.3", schedule: "SUN 9:30AM – 10AM", description: "Community station serving Ijebu with family programs, local news, and inspirational content.", websiteUrl: "https://www.superfm963.com/" },
+  { name: "DIAMOND FM, OSUN", frequency: "88.5", schedule: "WED 5:30PM – 6PM", description: "Urban contemporary station excelling in news dissemination, nation-building, and arts/culture.", websiteUrl: "https://www.facebook.com/Diamond885fm/" },
+  { name: "DIAMOND FM, KWARA", frequency: "88.7", schedule: "SUN 9:30AM – 10AM", description: "Contemporary station focusing on quality news, community discourse, and cultural programming.", websiteUrl: "https://www.facebook.com/Diamond887FM/" },
+  { name: "XL FM, AKWA IBOM", frequency: "106.9", schedule: "TUES 9:15PM – 9:45PM", description: "Akwa Ibom's vibrant station with urban music, entertainment news, and youth-focused content.", websiteUrl: "https://www.facebook.com/xl1069fm/" },
+  { name: "ROYAL FM, ILORIN", frequency: "95.1", schedule: "WED 6:30PM – 7PM", description: "General interest station providing news, talk, and music as a primary voice in Kwara region.", websiteUrl: "http://www.royalfm.net" },
+  { name: "ROYAL FM, KADUNA", frequency: "93.3", schedule: "WED 6:30PM – 7PM", description: "Kaduna-based station offering diverse programming including news, talk shows, and entertainment.", websiteUrl: "https://royalfm933.net.ng/" },
+  { name: "HERITAGE FM, AKWA IBOM", frequency: "104.9", schedule: "FRI 6:30PM – 7PM", description: "Cultural heritage station celebrating Akwa Ibom traditions while delivering news and entertainment.", websiteUrl: "https://www.facebook.com/HeritageRadio104.9/" },
+  { name: "INSPIRATION FM, UYO", frequency: "105.9", schedule: "SUN 4PM – 4:30PM", description: "Family-focused station dedicated to positive, uplifting content, gospel music, and lifestyle talk.", websiteUrl: "https://inspirationfm.ng/" },
+  { name: "SPARKLING FM, CALABAR", frequency: "92.3", schedule: "SUN 9AM – 9:30AM", description: "Urban contemporary music and entertainment news station serving the Calabar metropolis.", websiteUrl: "https://sparkling923fm.com/" },
+  { name: "SUPER FM, PORTHARCOURT", frequency: "93.3", schedule: "SUN 10AM – 10:30AM", description: "Port Harcourt's family station promoting positive values through informative and inspiring programs.", websiteUrl: "https://superfm.online/station/?id=superfm933" },
+  { name: "HARVEST FM, MAKURDI", frequency: "103.5", schedule: "TUES 10AM – 10:30AM", description: "Agricultural and community station focusing on farming, rural development, and local news.", websiteUrl: "https://twitter.com/harvest1035fm" },
 ]
 
 const ghanaStations: RadioStation[] = [
-  { name: "ATL FM, CAPE COAST", frequency: "100.5", schedule: "TUES 12:30PM – 1PM", websiteUrl: "https://atlfmnews.com/" },
-  { name: "BISHARA FM, RAMALE", frequency: "97.7", schedule: "WED 9AM – 9:30AM", websiteUrl: "https://www.facebook.com/BisharaRadio/" },
-  { name: "CLASSIC FM, TECHIMAN", frequency: "91.9", schedule: "SUN 10AM – 10:30AM", websiteUrl: "https://www.facebook.com/classic91.9fmtechiman/" },
-  { name: "SWEET MELODIES FM, ACCRA", frequency: "94.3", schedule: "SAT 7:30AM – 8AM", websiteUrl: "https://www.sweetmelodiesfm.com/" },
-  { name: "GREENA, SUNYANI", frequency: "95.9", schedule: "FRI 7PM – 7:30PM", websiteUrl: "https://www.facebook.com/Greena95.9fm/" },
-  { name: "LOVE FM, KUMASI", frequency: "99.5", schedule: "TUES 5:15AM – 5:45AM", websiteUrl: "https://onlineradiobox.com/gh/luv/" },
-  { name: "SWISS FM, HO", frequency: "93.7", schedule: "WED 12:30PM – 1PM", websiteUrl: "https://www.facebook.com/swiss93.7fm/" },
-  { name: "WORD FM, BOLGATANGA", frequency: "88.3", schedule: "TUES 7PM – 7:30PM", websiteUrl: "https://www.facebook.com/wordfm88.3/" },
-  { name: "FOX FM, KUMASI", frequency: "97.6", schedule: "SUN 5PM – 5:30PM", websiteUrl: "https://zeno.fm/radio/fox-97-9-fm/" },
-  { name: "HITZ FM, KUMASI", frequency: "97.9", schedule: "WED 4:30AM – 5AM", websiteUrl: "https://ghana-radio.com/12-hitz-fm.html" },
-  { name: "ANGEL FM, KWARA", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM", websiteUrl: "https://thenonstopradio.com/radio/angel_fm_96_1_gh" },
+  { name: "ATL FM, CAPE COAST", frequency: "100.5", schedule: "TUES 12:30PM – 1PM", description: "University of Cape Coast's official voice providing scholarly broadcasting, authentic news, and educational talks.", websiteUrl: "https://atlfmnews.com/" },
+  { name: "BISHARA FM, RAMALE", frequency: "97.7", schedule: "WED 9AM – 9:30AM", description: "Northern region station focusing on community development, local news, and diverse cultural programming.", websiteUrl: "https://www.facebook.com/BisharaRadio/" },
+  { name: "CLASSIC FM, TECHIMAN", frequency: "91.9", schedule: "SUN 10AM – 10:30AM", description: "Prominent Bono East region station focusing on news, agriculture, and local commerce.", websiteUrl: "https://www.facebook.com/classic91.9fmtechiman/" },
+  { name: "SWEET MELODIES FM, ACCRA", frequency: "94.3", schedule: "SAT 7:30AM – 8AM", description: "Christian-themed station focusing on uplifting gospel music, sermons, and spiritual growth programs.", websiteUrl: "https://www.sweetmelodiesfm.com/" },
+  { name: "GREENA, SUNYANI", frequency: "95.9", schedule: "FRI 7PM – 7:30PM", description: "Commercial station focusing on news, sports, and entertainment for the Sunyani municipality.", websiteUrl: "https://www.facebook.com/Greena95.9fm/" },
+  { name: "LOVE FM, KUMASI", frequency: "99.5", schedule: "TUES 5:15AM – 5:45AM", description: "Multimedia Group station with adult contemporary music, social issues, and family-oriented talk shows.", websiteUrl: "https://onlineradiobox.com/gh/luv/" },
+  { name: "SWISS FM, HO", frequency: "93.7", schedule: "WED 12:30PM – 1PM", description: "Volta Region's community station delivering local news, cultural programs, and entertainment.", websiteUrl: "https://www.facebook.com/swiss93.7fm/" },
+  { name: "WORD FM, BOLGATANGA", frequency: "88.3", schedule: "TUES 7PM – 7:30PM", description: "Upper East Region station promoting faith-based content, community news, and local development.", websiteUrl: "https://www.facebook.com/wordfm88.3/" },
+  { name: "FOX FM, KUMASI", frequency: "97.6", schedule: "SUN 5PM – 5:30PM", description: "Popular commercial station known for robust news coverage, sports, and high-energy morning shows.", websiteUrl: "https://zeno.fm/radio/fox-97-9-fm/" },
+  { name: "HITZ FM, KUMASI", frequency: "97.9", schedule: "WED 4:30AM – 5AM", description: "Youth-centric station focusing on the latest hits, entertainment news, and pop culture.", websiteUrl: "https://ghana-radio.com/12-hitz-fm.html" },
+  { name: "ANGEL FM, KUMASI", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM", description: "High-impact commercial station focusing on socio-political talk, local news, and diverse entertainment.", websiteUrl: "https://thenonstopradio.com/radio/angel_fm_96_1_gh" },
 ]
 
 const getLinkInfo = (url: string) => {
@@ -88,10 +89,13 @@ const StationCard = ({ station, variant }: { station: RadioStation; variant: 'ni
           </div>
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <MapPin className={`h-4 w-4 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
+          <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
+            <MapPin className={`h-4 w-4 flex-shrink-0 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
             {station.name}
           </h3>
+          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+            {station.description}
+          </p>
           <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
             <Clock className="h-4 w-4" />
             <span>{station.schedule}</span>
