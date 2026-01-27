@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react"
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search, MapPinned, Navigation } from "lucide-react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search, MapPinned, Navigation, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
@@ -154,14 +154,7 @@ const CountrySection = ({
           />
         ))}
       </div>
-    ) : (
-      <div className="bg-muted/50 rounded-lg p-8 text-center">
-        <RadioIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-        <p className="text-muted-foreground">
-          No stations found matching your search criteria.
-        </p>
-      </div>
-    )}
+    ) : null}
   </div>
 )
 
@@ -364,22 +357,45 @@ const Radio = ({ onBack }: RadioProps) => {
 
       {/* Radio Stations by Country */}
       <div className="px-4 pb-8 max-w-6xl mx-auto">
-        <CountrySection 
-          country="Nigeria" 
-          stations={filteredNigeriaStations} 
-          flagEmoji="🇳🇬"
-          variant="nigeria"
-          highlightedStationId={closestStation?.id || null}
-          highlightedStationRef={highlightedStationRef}
-        />
-        <CountrySection 
-          country="Ghana" 
-          stations={filteredGhanaStations} 
-          flagEmoji="🇬🇭"
-          variant="ghana"
-          highlightedStationId={closestStation?.id || null}
-          highlightedStationRef={highlightedStationRef}
-        />
+        {filteredNigeriaStations.length === 0 && filteredGhanaStations.length === 0 ? (
+          <div className="bg-muted/50 rounded-lg p-8 text-center">
+            <RadioIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+            <p className="text-muted-foreground mb-4">
+              No stations found matching your search criteria.
+            </p>
+            <a 
+              href="https://lightembassychurch.podbean.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Listen on Podbean Instead
+            </a>
+            <p className="text-sm text-muted-foreground mt-3">
+              Access our full library of teachings and messages online
+            </p>
+          </div>
+        ) : (
+          <>
+            <CountrySection 
+              country="Nigeria" 
+              stations={filteredNigeriaStations} 
+              flagEmoji="🇳🇬"
+              variant="nigeria"
+              highlightedStationId={closestStation?.id || null}
+              highlightedStationRef={highlightedStationRef}
+            />
+            <CountrySection 
+              country="Ghana" 
+              stations={filteredGhanaStations} 
+              flagEmoji="🇬🇭"
+              variant="ghana"
+              highlightedStationId={closestStation?.id || null}
+              highlightedStationRef={highlightedStationRef}
+            />
+          </>
+        )}
       </div>
     </div>
   )
