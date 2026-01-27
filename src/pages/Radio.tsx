@@ -1,4 +1,4 @@
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, ExternalLink } from "lucide-react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, ExternalLink, Facebook, Twitter, Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -56,47 +56,62 @@ const ghanaStations: RadioStation[] = [
   { name: "ANGEL FM, KWARA", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM", websiteUrl: "https://thenonstopradio.com/radio/angel_fm_96_1_gh" },
 ]
 
-const StationCard = ({ station, variant }: { station: RadioStation; variant: 'nigeria' | 'ghana' }) => (
-  <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-    <CardContent className="p-0">
-      <div className={`px-4 py-3 ${
-        variant === 'nigeria' 
-          ? 'bg-gradient-to-r from-amber-500 to-orange-500' 
-          : 'bg-gradient-to-r from-emerald-500 to-teal-500'
-      }`}>
-        <div className="flex items-center justify-between">
-          <span className="text-white font-bold text-lg">{station.frequency} FM</span>
-          <RadioIcon className="h-5 w-5 text-white" />
+const getLinkInfo = (url: string) => {
+  if (url.includes('facebook.com')) {
+    return { icon: Facebook, label: 'Facebook' }
+  }
+  if (url.includes('twitter.com') || url.includes('x.com')) {
+    return { icon: Twitter, label: 'Twitter/X' }
+  }
+  return { icon: Globe, label: 'Website' }
+}
+
+const StationCard = ({ station, variant }: { station: RadioStation; variant: 'nigeria' | 'ghana' }) => {
+  const linkInfo = station.websiteUrl ? getLinkInfo(station.websiteUrl) : null
+  const LinkIcon = linkInfo?.icon
+  
+  return (
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      <CardContent className="p-0">
+        <div className={`px-4 py-3 ${
+          variant === 'nigeria' 
+            ? 'bg-gradient-to-r from-amber-500 to-orange-500' 
+            : 'bg-gradient-to-r from-emerald-500 to-teal-500'
+        }`}>
+          <div className="flex items-center justify-between">
+            <span className="text-white font-bold text-lg">{station.frequency} FM</span>
+            <RadioIcon className="h-5 w-5 text-white" />
+          </div>
         </div>
-      </div>
-      <div className="p-4">
-        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-          <MapPin className={`h-4 w-4 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
-          {station.name}
-        </h3>
-        <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
-          <Clock className="h-4 w-4" />
-          <span>{station.schedule}</span>
+        <div className="p-4">
+          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+            <MapPin className={`h-4 w-4 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
+            {station.name}
+          </h3>
+          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+            <Clock className="h-4 w-4" />
+            <span>{station.schedule}</span>
+          </div>
+          {station.websiteUrl && LinkIcon && (
+            <a 
+              href={station.websiteUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                variant === 'nigeria' 
+                  ? 'text-amber-600 hover:text-amber-700' 
+                  : 'text-emerald-600 hover:text-emerald-700'
+              }`}
+            >
+              <LinkIcon className="h-3.5 w-3.5" />
+              {linkInfo.label}
+            </a>
+          )}
         </div>
-        {station.websiteUrl && (
-          <a 
-            href={station.websiteUrl} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
-              variant === 'nigeria' 
-                ? 'text-amber-600 hover:text-amber-700' 
-                : 'text-emerald-600 hover:text-emerald-700'
-            }`}
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-            Listen Online
-          </a>
-        )}
-      </div>
-    </CardContent>
-  </Card>
-)
+      </CardContent>
+    </Card>
+  )
+}
 
 const CountrySection = ({ 
   country, 
