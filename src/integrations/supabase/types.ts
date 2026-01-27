@@ -279,6 +279,13 @@ export type Database = {
             referencedRelation: "conversations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "public_conversations"
+            referencedColumns: ["id"]
+          },
         ]
       }
       podcasts: {
@@ -635,6 +642,15 @@ export type Database = {
       }
     }
     Views: {
+      public_conversations: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          status: string | null
+          subject: string | null
+        }
+        Relationships: []
+      }
       public_prayer_requests: {
         Row: {
           category: string | null
