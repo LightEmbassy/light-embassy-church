@@ -1,9 +1,10 @@
 import { useState } from "react"
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter } from "lucide-react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
 interface RadioProps {
   onBack: () => void
@@ -158,14 +159,20 @@ const CountrySection = ({
 
 const Radio = ({ onBack }: RadioProps) => {
   const [showOnlyWithLinks, setShowOnlyWithLinks] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
 
-  const filteredNigeriaStations = showOnlyWithLinks 
-    ? nigeriaStations.filter(s => s.websiteUrl) 
-    : nigeriaStations
-  
-  const filteredGhanaStations = showOnlyWithLinks 
-    ? ghanaStations.filter(s => s.websiteUrl) 
-    : ghanaStations
+  const filterStations = (stations: RadioStation[]) => {
+    return stations.filter(s => {
+      const matchesSearch = searchQuery === "" || 
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.frequency.includes(searchQuery)
+      const matchesLinkFilter = !showOnlyWithLinks || s.websiteUrl
+      return matchesSearch && matchesLinkFilter
+    })
+  }
+
+  const filteredNigeriaStations = filterStations(nigeriaStations)
+  const filteredGhanaStations = filterStations(ghanaStations)
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -203,8 +210,21 @@ const Radio = ({ onBack }: RadioProps) => {
         </p>
       </div>
 
-      {/* Filter */}
-      <div className="px-4 pb-6 max-w-6xl mx-auto">
+      {/* Search and Filter */}
+      <div className="px-4 pb-6 max-w-6xl mx-auto space-y-4">
+        {/* Search Box */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Search by station name, location, or frequency..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
+        {/* Filter Toggle */}
         <div className="flex items-center justify-center gap-3 p-4 bg-muted/50 rounded-lg">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <Switch
