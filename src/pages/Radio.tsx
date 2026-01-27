@@ -55,10 +55,14 @@ const ghanaStations: RadioStation[] = [
   { name: "ANGEL FM, KWARA", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM" },
 ]
 
-const StationCard = ({ station }: { station: RadioStation }) => (
+const StationCard = ({ station, variant }: { station: RadioStation; variant: 'nigeria' | 'ghana' }) => (
   <Card className="overflow-hidden hover:shadow-lg transition-shadow">
     <CardContent className="p-0">
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3">
+      <div className={`px-4 py-3 ${
+        variant === 'nigeria' 
+          ? 'bg-gradient-to-r from-amber-500 to-orange-500' 
+          : 'bg-gradient-to-r from-emerald-500 to-teal-500'
+      }`}>
         <div className="flex items-center justify-between">
           <span className="text-white font-bold text-lg">{station.frequency} FM</span>
           <RadioIcon className="h-5 w-5 text-white" />
@@ -66,7 +70,7 @@ const StationCard = ({ station }: { station: RadioStation }) => (
       </div>
       <div className="p-4">
         <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-amber-600" />
+          <MapPin className={`h-4 w-4 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
           {station.name}
         </h3>
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -81,24 +85,30 @@ const StationCard = ({ station }: { station: RadioStation }) => (
 const CountrySection = ({ 
   country, 
   stations, 
-  flagEmoji 
+  flagEmoji,
+  variant
 }: { 
   country: string
   stations: RadioStation[]
   flagEmoji: string
+  variant: 'nigeria' | 'ghana'
 }) => (
   <div className="mb-12">
     <div className="flex items-center gap-3 mb-6">
       <span className="text-3xl">{flagEmoji}</span>
       <h2 className="font-playfair text-2xl font-bold text-foreground">{country}</h2>
-      <span className="bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full">
+      <span className={`text-sm font-medium px-3 py-1 rounded-full ${
+        variant === 'nigeria' 
+          ? 'bg-amber-100 text-amber-800' 
+          : 'bg-emerald-100 text-emerald-800'
+      }`}>
         {stations.length} station{stations.length !== 1 ? 's' : ''}
       </span>
     </div>
     {stations.length > 0 ? (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {stations.map((station, index) => (
-          <StationCard key={index} station={station} />
+          <StationCard key={index} station={station} variant={variant} />
         ))}
       </div>
     ) : (
@@ -154,12 +164,14 @@ const Radio = ({ onBack }: RadioProps) => {
         <CountrySection 
           country="Nigeria" 
           stations={nigeriaStations} 
-          flagEmoji="🇳🇬" 
+          flagEmoji="🇳🇬"
+          variant="nigeria"
         />
         <CountrySection 
           country="Ghana" 
           stations={ghanaStations} 
-          flagEmoji="🇬🇭" 
+          flagEmoji="🇬🇭"
+          variant="ghana"
         />
       </div>
     </div>
