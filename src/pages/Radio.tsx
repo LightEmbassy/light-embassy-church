@@ -1,6 +1,9 @@
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, ExternalLink, Facebook, Twitter, Globe } from "lucide-react"
+import { useState } from "react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 interface RadioProps {
   onBack: () => void
@@ -154,6 +157,16 @@ const CountrySection = ({
 )
 
 const Radio = ({ onBack }: RadioProps) => {
+  const [showOnlyWithLinks, setShowOnlyWithLinks] = useState(false)
+
+  const filteredNigeriaStations = showOnlyWithLinks 
+    ? nigeriaStations.filter(s => s.websiteUrl) 
+    : nigeriaStations
+  
+  const filteredGhanaStations = showOnlyWithLinks 
+    ? ghanaStations.filter(s => s.websiteUrl) 
+    : ghanaStations
+
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
@@ -190,17 +203,32 @@ const Radio = ({ onBack }: RadioProps) => {
         </p>
       </div>
 
+      {/* Filter */}
+      <div className="px-4 pb-6 max-w-6xl mx-auto">
+        <div className="flex items-center justify-center gap-3 p-4 bg-muted/50 rounded-lg">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Switch
+            id="streaming-filter"
+            checked={showOnlyWithLinks}
+            onCheckedChange={setShowOnlyWithLinks}
+          />
+          <Label htmlFor="streaming-filter" className="text-sm font-medium cursor-pointer">
+            Show only stations with streaming links
+          </Label>
+        </div>
+      </div>
+
       {/* Radio Stations by Country */}
       <div className="px-4 pb-8 max-w-6xl mx-auto">
         <CountrySection 
           country="Nigeria" 
-          stations={nigeriaStations} 
+          stations={filteredNigeriaStations} 
           flagEmoji="🇳🇬"
           variant="nigeria"
         />
         <CountrySection 
           country="Ghana" 
-          stations={ghanaStations} 
+          stations={filteredGhanaStations} 
           flagEmoji="🇬🇭"
           variant="ghana"
         />
