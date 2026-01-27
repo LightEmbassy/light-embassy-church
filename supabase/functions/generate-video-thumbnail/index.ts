@@ -86,8 +86,14 @@ serve(async (req) => {
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "Payment required" }), {
-          status: 402,
+        // Return YouTube's default thumbnail as fallback
+        const fallbackUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        console.log(`Credits exhausted, using YouTube fallback for: ${videoId}`);
+        return new Response(JSON.stringify({ 
+          videoId,
+          thumbnailUrl: fallbackUrl,
+          fallback: true
+        }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
