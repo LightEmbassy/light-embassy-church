@@ -5,7 +5,7 @@ import { RadioBanner } from "@/components/home/radio-banner"
 import { ProgressBanner } from "@/components/home/progress-banner"
 import { QuickActions } from "@/components/home/quick-actions"
 import { DailyInspiration } from "@/components/home/daily-inspiration"
-import { CommunityFeed } from "@/components/home/community-feed"
+import { LatestConversations } from "@/components/home/latest-conversations"
 
 interface HomeProps {
   onNavigate?: (tab: string) => void
@@ -21,7 +21,7 @@ export default function Home({ onNavigate }: HomeProps) {
       <ProgressBanner onNavigate={onNavigate} />
       <QuickActions onNavigate={onNavigate} />
       <DailyInspiration />
-      <CommunityFeed />
+      <LatestConversations onNavigate={onNavigate} />
     </div>
   )
 }
