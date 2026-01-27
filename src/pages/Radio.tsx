@@ -1,10 +1,17 @@
-import { useState } from "react"
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search, MapPinned } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface RadioProps {
   onBack: () => void
@@ -164,6 +171,19 @@ const CountrySection = ({
 const Radio = ({ onBack }: RadioProps) => {
   const [showOnlyWithLinks, setShowOnlyWithLinks] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCountry, setSelectedCountry] = useState<string>("all")
+  
+  const nigeriaRef = useRef<HTMLDivElement>(null)
+  const ghanaRef = useRef<HTMLDivElement>(null)
+
+  // Scroll to country section when selected
+  useEffect(() => {
+    if (selectedCountry === "nigeria" && nigeriaRef.current) {
+      nigeriaRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
+    } else if (selectedCountry === "ghana" && ghanaRef.current) {
+      ghanaRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }, [selectedCountry])
 
   const filterStations = (stations: RadioStation[]) => {
     return stations.filter(s => {
@@ -177,6 +197,9 @@ const Radio = ({ onBack }: RadioProps) => {
 
   const filteredNigeriaStations = filterStations(nigeriaStations)
   const filteredGhanaStations = filterStations(ghanaStations)
+  
+  const showNigeria = selectedCountry === "all" || selectedCountry === "nigeria"
+  const showGhana = selectedCountry === "all" || selectedCountry === "ghana"
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -216,6 +239,22 @@ const Radio = ({ onBack }: RadioProps) => {
 
       {/* Search and Filter */}
       <div className="px-4 pb-6 max-w-6xl mx-auto space-y-4">
+        {/* Country Selector */}
+        <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <MapPinned className="h-5 w-5 text-primary" />
+          <Label className="text-sm font-medium">Find stations in:</Label>
+          <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+            <SelectTrigger className="w-[200px] bg-background">
+              <SelectValue placeholder="Select a country" />
+            </SelectTrigger>
+            <SelectContent className="bg-background border shadow-lg z-50">
+              <SelectItem value="all">All Countries</SelectItem>
+              <SelectItem value="nigeria">🇳🇬 Nigeria</SelectItem>
+              <SelectItem value="ghana">🇬🇭 Ghana</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Search Box */}
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -244,18 +283,32 @@ const Radio = ({ onBack }: RadioProps) => {
 
       {/* Radio Stations by Country */}
       <div className="px-4 pb-8 max-w-6xl mx-auto">
-        <CountrySection 
-          country="Nigeria" 
-          stations={filteredNigeriaStations} 
-          flagEmoji="🇳🇬"
-          variant="nigeria"
-        />
-        <CountrySection 
-          country="Ghana" 
-          stations={filteredGhanaStations} 
-          flagEmoji="🇬🇭"
-          variant="ghana"
-        />
+        {showNigeria && (
+          <div 
+            ref={nigeriaRef} 
+            className={`scroll-mt-4 transition-all duration-300 ${selectedCountry === "nigeria" ? "ring-2 ring-amber-500 ring-offset-4 rounded-lg" : ""}`}
+          >
+            <CountrySection 
+              country="Nigeria" 
+              stations={filteredNigeriaStations} 
+              flagEmoji="🇳🇬"
+              variant="nigeria"
+            />
+          </div>
+        )}
+        {showGhana && (
+          <div 
+            ref={ghanaRef} 
+            className={`scroll-mt-4 transition-all duration-300 ${selectedCountry === "ghana" ? "ring-2 ring-emerald-500 ring-offset-4 rounded-lg" : ""}`}
+          >
+            <CountrySection 
+              country="Ghana" 
+              stations={filteredGhanaStations} 
+              flagEmoji="🇬🇭"
+              variant="ghana"
+            />
+          </div>
+        )}
       </div>
     </div>
   )
