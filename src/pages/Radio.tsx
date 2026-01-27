@@ -6,7 +6,13 @@ interface RadioProps {
   onBack: () => void
 }
 
-const radioStations = [
+interface RadioStation {
+  name: string
+  frequency: string
+  schedule: string
+}
+
+const nigeriaStations: RadioStation[] = [
   { name: "DARLING FM, OWERRI", frequency: "107.3", schedule: "SUN 9AM – 9:30AM" },
   { name: "RHYTHM FM, BAYELSA", frequency: "94.7", schedule: "SUN 8:30AM – 9AM" },
   { name: "BROTHERS FM, MAKURDI", frequency: "90.5", schedule: "WED 10:30AM – 11AM" },
@@ -34,6 +40,65 @@ const radioStations = [
   { name: "SUPER FM, PORTHARCOURT", frequency: "93.3", schedule: "SUN 10AM – 10:30AM" },
   { name: "HARVEST FM, MAKURDI", frequency: "103.5", schedule: "TUES 10AM – 10:30AM" },
 ]
+
+const ghanaStations: RadioStation[] = []
+
+const StationCard = ({ station }: { station: RadioStation }) => (
+  <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <CardContent className="p-0">
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <span className="text-white font-bold text-lg">{station.frequency} FM</span>
+          <RadioIcon className="h-5 w-5 text-white" />
+        </div>
+      </div>
+      <div className="p-4">
+        <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+          <MapPin className="h-4 w-4 text-amber-600" />
+          {station.name}
+        </h3>
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <Clock className="h-4 w-4" />
+          <span>{station.schedule}</span>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+)
+
+const CountrySection = ({ 
+  country, 
+  stations, 
+  flagEmoji 
+}: { 
+  country: string
+  stations: RadioStation[]
+  flagEmoji: string
+}) => (
+  <div className="mb-12">
+    <div className="flex items-center gap-3 mb-6">
+      <span className="text-3xl">{flagEmoji}</span>
+      <h2 className="font-playfair text-2xl font-bold text-foreground">{country}</h2>
+      <span className="bg-amber-100 text-amber-800 text-sm font-medium px-3 py-1 rounded-full">
+        {stations.length} station{stations.length !== 1 ? 's' : ''}
+      </span>
+    </div>
+    {stations.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {stations.map((station, index) => (
+          <StationCard key={index} station={station} />
+        ))}
+      </div>
+    ) : (
+      <div className="bg-muted/50 rounded-lg p-8 text-center">
+        <RadioIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
+        <p className="text-muted-foreground">
+          Coming soon! Stay tuned for radio stations in {country}.
+        </p>
+      </div>
+    )}
+  </div>
+)
 
 const Radio = ({ onBack }: RadioProps) => {
   return (
@@ -67,37 +132,23 @@ const Radio = ({ onBack }: RadioProps) => {
       {/* Introduction */}
       <div className="px-4 py-6">
         <p className="text-center text-muted-foreground max-w-2xl mx-auto">
-          Listen to Light Embassy's life-transforming teaching on these FM radio stations across Nigeria. 
+          Listen to Light Embassy's life-transforming teaching on FM radio stations. 
           Find a station near you and tune in at the scheduled time.
         </p>
       </div>
 
-      {/* Radio Stations Grid */}
-      <div className="px-4 pb-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
-          {radioStations.map((station, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <CardContent className="p-0">
-                <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-white font-bold text-lg">{station.frequency} FM</span>
-                    <RadioIcon className="h-5 w-5 text-white" />
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <MapPin className="h-4 w-4 text-amber-600" />
-                    {station.name}
-                  </h3>
-                  <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                    <Clock className="h-4 w-4" />
-                    <span>{station.schedule}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      {/* Radio Stations by Country */}
+      <div className="px-4 pb-8 max-w-6xl mx-auto">
+        <CountrySection 
+          country="Nigeria" 
+          stations={nigeriaStations} 
+          flagEmoji="🇳🇬" 
+        />
+        <CountrySection 
+          country="Ghana" 
+          stations={ghanaStations} 
+          flagEmoji="🇬🇭" 
+        />
       </div>
     </div>
   )
