@@ -41,7 +41,19 @@ const nigeriaStations: RadioStation[] = [
   { name: "HARVEST FM, MAKURDI", frequency: "103.5", schedule: "TUES 10AM – 10:30AM" },
 ]
 
-const ghanaStations: RadioStation[] = []
+const ghanaStations: RadioStation[] = [
+  { name: "ATL FM, CAPE COAST", frequency: "100.5", schedule: "TUES 12:30PM – 1PM" },
+  { name: "BISHARA FM, RAMALE", frequency: "97.7", schedule: "WED 9AM – 9:30AM" },
+  { name: "CLASSIC FM, TECHIMAN", frequency: "91.9", schedule: "SUN 10AM – 10:30AM" },
+  { name: "SWEET MELODIES FM, ACCRA", frequency: "94.3", schedule: "SAT 7:30AM – 8AM" },
+  { name: "GREENA, SUNYANI", frequency: "95.9", schedule: "FRI 7PM – 7:30PM" },
+  { name: "LOVE FM, KUMASI", frequency: "99.5", schedule: "TUES 5:15AM – 5:45AM" },
+  { name: "SWISS FM, HO", frequency: "93.7", schedule: "WED 12:30PM – 1PM" },
+  { name: "WORD FM, BOLGATANGA", frequency: "88.3", schedule: "TUES 7PM – 7:30PM" },
+  { name: "FOX FM, KUMASI", frequency: "97.6", schedule: "SUN 5PM – 5:30PM" },
+  { name: "HITZ FM, KUMASI", frequency: "97.9", schedule: "WED 4:30AM – 5AM" },
+  { name: "ANGEL FM, KWARA", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM" },
+]
 
 const StationCard = ({ station }: { station: RadioStation }) => (
   <Card className="overflow-hidden hover:shadow-lg transition-shadow">
