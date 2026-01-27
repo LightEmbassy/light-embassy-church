@@ -1,4 +1,4 @@
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin } from "lucide-react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 
@@ -10,49 +10,50 @@ interface RadioStation {
   name: string
   frequency: string
   schedule: string
+  websiteUrl?: string
 }
 
 const nigeriaStations: RadioStation[] = [
-  { name: "DARLING FM, OWERRI", frequency: "107.3", schedule: "SUN 9AM – 9:30AM" },
-  { name: "RHYTHM FM, BAYELSA", frequency: "94.7", schedule: "SUN 8:30AM – 9AM" },
+  { name: "DARLING FM, OWERRI", frequency: "107.3", schedule: "SUN 9AM – 9:30AM", websiteUrl: "https://www.darlingfm.ng/" },
+  { name: "RHYTHM FM, BAYELSA", frequency: "94.7", schedule: "SUN 8:30AM – 9AM", websiteUrl: "https://onlineradiobox.com/ng/rhythm947/" },
   { name: "BROTHERS FM, MAKURDI", frequency: "90.5", schedule: "WED 10:30AM – 11AM" },
   { name: "TOAST FM, OWERRI", frequency: "90.3", schedule: "SUN 7AM – 7:30AM" },
   { name: "BLAZE FM, ANAMBRA", frequency: "91.5", schedule: "SUN 5:45PM – 6:15PM" },
   { name: "JOY FM, MAKURDI", frequency: "96.5", schedule: "SUN 5:30PM – 6PM" },
-  { name: "VISION FM, KADUNA", frequency: "92.5", schedule: "SUN 4:30PM – 5PM" },
+  { name: "VISION FM, KADUNA", frequency: "92.5", schedule: "SUN 4:30PM – 5PM", websiteUrl: "https://onlineradiobox.com/ng/visionfmkaduna/" },
   { name: "JATTO FM, KOGI", frequency: "102.7", schedule: "FRI 7:30PM – 8PM" },
   { name: "EBSU FM, EBONYI", frequency: "93.3", schedule: "TUES 10AM – 10:30AM" },
-  { name: "HIT FM, CALABAR", frequency: "95.9", schedule: "WED 7:30PM – 8PM" },
-  { name: "PEOPLES FM, BAYELSA", frequency: "93.1", schedule: "MON 4:30PM – 5PM" },
+  { name: "HIT FM, CALABAR", frequency: "95.9", schedule: "WED 7:30PM – 8PM", websiteUrl: "https://hitfmcalabar.com/" },
+  { name: "PEOPLES FM, BAYELSA", frequency: "93.1", schedule: "MON 4:30PM – 5PM", websiteUrl: "https://radio.org.ng/people-s-93-1-fm/" },
   { name: "CARITAS FM, ENUGU", frequency: "98.7", schedule: "FRI 8:20PM – 8:40PM" },
   { name: "SPEED FM, BENIN", frequency: "96.9", schedule: "FRI 11:05AM – 11:35AM" },
-  { name: "SUPER FM, BENIN", frequency: "88.1", schedule: "SUN 3:30PM – 4PM" },
-  { name: "INVICTA FM, KADUNA", frequency: "98.9", schedule: "SUN 5:30PM – 6PM" },
-  { name: "SUPER FM, IJEBU", frequency: "96.3", schedule: "SUN 9:30AM – 10AM" },
+  { name: "SUPER FM, BENIN", frequency: "88.1", schedule: "SUN 3:30PM – 4PM", websiteUrl: "https://superfm.online/ph/" },
+  { name: "INVICTA FM, KADUNA", frequency: "98.9", schedule: "SUN 5:30PM – 6PM", websiteUrl: "https://onlineradiobox.com/ng/invictafm/" },
+  { name: "SUPER FM, IJEBU", frequency: "96.3", schedule: "SUN 9:30AM – 10AM", websiteUrl: "https://www.superfm963.com/" },
   { name: "DIAMOND FM, OSUN", frequency: "88.5", schedule: "WED 5:30PM – 6PM" },
   { name: "DIAMOND FM, KWARA", frequency: "88.7", schedule: "SUN 9:30AM – 10AM" },
   { name: "XL FM, AKWA IBOM", frequency: "106.9", schedule: "TUES 9:15PM – 9:45PM" },
-  { name: "ROYAL FM, ILORIN", frequency: "95.1", schedule: "WED 6:30PM – 7PM" },
-  { name: "ROYAL FM, KADUNA", frequency: "93.3", schedule: "WED 6:30PM – 7PM" },
+  { name: "ROYAL FM, ILORIN", frequency: "95.1", schedule: "WED 6:30PM – 7PM", websiteUrl: "http://www.royalfm.net" },
+  { name: "ROYAL FM, KADUNA", frequency: "93.3", schedule: "WED 6:30PM – 7PM", websiteUrl: "https://royalfm933.net.ng/" },
   { name: "HERITAGE FM, AKWA IBOM", frequency: "104.9", schedule: "FRI 6:30PM – 7PM" },
-  { name: "INSPIRATION FM, UYO", frequency: "105.9", schedule: "SUN 4PM – 4:30PM" },
-  { name: "SPARKLING FM, CALABAR", frequency: "92.3", schedule: "SUN 9AM – 9:30AM" },
-  { name: "SUPER FM, PORTHARCOURT", frequency: "93.3", schedule: "SUN 10AM – 10:30AM" },
+  { name: "INSPIRATION FM, UYO", frequency: "105.9", schedule: "SUN 4PM – 4:30PM", websiteUrl: "https://inspirationfm.ng/" },
+  { name: "SPARKLING FM, CALABAR", frequency: "92.3", schedule: "SUN 9AM – 9:30AM", websiteUrl: "https://sparkling923fm.com/" },
+  { name: "SUPER FM, PORTHARCOURT", frequency: "93.3", schedule: "SUN 10AM – 10:30AM", websiteUrl: "https://superfm.online/station/?id=superfm933" },
   { name: "HARVEST FM, MAKURDI", frequency: "103.5", schedule: "TUES 10AM – 10:30AM" },
 ]
 
 const ghanaStations: RadioStation[] = [
-  { name: "ATL FM, CAPE COAST", frequency: "100.5", schedule: "TUES 12:30PM – 1PM" },
+  { name: "ATL FM, CAPE COAST", frequency: "100.5", schedule: "TUES 12:30PM – 1PM", websiteUrl: "https://atlfmnews.com/" },
   { name: "BISHARA FM, RAMALE", frequency: "97.7", schedule: "WED 9AM – 9:30AM" },
   { name: "CLASSIC FM, TECHIMAN", frequency: "91.9", schedule: "SUN 10AM – 10:30AM" },
-  { name: "SWEET MELODIES FM, ACCRA", frequency: "94.3", schedule: "SAT 7:30AM – 8AM" },
+  { name: "SWEET MELODIES FM, ACCRA", frequency: "94.3", schedule: "SAT 7:30AM – 8AM", websiteUrl: "https://www.sweetmelodiesfm.com/" },
   { name: "GREENA, SUNYANI", frequency: "95.9", schedule: "FRI 7PM – 7:30PM" },
-  { name: "LOVE FM, KUMASI", frequency: "99.5", schedule: "TUES 5:15AM – 5:45AM" },
+  { name: "LOVE FM, KUMASI", frequency: "99.5", schedule: "TUES 5:15AM – 5:45AM", websiteUrl: "https://onlineradiobox.com/gh/luv/" },
   { name: "SWISS FM, HO", frequency: "93.7", schedule: "WED 12:30PM – 1PM" },
   { name: "WORD FM, BOLGATANGA", frequency: "88.3", schedule: "TUES 7PM – 7:30PM" },
-  { name: "FOX FM, KUMASI", frequency: "97.6", schedule: "SUN 5PM – 5:30PM" },
-  { name: "HITZ FM, KUMASI", frequency: "97.9", schedule: "WED 4:30AM – 5AM" },
-  { name: "ANGEL FM, KWARA", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM" },
+  { name: "FOX FM, KUMASI", frequency: "97.6", schedule: "SUN 5PM – 5:30PM", websiteUrl: "https://zeno.fm/radio/fox-97-9-fm/" },
+  { name: "HITZ FM, KUMASI", frequency: "97.9", schedule: "WED 4:30AM – 5AM", websiteUrl: "https://ghana-radio.com/12-hitz-fm.html" },
+  { name: "ANGEL FM, KWARA", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM", websiteUrl: "https://thenonstopradio.com/radio/angel_fm_96_1_gh" },
 ]
 
 const StationCard = ({ station, variant }: { station: RadioStation; variant: 'nigeria' | 'ghana' }) => (
@@ -73,10 +74,25 @@ const StationCard = ({ station, variant }: { station: RadioStation; variant: 'ni
           <MapPin className={`h-4 w-4 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
           {station.name}
         </h3>
-        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
           <Clock className="h-4 w-4" />
           <span>{station.schedule}</span>
         </div>
+        {station.websiteUrl && (
+          <a 
+            href={station.websiteUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
+              variant === 'nigeria' 
+                ? 'text-amber-600 hover:text-amber-700' 
+                : 'text-emerald-600 hover:text-emerald-700'
+            }`}
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            Listen Online
+          </a>
+        )}
       </div>
     </CardContent>
   </Card>
