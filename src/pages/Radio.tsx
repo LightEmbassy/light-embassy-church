@@ -201,7 +201,7 @@ const Radio = ({ onBack }: RadioProps) => {
             <RadioIcon className="h-8 w-8 text-white animate-pulse" />
           </div>
           <p className="text-white/90">
-            Tune in to Light Embassy on FM Radio
+            Life transforming teaching broadcast live on a daily basis
           </p>
         </div>
       </div>
