@@ -1,72 +1,30 @@
-import { useState, useRef, useEffect } from "react"
-import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search, MapPinned } from "lucide-react"
+import { useState, useRef, useEffect, useMemo } from "react"
+import { ArrowLeft, Radio as RadioIcon, Clock, MapPin, Facebook, Twitter, Globe, Filter, Search, MapPinned, Navigation } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { countries, calculateDistance, Country } from "@/data/countries"
+import { radioStations, nigeriaStations, ghanaStations, RadioStation } from "@/data/radioStations"
+import { cn } from "@/lib/utils"
 
 interface RadioProps {
   onBack: () => void
 }
-
-interface RadioStation {
-  name: string
-  frequency: string
-  schedule: string
-  description: string
-  websiteUrl?: string
-}
-
-const nigeriaStations: RadioStation[] = [
-  { name: "DARLING FM, OWERRI", frequency: "107.3", schedule: "SUN 9AM – 9:30AM", description: "Edu-attainment station focusing on Christian lifestyle, urban contemporary music, and intelligent talk shows.", websiteUrl: "https://www.darlingfm.ng/" },
-  { name: "RHYTHM FM, BAYELSA", frequency: "94.7", schedule: "SUN 8:30AM – 9AM", description: "Urban contemporary station with steady music rotation including Reggae, Gospel, Jazz and educational programs.", websiteUrl: "https://onlineradiobox.com/ng/rhythm947/" },
-  { name: "BROTHERS FM, MAKURDI", frequency: "90.5", schedule: "WED 10:30AM – 11AM", description: "Community-focused station serving Benue State with local news, talk shows, and family programming." },
-  { name: "TOAST FM, OWERRI", frequency: "90.3", schedule: "SUN 7AM – 7:30AM", description: "Popular Owerri station offering a blend of news, entertainment, and community-focused programming.", websiteUrl: "https://www.facebook.com/903toastfm/" },
-  { name: "BLAZE FM, ANAMBRA", frequency: "91.5", schedule: "SUN 5:45PM – 6:15PM", description: "Dynamic station serving Anambra with contemporary music, news, and youth-oriented content.", websiteUrl: "https://www.facebook.com/blaze915fm/" },
-  { name: "JOY FM, MAKURDI", frequency: "96.5", schedule: "SUN 5:30PM – 6PM", description: "Benue State's beloved station featuring uplifting content, local news, and family entertainment.", websiteUrl: "https://www.facebook.com/Joyfm96.5/" },
-  { name: "VISION FM, KADUNA", frequency: "92.5", schedule: "SUN 4:30PM – 5PM", description: "Multi-city network focusing on authoritative news, talk shows, and community-centric discussions.", websiteUrl: "https://onlineradiobox.com/ng/visionfmkaduna/" },
-  { name: "JATTO FM, KOGI", frequency: "102.7", schedule: "FRI 7:30PM – 8PM", description: "Kogi State's community station delivering local news, cultural programming, and entertainment.", websiteUrl: "https://www.facebook.com/jattofmradio/" },
-  { name: "EBSU FM, EBONYI", frequency: "93.3", schedule: "TUES 10AM – 10:30AM", description: "University-based station providing educational content, news, and cultural programming for Ebonyi.", websiteUrl: "https://www.facebook.com/ebsu.edu.ng/" },
-  { name: "HIT FM, CALABAR", frequency: "95.9", schedule: "WED 7:30PM – 8PM", description: "Cross River's first private urban music station focusing on lifestyle, hit music, and youth entertainment.", websiteUrl: "https://hitfmcalabar.com/" },
-  { name: "PEOPLES FM, BAYELSA", frequency: "93.1", schedule: "MON 4:30PM – 5PM", description: "Voice of the Niger Delta with hourly news, current affairs, and regional developmental discourse.", websiteUrl: "https://radio.org.ng/people-s-93-1-fm/" },
-  { name: "CARITAS FM, ENUGU", frequency: "98.7", schedule: "FRI 8:20PM – 8:40PM", description: "Catholic-owned station promoting faith, family values, and community development in Enugu.", websiteUrl: "https://www.facebook.com/caritasfm987/" },
-  { name: "SPEED FM, BENIN", frequency: "96.9", schedule: "FRI 11:05AM – 11:35AM", description: "Grassroots station broadcasting in Pidgin English, covering news and social justice issues.", websiteUrl: "https://x.com/speedfm969" },
-  { name: "SUPER FM, BENIN", frequency: "88.1", schedule: "SUN 3:30PM – 4PM", description: "Family-oriented station promoting programs that inform, inspire, and foster positive family values.", websiteUrl: "https://superfm.online/ph/" },
-  { name: "INVICTA FM, KADUNA", frequency: "98.9", schedule: "SUN 5:30PM – 6PM", description: "Kaduna's premier station offering balanced news, current affairs, and entertainment programming.", websiteUrl: "https://onlineradiobox.com/ng/invictafm/" },
-  { name: "SUPER FM, IJEBU", frequency: "96.3", schedule: "SUN 9:30AM – 10AM", description: "Community station serving Ijebu with family programs, local news, and inspirational content.", websiteUrl: "https://www.superfm963.com/" },
-  { name: "DIAMOND FM, OSUN", frequency: "88.5", schedule: "WED 5:30PM – 6PM", description: "Urban contemporary station excelling in news dissemination, nation-building, and arts/culture.", websiteUrl: "https://www.facebook.com/Diamond885fm/" },
-  { name: "DIAMOND FM, KWARA", frequency: "88.7", schedule: "SUN 9:30AM – 10AM", description: "Contemporary station focusing on quality news, community discourse, and cultural programming.", websiteUrl: "https://www.facebook.com/Diamond887FM/" },
-  { name: "XL FM, AKWA IBOM", frequency: "106.9", schedule: "TUES 9:15PM – 9:45PM", description: "Akwa Ibom's vibrant station with urban music, entertainment news, and youth-focused content.", websiteUrl: "https://www.facebook.com/xl1069fm/" },
-  { name: "ROYAL FM, ILORIN", frequency: "95.1", schedule: "WED 6:30PM – 7PM", description: "General interest station providing news, talk, and music as a primary voice in Kwara region.", websiteUrl: "http://www.royalfm.net" },
-  { name: "ROYAL FM, KADUNA", frequency: "93.3", schedule: "WED 6:30PM – 7PM", description: "Kaduna-based station offering diverse programming including news, talk shows, and entertainment.", websiteUrl: "https://royalfm933.net.ng/" },
-  { name: "HERITAGE FM, AKWA IBOM", frequency: "104.9", schedule: "FRI 6:30PM – 7PM", description: "Cultural heritage station celebrating Akwa Ibom traditions while delivering news and entertainment.", websiteUrl: "https://www.facebook.com/HeritageRadio104.9/" },
-  { name: "INSPIRATION FM, UYO", frequency: "105.9", schedule: "SUN 4PM – 4:30PM", description: "Family-focused station dedicated to positive, uplifting content, gospel music, and lifestyle talk.", websiteUrl: "https://inspirationfm.ng/" },
-  { name: "SPARKLING FM, CALABAR", frequency: "92.3", schedule: "SUN 9AM – 9:30AM", description: "Urban contemporary music and entertainment news station serving the Calabar metropolis.", websiteUrl: "https://sparkling923fm.com/" },
-  { name: "SUPER FM, PORTHARCOURT", frequency: "93.3", schedule: "SUN 10AM – 10:30AM", description: "Port Harcourt's family station promoting positive values through informative and inspiring programs.", websiteUrl: "https://superfm.online/station/?id=superfm933" },
-  { name: "HARVEST FM, MAKURDI", frequency: "103.5", schedule: "TUES 10AM – 10:30AM", description: "Agricultural and community station focusing on farming, rural development, and local news.", websiteUrl: "https://twitter.com/harvest1035fm" },
-]
-
-const ghanaStations: RadioStation[] = [
-  { name: "ATL FM, CAPE COAST", frequency: "100.5", schedule: "TUES 12:30PM – 1PM", description: "University of Cape Coast's official voice providing scholarly broadcasting, authentic news, and educational talks.", websiteUrl: "https://atlfmnews.com/" },
-  { name: "BISHARA FM, RAMALE", frequency: "97.7", schedule: "WED 9AM – 9:30AM", description: "Northern region station focusing on community development, local news, and diverse cultural programming.", websiteUrl: "https://www.facebook.com/BisharaRadio/" },
-  { name: "CLASSIC FM, TECHIMAN", frequency: "91.9", schedule: "SUN 10AM – 10:30AM", description: "Prominent Bono East region station focusing on news, agriculture, and local commerce.", websiteUrl: "https://www.facebook.com/classic91.9fmtechiman/" },
-  { name: "SWEET MELODIES FM, ACCRA", frequency: "94.3", schedule: "SAT 7:30AM – 8AM", description: "Christian-themed station focusing on uplifting gospel music, sermons, and spiritual growth programs.", websiteUrl: "https://www.sweetmelodiesfm.com/" },
-  { name: "GREENA, SUNYANI", frequency: "95.9", schedule: "FRI 7PM – 7:30PM", description: "Commercial station focusing on news, sports, and entertainment for the Sunyani municipality.", websiteUrl: "https://www.facebook.com/Greena95.9fm/" },
-  { name: "LOVE FM, KUMASI", frequency: "99.5", schedule: "TUES 5:15AM – 5:45AM", description: "Multimedia Group station with adult contemporary music, social issues, and family-oriented talk shows.", websiteUrl: "https://onlineradiobox.com/gh/luv/" },
-  { name: "SWISS FM, HO", frequency: "93.7", schedule: "WED 12:30PM – 1PM", description: "Volta Region's community station delivering local news, cultural programs, and entertainment.", websiteUrl: "https://www.facebook.com/swiss93.7fm/" },
-  { name: "WORD FM, BOLGATANGA", frequency: "88.3", schedule: "TUES 7PM – 7:30PM", description: "Upper East Region station promoting faith-based content, community news, and local development.", websiteUrl: "https://www.facebook.com/wordfm88.3/" },
-  { name: "FOX FM, KUMASI", frequency: "97.6", schedule: "SUN 5PM – 5:30PM", description: "Popular commercial station known for robust news coverage, sports, and high-energy morning shows.", websiteUrl: "https://zeno.fm/radio/fox-97-9-fm/" },
-  { name: "HITZ FM, KUMASI", frequency: "97.9", schedule: "WED 4:30AM – 5AM", description: "Youth-centric station focusing on the latest hits, entertainment news, and pop culture.", websiteUrl: "https://ghana-radio.com/12-hitz-fm.html" },
-  { name: "ANGEL FM, KUMASI", frequency: "96.1", schedule: "SAT 8:20PM – 8:50PM", description: "High-impact commercial station focusing on socio-political talk, local news, and diverse entertainment.", websiteUrl: "https://thenonstopradio.com/radio/angel_fm_96_1_gh" },
-]
 
 const getLinkInfo = (url: string) => {
   if (url.includes('facebook.com')) {
@@ -78,53 +36,82 @@ const getLinkInfo = (url: string) => {
   return { icon: Globe, label: 'Website' }
 }
 
-const StationCard = ({ station, variant }: { station: RadioStation; variant: 'nigeria' | 'ghana' }) => {
+const StationCard = ({ 
+  station, 
+  variant,
+  isHighlighted,
+  stationRef
+}: { 
+  station: RadioStation
+  variant: 'nigeria' | 'ghana'
+  isHighlighted: boolean
+  stationRef?: React.RefObject<HTMLDivElement>
+}) => {
   const linkInfo = station.websiteUrl ? getLinkInfo(station.websiteUrl) : null
   const LinkIcon = linkInfo?.icon
   
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-      <CardContent className="p-0">
-        <div className={`px-4 py-3 ${
-          variant === 'nigeria' 
-            ? 'bg-gradient-to-r from-amber-500 to-orange-500' 
-            : 'bg-gradient-to-r from-emerald-500 to-teal-500'
-        }`}>
-          <div className="flex items-center justify-between">
-            <span className="text-white font-bold text-lg">{station.frequency} FM</span>
-            <RadioIcon className="h-5 w-5 text-white" />
+    <div ref={stationRef}>
+      <Card className={cn(
+        "overflow-hidden transition-all duration-500",
+        isHighlighted 
+          ? "ring-4 ring-primary shadow-2xl scale-[1.02] z-10" 
+          : "hover:shadow-lg"
+      )}>
+        <CardContent className="p-0">
+          <div className={cn(
+            "px-4 py-3",
+            variant === 'nigeria' 
+              ? 'bg-gradient-to-r from-amber-500 to-orange-500' 
+              : 'bg-gradient-to-r from-emerald-500 to-teal-500'
+          )}>
+            <div className="flex items-center justify-between">
+              <span className="text-white font-bold text-lg">{station.frequency} FM</span>
+              <div className="flex items-center gap-2">
+                {isHighlighted && (
+                  <span className="bg-white/20 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Navigation className="h-3 w-3" />
+                    Closest
+                  </span>
+                )}
+                <RadioIcon className="h-5 w-5 text-white" />
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
-            <MapPin className={`h-4 w-4 flex-shrink-0 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
-            {station.name}
-          </h3>
-          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-            {station.description}
-          </p>
-          <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
-            <Clock className="h-4 w-4" />
-            <span>{station.schedule}</span>
+          <div className={cn(
+            "p-4",
+            isHighlighted && "bg-primary/5"
+          )}>
+            <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
+              <MapPin className={`h-4 w-4 flex-shrink-0 ${variant === 'nigeria' ? 'text-amber-600' : 'text-emerald-600'}`} />
+              {station.name}
+            </h3>
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              {station.description}
+            </p>
+            <div className="flex items-center gap-2 text-muted-foreground text-sm mb-3">
+              <Clock className="h-4 w-4" />
+              <span>{station.schedule}</span>
+            </div>
+            {station.websiteUrl && LinkIcon && (
+              <a 
+                href={station.websiteUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
+                  variant === 'nigeria' 
+                    ? 'text-amber-600 hover:text-amber-700' 
+                    : 'text-emerald-600 hover:text-emerald-700'
+                }`}
+              >
+                <LinkIcon className="h-3.5 w-3.5" />
+                {linkInfo.label}
+              </a>
+            )}
           </div>
-          {station.websiteUrl && LinkIcon && (
-            <a 
-              href={station.websiteUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                variant === 'nigeria' 
-                  ? 'text-amber-600 hover:text-amber-700' 
-                  : 'text-emerald-600 hover:text-emerald-700'
-              }`}
-            >
-              <LinkIcon className="h-3.5 w-3.5" />
-              {linkInfo.label}
-            </a>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
@@ -132,12 +119,16 @@ const CountrySection = ({
   country, 
   stations, 
   flagEmoji,
-  variant
+  variant,
+  highlightedStationId,
+  highlightedStationRef
 }: { 
   country: string
   stations: RadioStation[]
   flagEmoji: string
   variant: 'nigeria' | 'ghana'
+  highlightedStationId: string | null
+  highlightedStationRef: React.RefObject<HTMLDivElement>
 }) => (
   <div className="mb-12">
     <div className="flex items-center gap-3 mb-6">
@@ -153,15 +144,21 @@ const CountrySection = ({
     </div>
     {stations.length > 0 ? (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {stations.map((station, index) => (
-          <StationCard key={index} station={station} variant={variant} />
+        {stations.map((station) => (
+          <StationCard 
+            key={station.id} 
+            station={station} 
+            variant={variant}
+            isHighlighted={station.id === highlightedStationId}
+            stationRef={station.id === highlightedStationId ? highlightedStationRef : undefined}
+          />
         ))}
       </div>
     ) : (
       <div className="bg-muted/50 rounded-lg p-8 text-center">
         <RadioIcon className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
         <p className="text-muted-foreground">
-          Coming soon! Stay tuned for radio stations in {country}.
+          No stations found matching your search criteria.
         </p>
       </div>
     )}
@@ -171,19 +168,45 @@ const CountrySection = ({
 const Radio = ({ onBack }: RadioProps) => {
   const [showOnlyWithLinks, setShowOnlyWithLinks] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedCountry, setSelectedCountry] = useState<string>("all")
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null)
+  const [open, setOpen] = useState(false)
   
-  const nigeriaRef = useRef<HTMLDivElement>(null)
-  const ghanaRef = useRef<HTMLDivElement>(null)
+  const highlightedStationRef = useRef<HTMLDivElement>(null)
 
-  // Scroll to country section when selected
-  useEffect(() => {
-    if (selectedCountry === "nigeria" && nigeriaRef.current) {
-      nigeriaRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
-    } else if (selectedCountry === "ghana" && ghanaRef.current) {
-      ghanaRef.current.scrollIntoView({ behavior: "smooth", block: "start" })
+  // Find closest station to selected country
+  const closestStation = useMemo(() => {
+    if (!selectedCountry) return null
+    
+    let closest: RadioStation | null = null
+    let minDistance = Infinity
+    
+    for (const station of radioStations) {
+      const distance = calculateDistance(
+        selectedCountry.lat,
+        selectedCountry.lng,
+        station.lat,
+        station.lng
+      )
+      if (distance < minDistance) {
+        minDistance = distance
+        closest = station
+      }
     }
+    
+    return closest
   }, [selectedCountry])
+
+  // Scroll to highlighted station when it changes
+  useEffect(() => {
+    if (closestStation && highlightedStationRef.current) {
+      setTimeout(() => {
+        highlightedStationRef.current?.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "center" 
+        })
+      }, 100)
+    }
+  }, [closestStation])
 
   const filterStations = (stations: RadioStation[]) => {
     return stations.filter(s => {
@@ -197,9 +220,6 @@ const Radio = ({ onBack }: RadioProps) => {
 
   const filteredNigeriaStations = filterStations(nigeriaStations)
   const filteredGhanaStations = filterStations(ghanaStations)
-  
-  const showNigeria = selectedCountry === "all" || selectedCountry === "nigeria"
-  const showGhana = selectedCountry === "all" || selectedCountry === "ghana"
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -240,20 +260,81 @@ const Radio = ({ onBack }: RadioProps) => {
       {/* Search and Filter */}
       <div className="px-4 pb-6 max-w-6xl mx-auto space-y-4">
         {/* Country Selector */}
-        <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-          <MapPinned className="h-5 w-5 text-primary" />
-          <Label className="text-sm font-medium">Find stations in:</Label>
-          <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-            <SelectTrigger className="w-[200px] bg-background">
-              <SelectValue placeholder="Select a country" />
-            </SelectTrigger>
-            <SelectContent className="bg-background border shadow-lg z-50">
-              <SelectItem value="all">All Countries</SelectItem>
-              <SelectItem value="nigeria">🇳🇬 Nigeria</SelectItem>
-              <SelectItem value="ghana">🇬🇭 Ghana</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+          <div className="flex items-center gap-2">
+            <MapPinned className="h-5 w-5 text-primary" />
+            <Label className="text-sm font-medium whitespace-nowrap">Find nearest station:</Label>
+          </div>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full sm:w-[300px] justify-between bg-background"
+              >
+                {selectedCountry ? (
+                  <span className="flex items-center gap-2">
+                    <span>{selectedCountry.flag}</span>
+                    <span>{selectedCountry.name}</span>
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">Select your country...</span>
+                )}
+                <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-0 bg-background border shadow-lg z-50" align="start">
+              <Command>
+                <CommandInput placeholder="Search countries..." />
+                <CommandList>
+                  <CommandEmpty>No country found.</CommandEmpty>
+                  <CommandGroup className="max-h-[300px] overflow-y-auto">
+                    {countries.map((country) => (
+                      <CommandItem
+                        key={country.code}
+                        value={country.name}
+                        onSelect={() => {
+                          setSelectedCountry(country)
+                          setOpen(false)
+                        }}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <span>{country.flag}</span>
+                        <span>{country.name}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          {selectedCountry && (
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setSelectedCountry(null)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Clear
+            </Button>
+          )}
         </div>
+
+        {/* Closest Station Info */}
+        {selectedCountry && closestStation && (
+          <div className="p-4 bg-primary/10 border border-primary/30 rounded-lg">
+            <div className="flex items-center gap-2 text-primary font-medium">
+              <Navigation className="h-4 w-4" />
+              <span>
+                Closest station to {selectedCountry.name}: <strong>{closestStation.name}</strong> ({closestStation.frequency} FM)
+              </span>
+            </div>
+            <p className="text-sm text-muted-foreground mt-1">
+              Located in {closestStation.country === 'nigeria' ? 'Nigeria 🇳🇬' : 'Ghana 🇬🇭'}
+            </p>
+          </div>
+        )}
 
         {/* Search Box */}
         <div className="relative">
@@ -283,32 +364,22 @@ const Radio = ({ onBack }: RadioProps) => {
 
       {/* Radio Stations by Country */}
       <div className="px-4 pb-8 max-w-6xl mx-auto">
-        {showNigeria && (
-          <div 
-            ref={nigeriaRef} 
-            className={`scroll-mt-4 transition-all duration-300 ${selectedCountry === "nigeria" ? "ring-2 ring-amber-500 ring-offset-4 rounded-lg" : ""}`}
-          >
-            <CountrySection 
-              country="Nigeria" 
-              stations={filteredNigeriaStations} 
-              flagEmoji="🇳🇬"
-              variant="nigeria"
-            />
-          </div>
-        )}
-        {showGhana && (
-          <div 
-            ref={ghanaRef} 
-            className={`scroll-mt-4 transition-all duration-300 ${selectedCountry === "ghana" ? "ring-2 ring-emerald-500 ring-offset-4 rounded-lg" : ""}`}
-          >
-            <CountrySection 
-              country="Ghana" 
-              stations={filteredGhanaStations} 
-              flagEmoji="🇬🇭"
-              variant="ghana"
-            />
-          </div>
-        )}
+        <CountrySection 
+          country="Nigeria" 
+          stations={filteredNigeriaStations} 
+          flagEmoji="🇳🇬"
+          variant="nigeria"
+          highlightedStationId={closestStation?.id || null}
+          highlightedStationRef={highlightedStationRef}
+        />
+        <CountrySection 
+          country="Ghana" 
+          stations={filteredGhanaStations} 
+          flagEmoji="🇬🇭"
+          variant="ghana"
+          highlightedStationId={closestStation?.id || null}
+          highlightedStationRef={highlightedStationRef}
+        />
       </div>
     </div>
   )
