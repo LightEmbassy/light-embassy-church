@@ -196,7 +196,7 @@ const Radio = ({ onBack }: RadioProps) => {
           <div className="flex items-center justify-center gap-3 mb-2">
             <RadioIcon className="h-8 w-8 text-white animate-pulse" />
             <h1 className="font-playfair text-2xl md:text-3xl font-bold text-white">
-              Radio in Your Area
+              Live Radio
             </h1>
             <RadioIcon className="h-8 w-8 text-white animate-pulse" />
           </div>
