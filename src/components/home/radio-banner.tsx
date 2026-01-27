@@ -14,7 +14,7 @@ export function RadioBanner({ onNavigate }: RadioBannerProps) {
         <div className="flex items-center justify-center gap-3 mb-1">
           <Radio className="h-6 w-6 text-white animate-pulse" />
           <h3 className="font-playfair text-xl md:text-2xl font-bold text-white">
-            Radio in Your Area
+            Live Radio
           </h3>
           <Radio className="h-6 w-6 text-white animate-pulse" />
         </div>
