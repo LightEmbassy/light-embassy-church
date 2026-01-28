@@ -163,7 +163,7 @@ export function WatchSection({ onBack }: WatchSectionProps) {
       >
         <CardContent className="p-0">
           {/* Thumbnail */}
-          <AspectRatio ratio={16 / 9} className="relative">
+          <AspectRatio ratio={16 / 9} className="relative bg-muted">
             {isGenerating ? (
               <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse flex items-center justify-center">
                 <div className="text-xs text-muted-foreground">Generating...</div>
