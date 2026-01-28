@@ -230,13 +230,15 @@ export function WatchSection({ onBack }: WatchSectionProps) {
   const VideoSkeleton = () => (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
-        <Skeleton className="aspect-video" />
-        <div className="p-4 space-y-2">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/2" />
-          <div className="flex justify-between mt-2">
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-8 w-8 rounded" />
+        <AspectRatio ratio={16 / 9}>
+          <Skeleton className="w-full h-full" />
+        </AspectRatio>
+        <div className="p-2 sm:p-3 space-y-1.5">
+          <Skeleton className="h-3 sm:h-4 w-full" />
+          <Skeleton className="h-3 sm:h-4 w-3/4" />
+          <div className="flex justify-between mt-1.5">
+            <Skeleton className="h-2.5 sm:h-3 w-16" />
+            <Skeleton className="h-6 w-6 rounded" />
           </div>
         </div>
       </CardContent>
