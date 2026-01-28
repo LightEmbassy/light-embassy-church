@@ -199,6 +199,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             <h3 className="font-inter font-semibold text-foreground line-clamp-2 text-xs sm:text-sm leading-tight">
               {video.title}
             </h3>
+            <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1 leading-relaxed">
+              {video.description}
+            </p>
             <div className="flex items-center justify-between gap-1 mt-1.5">
               <div className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground">
                 <Clock className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
