@@ -6,10 +6,12 @@ import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Play, Clock, ExternalLink, Share2, ArrowLeft, Search, X } from "lucide-react"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Play, Clock, ExternalLink, Share2, ArrowLeft, Search, X, History } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 import { useMediaHistory } from "@/hooks/useMediaHistory"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface VideoItem {
   id: string
@@ -18,6 +20,13 @@ interface VideoItem {
   thumbnail: string
   publishedAt: string
   embedId: string
+}
+
+interface RecentlyWatchedItem {
+  id: string
+  media_id: string
+  media_title: string
+  watched_at: string
 }
 
 interface WatchSectionProps {
@@ -29,12 +38,14 @@ const THUMBNAIL_CACHE_KEY = 'video_thumbnails_cache'
 export function WatchSection({ onBack }: WatchSectionProps) {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
   const [videos, setVideos] = useState<VideoItem[]>([])
+  const [recentlyWatched, setRecentlyWatched] = useState<RecentlyWatchedItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [thumbnailCache, setThumbnailCache] = useState<Record<string, string>>({})
   const [generatingThumbnails, setGeneratingThumbnails] = useState<Set<string>>(new Set())
   const { toast } = useToast()
   const { trackMedia } = useMediaHistory()
+  const { user } = useAuth()
 
   // Load cached thumbnails from localStorage
   useEffect(() => {
@@ -135,9 +146,38 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     }
   }
 
+  const fetchRecentlyWatched = async () => {
+    if (!user) return
+    
+    const { data, error } = await supabase
+      .from('media_history')
+      .select('id, media_id, media_title, watched_at')
+      .eq('user_id', user.id)
+      .eq('media_type', 'video')
+      .order('watched_at', { ascending: false })
+      .limit(10)
+    
+    if (!error && data) {
+      // Remove duplicates, keeping only the most recent watch of each video
+      const uniqueVideos = data.reduce((acc: RecentlyWatchedItem[], item) => {
+        if (!acc.find(v => v.media_id === item.media_id)) {
+          acc.push(item)
+        }
+        return acc
+      }, [])
+      setRecentlyWatched(uniqueVideos.slice(0, 6))
+    }
+  }
+
   useEffect(() => {
     fetchVideos()
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      fetchRecentlyWatched()
+    }
+  }, [user])
 
   const getYouTubeEmbedUrl = (embedId: string) => {
     return `https://www.youtube.com/embed/${embedId}?autoplay=1&rel=0`
@@ -150,6 +190,37 @@ export function WatchSection({ onBack }: WatchSectionProps) {
   const handlePlayVideo = (video: VideoItem) => {
     setPlayingVideo(video)
     trackMedia('video', video.id, video.title)
+    // Refresh recently watched after a short delay
+    setTimeout(() => fetchRecentlyWatched(), 1000)
+  }
+
+  const handlePlayFromHistory = (historyItem: RecentlyWatchedItem) => {
+    // Find the video in the videos list to get full details
+    const video = videos.find(v => v.id === historyItem.media_id)
+    if (video) {
+      handlePlayVideo(video)
+    } else {
+      // If video not in current list, create a minimal video object
+      // The embed ID is stored as the media_id
+      setPlayingVideo({
+        id: historyItem.media_id,
+        title: historyItem.media_title,
+        description: '',
+        thumbnail: `https://i.ytimg.com/vi/${historyItem.media_id}/mqdefault.jpg`,
+        publishedAt: '',
+        embedId: historyItem.media_id
+      })
+    }
+  }
+
+  // Get thumbnail for a recently watched video
+  const getHistoryThumbnail = (mediaId: string) => {
+    // Check if we have an AI-generated thumbnail
+    if (thumbnailCache[mediaId]) {
+      return thumbnailCache[mediaId]
+    }
+    // Fall back to YouTube thumbnail
+    return `https://i.ytimg.com/vi/${mediaId}/mqdefault.jpg`
   }
 
   const VideoCard = ({ video }: { video: VideoItem }) => {
@@ -300,6 +371,55 @@ export function WatchSection({ onBack }: WatchSectionProps) {
           </div>
         )}
       </div>
+
+      {/* Recently Watched Section */}
+      {user && recentlyWatched.length > 0 && !searchQuery && (
+        <div className="px-6 mt-4">
+          <div className="flex items-center gap-2 mb-3">
+            <History className="h-4 w-4 text-primary" />
+            <h2 className="font-inter font-semibold text-foreground text-sm">Recently Watched</h2>
+          </div>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-3 pb-3">
+              {recentlyWatched.map((item) => (
+                <Card 
+                  key={item.id}
+                  className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden flex-shrink-0 w-32 sm:w-40"
+                  onClick={() => handlePlayFromHistory(item)}
+                >
+                  <CardContent className="p-0">
+                    <AspectRatio ratio={16 / 9} className="relative bg-muted">
+                      <img
+                        src={getHistoryThumbnail(item.media_id)}
+                        alt={item.media_title}
+                        className="object-cover w-full h-full"
+                        onError={(e) => {
+                          const target = e.currentTarget
+                          if (!target.src.includes('hqdefault')) {
+                            target.src = `https://i.ytimg.com/vi/${item.media_id}/hqdefault.jpg`
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-white/95 rounded-full p-1.5 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
+                          <Play className="h-3 w-3 text-primary fill-primary" />
+                        </div>
+                      </div>
+                    </AspectRatio>
+                    <div className="p-1.5 sm:p-2">
+                      <h3 className="font-inter font-medium text-foreground line-clamp-2 text-[10px] sm:text-xs leading-tight">
+                        {item.media_title}
+                      </h3>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </div>
+      )}
 
       {/* Video Grid */}
       <div className="px-6 mt-4">
