@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { supabase } from "@/integrations/supabase/client"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Trophy, Medal, Award, Star, Crown, Play, Headphones, Calendar, Sparkles, ArrowLeft } from "lucide-react"
+import { Trophy, Medal, Award, Star, Crown, Play, Headphones, Calendar, Sparkles, ArrowLeft, LogIn, UserPlus } from "lucide-react"
 import { format } from "date-fns"
 import { Confetti } from "@/components/quiz/Confetti"
 import { AchievementBadges } from "@/components/progress/AchievementBadges"
@@ -105,9 +105,34 @@ export default function Progress({ onBack }: ProgressProps) {
             <h1 className="font-playfair text-3xl font-bold text-white mb-4">
               My Progress
             </h1>
-            <p className="text-white/80 text-lg">
+            <p className="text-white/80 text-lg mb-8">
               Sign in to track your spiritual journey and earn achievement badges!
             </p>
+            
+            {/* Auth Prompt Box */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-xl p-6 border border-white/20 max-w-md mx-auto">
+              <div className="flex items-center justify-center gap-2 text-white mb-4">
+                <Sparkles className="h-5 w-5 text-yellow-300" />
+                <span className="font-medium">Join the community to get started</span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button 
+                  variant="outline" 
+                  onClick={onBack}
+                  className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+                <Button 
+                  onClick={onBack}
+                  className="gap-2 bg-yellow-400 text-yellow-900 hover:bg-yellow-300 font-semibold"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Create Account
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

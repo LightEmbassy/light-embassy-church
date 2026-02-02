@@ -1,7 +1,8 @@
-import { Trophy, Flame, Play, Headphones, Sparkles, ChevronRight, Star } from "lucide-react"
+import { Trophy, Flame, Play, Headphones, Sparkles, ChevronRight, Star, LogIn, UserPlus } from "lucide-react"
 import { useUserStats } from "@/hooks/useUserStats"
 import { useAuth } from "@/contexts/AuthContext"
 import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button"
 
 interface ProgressBannerProps {
   onNavigate?: (tab: string) => void
@@ -11,26 +12,54 @@ export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
   const { user } = useAuth()
   const { stats, loading } = useUserStats()
 
-  // For non-logged-in users, show a teaser
+  // For non-logged-in users, show auth prompt
   if (!user) {
     return (
-      <button
-        onClick={() => onNavigate?.('progress')}
-        className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 py-6 px-4 hover:from-purple-700 hover:via-pink-600 hover:to-rose-600 transition-all cursor-pointer"
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 mb-1">
-            <Trophy className="h-6 w-6 text-yellow-300 animate-bounce" />
-            <h3 className="font-playfair text-xl md:text-2xl font-bold text-white">
-              Track Your Spiritual Journey
-            </h3>
-            <Trophy className="h-6 w-6 text-yellow-300 animate-bounce" />
+      <div className="w-full bg-gradient-to-r from-purple-600 via-pink-500 to-rose-500 py-6 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-4">
+            <div className="flex items-center justify-center gap-3 mb-2">
+              <Trophy className="h-6 w-6 text-yellow-300 animate-bounce" />
+              <h3 className="font-playfair text-xl md:text-2xl font-bold text-white">
+                Track Your Spiritual Journey
+              </h3>
+              <Trophy className="h-6 w-6 text-yellow-300 animate-bounce" />
+            </div>
+            <p className="text-white/90 text-sm mb-4">
+              Sign in to earn badges, track streaks & celebrate milestones!
+            </p>
           </div>
-          <p className="text-white/90 text-sm">
-            Sign in to earn badges, track streaks & celebrate milestones!
-          </p>
+          
+          {/* Auth Prompt Box */}
+          <div className="bg-white/15 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <div className="flex items-center gap-2 text-white">
+                <Sparkles className="h-5 w-5 text-yellow-300" />
+                <span className="font-medium">Join the community</span>
+              </div>
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => onNavigate?.('auth')}
+                  className="gap-1.5 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white"
+                >
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={() => onNavigate?.('auth')}
+                  className="gap-1.5 bg-yellow-400 text-yellow-900 hover:bg-yellow-300 font-semibold"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Register
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
-      </button>
+      </div>
     )
   }
 
