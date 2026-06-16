@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Play, BookOpen, Heart, MessageCircle, Sparkles, Headphones } from 'lucide-react'
+import { Play, BookOpen, Heart, MessageCircle, Sparkles, Headphones, type LucideIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface IntroVideoProps {
@@ -250,12 +250,12 @@ function SceneFeature({
   imageClass,
   secondaryIcon: Secondary,
 }: {
-  Icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  Icon: LucideIcon
   eyebrow: string
   title: string
   body: string
   imageClass: string
-  secondaryIcon?: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  secondaryIcon?: LucideIcon
 }) {
   return (
     <div className="flex flex-col items-center text-center px-6">
