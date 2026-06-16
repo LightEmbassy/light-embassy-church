@@ -13,7 +13,6 @@ interface QuizQuestion {
   id: string
   question: string
   options: string[]
-  correct_answer: number
   podcast_url?: string
   podcast_title?: string
 }
@@ -28,6 +27,7 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({})
   const [showResults, setShowResults] = useState(false)
   const [score, setScore] = useState(0)
+  const [correctMap, setCorrectMap] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [quizStarted, setQuizStarted] = useState(false)
 
@@ -39,7 +39,7 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
     try {
       const { data, error } = await supabase
         .from('quiz_questions')
-        .select('*')
+        .select('id, question, options, podcast_url, podcast_title, order_number')
         .order('order_number')
 
       if (error) throw error
@@ -83,15 +83,25 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
     }
   }
 
-  const calculateScore = () => {
-    let correct = 0
-    questions.forEach((question, index) => {
-      if (selectedAnswers[index] === question.correct_answer) {
-        correct++
-      }
-    })
-    setScore(correct)
-    setShowResults(true)
+  const calculateScore = async () => {
+    try {
+      const responses = questions.map((q, idx) => ({
+        question_id: q.id,
+        selected_answer: selectedAnswers[idx],
+      }))
+      const { data, error } = await supabase.functions.invoke('grade-quiz', {
+        body: { responses, save: false, quiz_type: 'podcast' },
+      })
+      if (error) throw error
+      const map: Record<string, number> = {}
+      for (const r of data.results) map[r.question_id] = r.correct_answer
+      setCorrectMap(map)
+      setScore(data.score)
+    } catch (e) {
+      console.error('Error grading quiz:', e)
+    } finally {
+      setShowResults(true)
+    }
   }
 
   const handleRestart = () => {
@@ -235,7 +245,8 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">Your Answers:</h3>
                 {questions.map((question, index) => {
-                  const isCorrect = selectedAnswers[index] === question.correct_answer
+                  const correctAnswer = correctMap[question.id]
+                  const isCorrect = selectedAnswers[index] === correctAnswer
                   return (
                     <div key={question.id} className={`p-3 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/20' : 'bg-red-50 dark:bg-red-950/20'}`}>
                       <div className="flex items-start gap-2">
@@ -246,9 +257,9 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground line-clamp-2">{question.question}</p>
-                          {!isCorrect && (
+                          {!isCorrect && correctAnswer !== undefined && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              Correct: {question.options[question.correct_answer]}
+                              Correct: {question.options[correctAnswer]}
                             </p>
                           )}
                           {question.podcast_url && (
