@@ -7,7 +7,9 @@ import { QuickActions } from "@/components/home/quick-actions"
 import { DailyInspiration } from "@/components/home/daily-inspiration"
 import { LatestConversations } from "@/components/home/latest-conversations"
 import { WelcomeScreen } from "@/components/welcome/WelcomeScreen"
+import { IntroVideo } from "@/components/welcome/IntroVideo"
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser"
+import { useIntroVideo } from "@/hooks/useIntroVideo"
 
 interface HomeProps {
   onNavigate?: (tab: string) => void
@@ -15,9 +17,14 @@ interface HomeProps {
 
 export default function Home({ onNavigate }: HomeProps) {
   const { isFirstTime, isLoading, markWelcomeSeen } = useFirstTimeUser()
+  const { hasSeen: hasSeenIntro, markSeen: markIntroSeen } = useIntroVideo()
 
-  if (isLoading) {
+  if (isLoading || hasSeenIntro === null) {
     return null
+  }
+
+  if (!hasSeenIntro) {
+    return <IntroVideo onComplete={markIntroSeen} />
   }
 
   if (isFirstTime) {
