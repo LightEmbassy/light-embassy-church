@@ -1,4 +1,6 @@
 import { useToast } from "@/hooks/use-toast"
+import { Share } from "@capacitor/share"
+import { isNative } from "@/lib/native"
 
 export interface ShareContent {
   title: string
@@ -64,13 +66,28 @@ export const useSharing = () => {
   }
 
   const shareViaWebAPI = async (content: ShareContent) => {
+    const payload = {
+      title: content.title,
+      text: content.text,
+      url: content.url || window.location.href,
+      dialogTitle: content.title,
+    }
+
+    if (isNative()) {
+      try {
+        await Share.share(payload)
+        return
+      } catch (error: any) {
+        if (error?.message && !/cancel/i.test(error.message)) {
+          console.error('Native share error:', error)
+        }
+        return
+      }
+    }
+
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: content.title,
-          text: content.text,
-          url: content.url || window.location.href,
-        })
+        await navigator.share(payload)
       } catch (error) {
         console.error('Error sharing:', error)
         toast({
