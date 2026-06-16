@@ -1,0 +1,14 @@
+# Light Embassy Church
+
+> A worldwide Christian church offering followers a unified space for worship, learning, prayer, and spiritual community.
+
+Light Embassy is a global community of followers of Christ revealing the Bible, discovering truth, and living the best life. The app provides sermons, podcasts, Bible study, prayer wall, community forum, and live radio.
+
+## Pages
+
+- [Home](/): Welcome, daily inspiration, and quick access to all features.
+- [Watch](/watch): Sermons, teachings, and video content from Light Embassy.
+- [Learn](/learn): Bible study tools, scripture reading, and saved verses.
+- [Podcast](/podcast): Audio teachings and episodes with quizzes.
+- [Prayers](/prayers): Submit prayer requests and pray for the community.
+- [Messages](/messages): Conversations with the Light Embassy team.
