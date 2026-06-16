@@ -172,7 +172,6 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
           conversation_id: conversationId,
           sender_id: user.id,
           content: newMessage.trim(),
-          is_from_staff: false,
         })
 
       if (error) throw error
