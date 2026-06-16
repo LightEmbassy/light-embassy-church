@@ -13,7 +13,6 @@ interface QuizQuestion {
   id: string
   question: string
   options: string[]
-  correct_answer: number
   order_number: number
   podcast_url?: string
   podcast_title?: string
@@ -29,6 +28,7 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: number }>({})
   const [showResults, setShowResults] = useState(false)
   const [score, setScore] = useState(0)
+  const [correctMap, setCorrectMap] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const { toast } = useToast()
@@ -41,7 +41,8 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
     try {
       const { data, error } = await supabase
         .from('quiz_questions')
-        .select('*')
+        .select('id, question, options, order_number, podcast_url, podcast_title')
+
 
       if (error) throw error
 
@@ -89,51 +90,27 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
   const submitQuiz = async () => {
     setSubmitting(true)
     try {
-      const user = (await supabase.auth.getUser()).data.user
-      if (!user) throw new Error('No user found')
+      const responses = questions.map(q => ({
+        question_id: q.id,
+        selected_answer: selectedAnswers[q.id],
+      }))
 
-      let correctAnswers = 0
+      const { data, error } = await supabase.functions.invoke('grade-quiz', {
+        body: { responses, save: true, quiz_type: 'signup' },
+      })
 
-      // Submit individual responses
-      for (const question of questions) {
-        const selectedAnswer = selectedAnswers[question.id]
-        const isCorrect = selectedAnswer === question.correct_answer
-        
-        if (isCorrect) correctAnswers++
+      if (error) throw error
 
-        await supabase
-          .from('user_quiz_responses')
-          .insert({
-            user_id: user.id,
-            question_id: question.id,
-            selected_answer: selectedAnswer,
-            is_correct: isCorrect
-          })
-      }
-
-      // Submit completion record
-      await supabase
-        .from('user_quiz_completion')
-        .insert({
-          user_id: user.id,
-          score: correctAnswers,
-          total_questions: questions.length
-        } as any)
-
-      // Update profile to mark quiz as completed
-      await supabase
-        .from('profiles')
-        .update({ quiz_completed: true })
-        .eq('user_id', user.id)
-
-      setScore(correctAnswers)
+      const map: Record<string, number> = {}
+      for (const r of data.results) map[r.question_id] = r.correct_answer
+      setCorrectMap(map)
+      setScore(data.score)
       setShowResults(true)
 
       toast({
         title: "Quiz Complete!",
-        description: `You scored ${correctAnswers} out of ${questions.length}`
+        description: `You scored ${data.score} out of ${data.total}`
       })
-
     } catch (error) {
       console.error('Error submitting quiz:', error)
       toast({
@@ -209,7 +186,7 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
               <div className="space-y-2">
                 {questions.map((question, index) => {
                   const selectedAnswer = selectedAnswers[question.id]
-                  const isCorrect = selectedAnswer === question.correct_answer
+                  const isCorrect = selectedAnswer === correctMap[question.id]
                   
                   return (
                     <div key={question.id} className="flex items-center justify-between gap-3 p-3 bg-background/50 rounded-lg">
