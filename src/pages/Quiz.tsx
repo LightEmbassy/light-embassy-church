@@ -14,7 +14,6 @@ interface QuizQuestion {
   id: string
   question: string
   options: string[]
-  correct_answer: number
   order_number: number
   podcast_url?: string
   podcast_title?: string
@@ -30,6 +29,7 @@ export default function Quiz({ onBack }: QuizPageProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: number }>({})
   const [showResults, setShowResults] = useState(false)
   const [score, setScore] = useState(0)
+  const [correctMap, setCorrectMap] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
   const [quizStarted, setQuizStarted] = useState(false)
   const [email, setEmail] = useState('')
@@ -43,7 +43,7 @@ export default function Quiz({ onBack }: QuizPageProps) {
     try {
       const { data, error } = await supabase
         .from('quiz_questions')
-        .select('*')
+        .select('id, question, options, order_number, podcast_url, podcast_title')
 
       if (error) throw error
 
@@ -83,16 +83,26 @@ export default function Quiz({ onBack }: QuizPageProps) {
     }
   }
 
-  const calculateScore = () => {
-    let correctAnswers = 0
-    for (const question of questions) {
-      const selectedAnswer = selectedAnswers[question.id]
-      if (selectedAnswer === question.correct_answer) {
-        correctAnswers++
-      }
+  const calculateScore = async () => {
+    try {
+      const responses = questions.map(q => ({
+        question_id: q.id,
+        selected_answer: selectedAnswers[q.id],
+      }))
+      const { data, error } = await supabase.functions.invoke('grade-quiz', {
+        body: { responses, save: false, quiz_type: 'bible' },
+      })
+      if (error) throw error
+      const map: Record<string, number> = {}
+      for (const r of data.results) map[r.question_id] = r.correct_answer
+      setCorrectMap(map)
+      setScore(data.score)
+    } catch (e) {
+      console.error('Error grading quiz:', e)
+      toast.error('Failed to grade quiz')
+    } finally {
+      setShowResults(true)
     }
-    setScore(correctAnswers)
-    setShowResults(true)
   }
 
   const handleRestart = () => {
@@ -275,7 +285,8 @@ export default function Quiz({ onBack }: QuizPageProps) {
               <div className="space-y-2">
                 {questions.map((question, index) => {
                   const selectedAnswer = selectedAnswers[question.id]
-                  const isCorrect = selectedAnswer === question.correct_answer
+                  const correctAnswer = correctMap[question.id]
+                  const isCorrect = selectedAnswer === correctAnswer
                   
                   return (
                     <div key={question.id} className="p-4 bg-background/50 rounded-lg space-y-3">
@@ -287,9 +298,9 @@ export default function Quiz({ onBack }: QuizPageProps) {
                         )}
                         <div className="flex-1">
                           <p className="text-sm font-medium">Q{index + 1}: {question.question}</p>
-                          {!isCorrect && (
+                          {!isCorrect && correctAnswer !== undefined && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              Correct answer: {question.options[question.correct_answer]}
+                              Correct answer: {question.options[correctAnswer]}
                             </p>
                           )}
                         </div>

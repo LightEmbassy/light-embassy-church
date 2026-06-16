@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.fetch-youtube-videos]
 verify_jwt = false
+
+[functions.grade-quiz]
+verify_jwt = false
