@@ -15,6 +15,7 @@ import Podcast from "./pages/Podcast";
 import Learn from "./pages/Learn";
 import Messages from "./pages/Messages";
 import Privacy from "./pages/Privacy";
+import DeleteAccount from "./pages/DeleteAccount";
 import { AdminRoute } from "./components/auth/AdminRoute";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/learn" element={<Learn />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/privacy" element={<Privacy />} />
+              <Route path="/delete-account" element={<DeleteAccount />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
