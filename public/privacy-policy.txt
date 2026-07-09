@@ -48,8 +48,10 @@ We do not sell personal data. We share information with trusted service provider
 5. INTERNATIONAL DATA TRANSFERS
 Some service providers may process data outside the EEA. We rely on appropriate safeguards such as Standard Contractual Clauses approved under GDPR.
 
-6. DATA RETENTION
-We keep personal data only as long as necessary to provide the service or as required by law. Account information is retained while the account is active. After account deletion, personal data is removed or anonymized within a reasonable period, typically 30 days, except where retention is necessary for legal, security, or fraud-prevention purposes.
+6. DATA RETENTION AND DELETION
+We keep personal data only as long as necessary to provide the service or as required by law. Account information is retained while the account is active.
+
+How to request deletion: To delete your account and associated personal data, contact us at pete@lightembassy.org with the subject line "Account Deletion Request." We will verify your identity and process the deletion within 30 days. After deletion, your personal data will be removed or anonymized, except where retention is necessary for legal, security, or fraud-prevention purposes. Anonymous prayer requests and forum posts may remain visible after account deletion.
 
 7. YOUR RIGHTS
 Depending on your location, you may have rights to access, rectify, erase, restrict, port, object to, or withdraw consent for processing of your personal data. To exercise these rights, contact pete@lightembassy.org.
