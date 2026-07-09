@@ -1,4 +1,5 @@
 import { Trophy, Flame, Play, Headphones, Sparkles, ChevronRight, Star, LogIn, UserPlus } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { useUserStats } from "@/hooks/useUserStats"
 import { useAuth } from "@/contexts/AuthContext"
 import { Progress } from "@/components/ui/progress"
