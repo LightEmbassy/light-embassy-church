@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Settings, Sparkles, LogIn, LogOut, User } from 'lucide-react'
+import { Settings, Sparkles, LogIn, LogOut, User, Shield } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
