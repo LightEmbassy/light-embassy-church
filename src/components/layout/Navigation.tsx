@@ -45,6 +45,12 @@ export function Navigation() {
               <Sparkles className="mr-2 h-4 w-4" />
               <span>Show Welcome Screen</span>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link to="/privacy" className="flex items-center">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Privacy Policy</span>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             {user ? (
               <>
