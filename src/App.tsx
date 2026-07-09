@@ -14,6 +14,7 @@ import Prayers from "./pages/Prayers";
 import Podcast from "./pages/Podcast";
 import Learn from "./pages/Learn";
 import Messages from "./pages/Messages";
+import Privacy from "./pages/Privacy";
 import { AdminRoute } from "./components/auth/AdminRoute";
 
 const queryClient = new QueryClient();

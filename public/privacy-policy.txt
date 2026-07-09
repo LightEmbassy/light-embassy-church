@@ -1,0 +1,75 @@
+PRIVACY POLICY
+Light Embassy App
+
+Effective date: July 9, 2026
+
+Data controller:
+Christ in you (Light Embassy Church)
+Sunnanväg 18L, 222 26 Lund, Sweden
+Email: pete@lightembassy.org
+
+This Privacy Policy explains how Christ in you (Light Embassy Church) collects, uses, and protects personal information in the Light Embassy mobile and web applications.
+
+1. INFORMATION WE COLLECT
+We collect information you provide directly, data generated through your use of the app, and limited technical data necessary to operate the service.
+
+- Account information: email address, password (stored in hashed form), and username.
+- Profile information: optional details such as display name or profile photo.
+- Prayer requests: titles, descriptions, categories, and optional contact details if you request pastoral counselling. Anonymous submissions are allowed.
+- Community content: forum posts, comments, messages sent through the in-app messaging feature, and chatbot conversations.
+- Activity data: media history, podcast and video views, quiz responses and scores, achievements, streaks, and feature usage.
+- Device and technical data: push notification token, device type, operating system, app version, and crash logs.
+- Location data: approximate location only when explicitly allowed, used to find nearby radio stations.
+- Camera/photos: images you choose to upload using the device camera or photo library.
+
+2. HOW WE USE YOUR INFORMATION
+We use personal data to:
+- Create and manage your account.
+- Deliver sermons, podcasts, Bible study materials, and live radio.
+- Process prayer requests and community forum posts.
+- Enable messaging with the Light Embassy team.
+- Track progress, streaks, achievements, and quiz history.
+- Send push notifications, devotional reminders, and service updates.
+- Respond to pastoral counselling requests.
+- Maintain security, prevent abuse, and troubleshoot issues.
+
+3. LEGAL BASIS FOR PROCESSING (GDPR)
+For users in the EEA and UK, we process personal data on the bases of: performance of a contract, consent for optional features, legitimate interests in security and improvement, and legal obligations.
+
+4. DATA SHARING AND THIRD PARTIES
+We do not sell personal data. We share information with trusted service providers and when legally necessary, including:
+- Lovable Cloud / backend services for hosting and data storage.
+- Google for sign-in authentication and YouTube video content.
+- Podbean for podcast streaming.
+- Mapbox for maps and radio station location features.
+- Analytics and crash reporting providers.
+- Law enforcement or regulators when required by law.
+
+5. INTERNATIONAL DATA TRANSFERS
+Some service providers may process data outside the EEA. We rely on appropriate safeguards such as Standard Contractual Clauses approved under GDPR.
+
+6. DATA RETENTION
+We keep personal data only as long as necessary to provide the service or as required by law. Account information is retained while the account is active. After account deletion, personal data is removed or anonymized within a reasonable period, typically 30 days, except where retention is necessary for legal, security, or fraud-prevention purposes.
+
+7. YOUR RIGHTS
+Depending on your location, you may have rights to access, rectify, erase, restrict, port, object to, or withdraw consent for processing of your personal data. To exercise these rights, contact pete@lightembassy.org.
+
+8. CALIFORNIA PRIVACY RIGHTS (CCPA/CPRA)
+California residents may request to know, delete, or correct personal information. We do not sell or share personal information for cross-context behavioral advertising. We do not discriminate against users for exercising their privacy rights.
+
+9. CHILDREN'S PRIVACY
+Light Embassy is family-friendly, and children are welcome under appropriate supervision. We do not knowingly collect personal data from children under 13 without verifiable parental consent. If you believe we have collected information from a child under 13 without consent, contact pete@lightembassy.org and we will promptly delete it.
+
+10. COOKIES AND SIMILAR TECHNOLOGIES
+Our web app may use cookies and similar technologies for sign-in, preferences, and usage understanding. Mobile apps use equivalent local storage and device identifiers.
+
+11. SECURITY
+We implement appropriate technical and organizational measures to protect personal data, including encryption in transit, access controls, hashed passwords, and regular security reviews. No online service can guarantee absolute security.
+
+12. CHANGES TO THIS POLICY
+We may update this Privacy Policy. Material changes will be notified through the app or by email. Continued use after changes constitutes acceptance.
+
+13. CONTACT US
+Christ in you (Light Embassy Church)
+Sunnanväg 18L, 222 26 Lund, Sweden
+Email: pete@lightembassy.org
