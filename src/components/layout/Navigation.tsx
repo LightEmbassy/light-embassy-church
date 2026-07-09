@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Settings, Sparkles, LogIn, LogOut, User } from 'lucide-react'
+import { Settings, Sparkles, LogIn, LogOut, User, Shield } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,6 +44,12 @@ export function Navigation() {
             <DropdownMenuItem onClick={handleShowWelcome} className="cursor-pointer">
               <Sparkles className="mr-2 h-4 w-4" />
               <span>Show Welcome Screen</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link to="/privacy" className="flex items-center">
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Privacy Policy</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {user ? (
