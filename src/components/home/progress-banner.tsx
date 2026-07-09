@@ -44,7 +44,7 @@ export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => onNavigate?.('auth')}
+                  onClick={goToAuth}
                   className="gap-1.5 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white"
                 >
                   <LogIn className="h-4 w-4" />
@@ -52,7 +52,7 @@ export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
                 </Button>
                 <Button 
                   size="sm" 
-                  onClick={() => onNavigate?.('auth')}
+                  onClick={goToAuth}
                   className="gap-1.5 bg-yellow-400 text-yellow-900 hover:bg-yellow-300 font-semibold"
                 >
                   <UserPlus className="h-4 w-4" />
