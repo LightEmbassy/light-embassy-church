@@ -12,6 +12,8 @@ interface ProgressBannerProps {
 export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
   const { user } = useAuth()
   const { stats, loading } = useUserStats()
+  const navigate = useNavigate()
+  const goToAuth = () => navigate('/auth')
 
   // For non-logged-in users, show auth prompt
   if (!user) {
