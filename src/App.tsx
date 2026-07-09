@@ -35,6 +35,7 @@ const App = () => (
               <Route path="/podcast" element={<Podcast />} />
               <Route path="/learn" element={<Learn />} />
               <Route path="/messages" element={<Messages />} />
+              <Route path="/privacy" element={<Privacy />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
