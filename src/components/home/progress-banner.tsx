@@ -1,4 +1,5 @@
 import { Trophy, Flame, Play, Headphones, Sparkles, ChevronRight, Star, LogIn, UserPlus } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { useUserStats } from "@/hooks/useUserStats"
 import { useAuth } from "@/contexts/AuthContext"
 import { Progress } from "@/components/ui/progress"
@@ -11,6 +12,8 @@ interface ProgressBannerProps {
 export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
   const { user } = useAuth()
   const { stats, loading } = useUserStats()
+  const navigate = useNavigate()
+  const goToAuth = () => navigate('/auth')
 
   // For non-logged-in users, show auth prompt
   if (!user) {
@@ -41,7 +44,7 @@ export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={() => onNavigate?.('auth')}
+                  onClick={goToAuth}
                   className="gap-1.5 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:text-white"
                 >
                   <LogIn className="h-4 w-4" />
@@ -49,7 +52,7 @@ export function ProgressBanner({ onNavigate }: ProgressBannerProps) {
                 </Button>
                 <Button 
                   size="sm" 
-                  onClick={() => onNavigate?.('auth')}
+                  onClick={goToAuth}
                   className="gap-1.5 bg-yellow-400 text-yellow-900 hover:bg-yellow-300 font-semibold"
                 >
                   <UserPlus className="h-4 w-4" />
