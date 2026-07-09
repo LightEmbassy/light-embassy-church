@@ -136,9 +136,12 @@ export default function Privacy() {
           </section>
 
           <section className="mb-8">
-            <h2 className="font-playfair text-2xl font-bold text-foreground mb-4">7. Data Retention</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              We keep your personal data only as long as necessary to provide the service or as required by law. Account information is retained while your account is active. If you delete your account, we will remove or anonymize your personal data within a reasonable period, typically within 30 days, except where retention is necessary for legal, security, or fraud-prevention purposes. Anonymous prayer requests and forum posts may remain visible after account deletion.
+            <h2 className="font-playfair text-2xl font-bold text-foreground mb-4">7. Data Retention and Deletion</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              We keep your personal data only as long as necessary to provide the service or as required by law. Account information is retained while your account is active.
+            </p>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              <strong>How to request deletion:</strong> To delete your account and associated personal data, contact us at pete@lightembassy.org with the subject line &ldquo;Account Deletion Request.&rdquo; We will verify your identity and process the deletion within 30 days. After deletion, your personal data will be removed or anonymized, except where retention is necessary for legal, security, or fraud-prevention purposes. Anonymous prayer requests and forum posts may remain visible after account deletion.
             </p>
           </section>
 
