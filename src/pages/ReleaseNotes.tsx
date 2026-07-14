@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Sparkles, Shield, Smartphone, Video, Zap, Users, BookOpen, Radio, MessageSquare } from "lucide-react"
+import { ArrowLeft, Sparkles, Shield, Smartphone, Video, Zap, Users, BookOpen, Radio, MessageSquare, FileText } from "lucide-react"
 import { Link } from "react-router-dom"
 
 interface ReleaseItem {
