@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/home/hero-section"
 import { PromotionalBanner } from "@/components/home/promotional-banner"
+import { GetAppBanner } from "@/components/home/get-app-banner"
 import { SignupBanner } from "@/components/home/signup-banner"
 import { RadioBanner } from "@/components/home/radio-banner"
 import { ProgressBanner } from "@/components/home/progress-banner"
@@ -33,6 +34,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <GetAppBanner />
       <PromotionalBanner onNavigate={onNavigate} />
       <HeroSection />
       <SignupBanner />
