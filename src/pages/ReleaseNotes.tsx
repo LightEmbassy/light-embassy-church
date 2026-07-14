@@ -124,6 +124,12 @@ export default function ReleaseNotes() {
             See what is new in Light Embassy and what is coming next for our
             community.
           </p>
+          <Button variant="link" asChild className="mt-2 gap-2">
+            <a href="/release-notes.txt" target="_blank" rel="noopener noreferrer">
+              <FileText className="h-4 w-4" />
+              View plain-text version
+            </a>
+          </Button>
         </div>
 
         <div className="space-y-10">
