@@ -27,6 +27,14 @@ export default function Privacy() {
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             This page is maintained by Christ in you (Light Embassy Church) to explain how we collect, use, and protect your personal information in the Light Embassy app.
           </p>
+          <a
+            href="/privacy-policy.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-4 text-sm text-primary hover:underline"
+          >
+            View plain-text version
+          </a>
         </div>
 
         <Card className="mb-6 border-primary/10 shadow-gentle">
