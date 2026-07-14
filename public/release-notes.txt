@@ -1,0 +1,51 @@
+Light Embassy Church - Release Notes
+=====================================
+
+Version 2.0 - July 2026
+------------------------
+
+Highlights:
+- Native iOS & Android apps ready
+- Secure quiz grading on the backend
+- Privacy policy & one-tap data erasure
+- Realtime messaging with scoped policies
+
+What's New:
+
+Mobile Apps
+The app is now Capacitor-ready for iOS and Android. Push notifications, camera sharing, native share sheets, and local notifications are integrated.
+
+Onboarding Intro Video
+A cinematic welcome video now greets first-time users, highlighting Watch, Learn, Prayers, and Community.
+
+Welcome Screen
+A colourful first-time welcome screen guides new users on what to do first. Users can revisit it anytime from Settings.
+
+Spiritual Journey Tracker
+Track your streaks, milestones, media history, and achievements. A fun progress banner keeps engagement visible on the home screen.
+
+Privacy Policy & Data Erasure
+A comprehensive Play Store & App Store compliant privacy policy is now live, plus an in-app "Erase My Data" option and a public deletion page.
+
+Secure Quiz Grading
+Quiz answers are now graded by a secure edge function instead of the client, keeping correct answers hidden from users.
+
+Scoped Realtime Messaging
+Realtime message delivery now respects row-level security, so users only receive messages from their own conversations.
+
+SEO & Discovery
+Added sitemap, robots.txt, llms.txt, JSON-LD structured data, Open Graph image, and canonical tags for better search and AI discovery.
+
+Get the App Banner
+Mobile web visitors now see a smart banner prompting them to install the native iOS or Android app.
+
+Version 1.0 - Earlier
+----------------------
+
+Highlights:
+- Foundation of Light Embassy web app
+
+What's New:
+
+Foundation Release
+Initial web app with home, watch, podcast, learn, prayers, community forum, live radio, and messaging.

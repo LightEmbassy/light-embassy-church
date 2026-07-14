@@ -9,4 +9,5 @@
   <url><loc>https://lightembassychurch.org/privacy</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
   <url><loc>https://lightembassychurch.org/delete-account</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
   <url><loc>https://lightembassychurch.org/release-notes</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://lightembassychurch.org/release-notes.txt</loc><changefreq>weekly</changefreq><priority>0.5</priority></url>
 </urlset>
