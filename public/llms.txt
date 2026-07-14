@@ -12,3 +12,5 @@ Light Embassy is a global community of followers of Christ revealing the Bible, 
 - [Podcast](/podcast): Audio teachings and episodes with quizzes.
 - [Prayers](/prayers): Submit prayer requests and pray for the community.
 - [Messages](/messages): Conversations with the Light Embassy team.
+- [Privacy](/privacy): Privacy policy and data practices.
+- [Release Notes](/release-notes): Changelog of new features and improvements.

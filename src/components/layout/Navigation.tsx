@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import { Settings, Sparkles, LogIn, LogOut, User, Shield, Trash2 } from 'lucide-react'
+import { Settings, Sparkles, LogIn, LogOut, User, Shield, Trash2, FileText } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -88,6 +88,12 @@ export function Navigation() {
               <Link to="/privacy" className="flex items-center">
                 <Shield className="mr-2 h-4 w-4" />
                 <span>Privacy Policy</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link to="/release-notes" className="flex items-center">
+                <FileText className="mr-2 h-4 w-4" />
+                <span>Release Notes</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
