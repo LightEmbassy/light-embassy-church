@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.55bd5653424a4578b8f35ca91a34b86b',
+  appId: 'aap1com.lightembassy',
   appName: 'Light Embassy One',
   webDir: 'dist',
   server: {
