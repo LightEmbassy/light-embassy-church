@@ -89,5 +89,19 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
+  },
+  "overrides": {
+    "@xmldom/xmldom": "^0.9.10",
+    "glob": "^11.0.0",
+    "minimatch": "^10.0.0",
+    "brace-expansion": "^2.0.2",
+    "@isaacs/brace-expansion": "^5.0.0"
+  },
+  "resolutions": {
+    "@xmldom/xmldom": "^0.9.10",
+    "glob": "^11.0.0",
+    "minimatch": "^10.0.0",
+    "brace-expansion": "^2.0.2",
+    "@isaacs/brace-expansion": "^5.0.0"
   }
 }
