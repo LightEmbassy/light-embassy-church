@@ -72,9 +72,11 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
   const wantsContact = form.watch('wants_contact')
 
   const onSubmit = async (data: FormData) => {
+    if (!user) return
     setIsSubmitting(true)
     try {
-      const userId = user?.id ?? null
+      const userId = user.id
+
 
       const { error } = await supabase
         .from('prayer_requests')
