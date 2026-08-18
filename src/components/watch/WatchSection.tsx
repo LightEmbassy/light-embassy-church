@@ -34,6 +34,28 @@ interface WatchSectionProps {
 }
 
 const THUMBNAIL_CACHE_KEY = 'video_thumbnails_cache'
+const MAX_CACHED_THUMBNAILS = 6
+
+// AI thumbnails are base64 data URLs, so persist only a small, bounded slice
+// of them and degrade gracefully when localStorage is full.
+function persistThumbnailCache(cache: Record<string, string>) {
+  const entries = Object.entries(cache)
+  for (let keep = Math.min(MAX_CACHED_THUMBNAILS, entries.length); keep > 0; keep = Math.floor(keep / 2)) {
+    try {
+      const slice = Object.fromEntries(entries.slice(-keep))
+      localStorage.setItem(THUMBNAIL_CACHE_KEY, JSON.stringify(slice))
+      return
+    } catch {
+      // quota exceeded — retry with fewer entries
+    }
+  }
+  try {
+    localStorage.removeItem(THUMBNAIL_CACHE_KEY)
+  } catch {
+    // ignore
+  }
+}
+
 
 export function WatchSection({ onBack }: WatchSectionProps) {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
