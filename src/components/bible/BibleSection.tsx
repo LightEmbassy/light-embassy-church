@@ -32,6 +32,8 @@ export function BibleSection() {
   const { toast } = useToast()
   const [favoriteVerses, setFavoriteVerses] = useState<FavoriteVerse[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [savingReference, setSavingReference] = useState<string | null>(null)
+
   const [newVerse, setNewVerse] = useState({
     reference: "",
     text: "",
