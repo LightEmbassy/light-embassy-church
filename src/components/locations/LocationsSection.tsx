@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LocationsList } from "@/components/map/LocationsList"
 import { Location } from "@/types/location"
+
 import { 
   MapPin, 
   Navigation, 
@@ -12,7 +15,10 @@ import {
   ExternalLink,
   Calendar,
   Users,
-  ArrowLeft
+  ArrowLeft,
+  Search,
+  X
+
 } from "lucide-react"
 
 interface LocationsSectionProps {
@@ -58,6 +64,42 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
     }
     // Add more locations as they become available
   ])
+
+  const [query, setQuery] = useState("")
+  const [country, setCountry] = useState("all")
+  const [serviceType, setServiceType] = useState("all")
+
+  const countries = useMemo(
+    () => Array.from(new Set(locations.map((l) => l.country))).sort(),
+    [locations]
+  )
+
+  const serviceTypes = useMemo(
+    () => Array.from(new Set(locations.flatMap((l) => l.services.map((s) => s.name)))).sort(),
+    [locations]
+  )
+
+  const filteredLocations = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return locations.filter((l) => {
+      const matchesQuery =
+        !q ||
+        [l.name, l.city, l.country, l.address].some((f) => f.toLowerCase().includes(q)) ||
+        l.services.some((s) => s.name.toLowerCase().includes(q))
+      const matchesCountry = country === "all" || l.country === country
+      const matchesService =
+        serviceType === "all" || l.services.some((s) => s.name === serviceType)
+      return matchesQuery && matchesCountry && matchesService
+    })
+  }, [locations, query, country, serviceType])
+
+  const hasFilters = query !== "" || country !== "all" || serviceType !== "all"
+
+  const clearFilters = () => {
+    setQuery("")
+    setCountry("all")
+    setServiceType("all")
+  }
 
   const requestLocation = () => {
     if (navigator.geolocation) {
@@ -162,15 +204,67 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
           )}
         </div>
 
+        {/* Search & Filters */}
+        <div className="mb-6 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by church, city or country"
+              aria-label="Search locations by church, city or country"
+              className="pl-9"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger className="sm:w-56" aria-label="Filter by country">
+                <SelectValue placeholder="All countries" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All countries</SelectItem>
+                {countries.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={serviceType} onValueChange={setServiceType}>
+              <SelectTrigger className="sm:w-56" aria-label="Filter by service type">
+                <SelectValue placeholder="All service types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All service types</SelectItem>
+                {serviceTypes.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {hasFilters && (
+              <Button variant="ghost" onClick={clearFilters} className="gap-2">
+                <X className="h-4 w-4" />
+                Clear filters
+              </Button>
+            )}
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredLocations.length} of {locations.length} location{locations.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
         {/* Locations Section */}
         <div className="space-y-4 mb-8">
           <LocationsList
-            locations={locations}
+            locations={filteredLocations}
             userLocation={userLocation}
             selectedLocation={selectedLocation}
             onLocationSelect={setSelectedLocation}
           />
         </div>
+
 
         {/* Selected Location Details */}
         {selectedLocation && (
