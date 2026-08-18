@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
+import { SignInRequired } from '@/components/auth/SignInRequired'
 import {
   Form,
   FormControl,
@@ -110,6 +111,15 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
   const handleSubmitAnother = () => {
     setIsSubmitted(false)
     form.reset()
+  }
+
+  if (!user) {
+    return (
+      <SignInRequired
+        title="Sign in to submit a prayer request"
+        description="Prayer requests are handled pastorally, so we ask you to create a free account first."
+      />
+    )
   }
 
   if (isSubmitted) {
