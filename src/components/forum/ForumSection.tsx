@@ -274,15 +274,16 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
   }
 
   const handleSubmitReply = async () => {
+    if (!user) {
+      toast.error("Please sign in to reply")
+      return
+    }
+
     if (!newReply.trim() || !selectedTopic) {
       toast.error("Please enter a reply")
       return
     }
 
-    if (!user && !replyGuestName.trim()) {
-      toast.error("Please enter your name")
-      return
-    }
 
     if (!validateSpamProtection(replyCaptchaAnswer, replyCaptcha, replyHumanVerified)) {
       return
