@@ -290,8 +290,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                   size="sm"
                   className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0"
                   onClick={(e) => e.stopPropagation()}
+                  aria-label={`Share video: ${video.title}`}
                 >
-                  <Share2 className="h-3 w-3" />
+                  <Share2 className="h-3 w-3" aria-hidden="true" />
                 </Button>
               </ShareDialog>
             </div>
