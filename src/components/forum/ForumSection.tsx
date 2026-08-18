@@ -509,12 +509,14 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
 
                 <Button 
                   onClick={handleSubmitReply} 
-                  disabled={submitting || !newReply.trim() || (!user && !replyGuestName.trim())}
+                  disabled={submitting || !newReply.trim()}
                   className="gap-2"
                 >
                   <Send className="h-4 w-4" />
                   Submit Reply
                 </Button>
+                </>
+                )}
               </div>
             </div>
           </CardContent>
