@@ -254,8 +254,9 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                       variant="ghost" 
                       size="sm"
                       onClick={(e) => e.stopPropagation()}
+                      aria-label={`Share episode: ${episode.title}`}
                     >
-                      <Share2 className="h-4 w-4" />
+                      <Share2 className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </ShareDialog>
                 </div>
