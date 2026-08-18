@@ -31,6 +31,11 @@ const ROUTE_META: Record<string, Meta> = {
     description:
       "Grow through Bible study tools, guided reading, quizzes and discipleship resources designed to help you understand Scripture and apply it daily.",
   },
+  "/learn/godly-living-purpose": {
+    title: "Godly Living & Purpose — Light Embassy",
+    description:
+      "What it means to be godly, how God orders the steps of a good man, the fear of the Lord, and how to find your purpose through everyday obedience.",
+  },
   "/locations": {
     title: "Find Locations — Light Embassy",
     description:
