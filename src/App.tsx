@@ -1,3 +1,5 @@
+import { HelmetProvider } from "react-helmet-async";
+import RouteSeo from "@/components/seo/RouteSeo";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +25,7 @@ import { PushNotificationsBridge } from "./components/native/PushNotificationsBr
 const queryClient = new QueryClient();
 
 const App = () => (
+  <HelmetProvider>
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <NavigationProvider>
@@ -31,6 +34,7 @@ const App = () => (
           <Sonner />
           <PushNotificationsBridge />
           <BrowserRouter>
+            <RouteSeo />
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<Index />} />
@@ -51,6 +55,7 @@ const App = () => (
       </NavigationProvider>
     </AuthProvider>
   </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;
