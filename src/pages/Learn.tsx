@@ -4,7 +4,8 @@ import { ForumSection } from "@/components/forum/ForumSection"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, Lightbulb, LayoutGrid, Heart, Sparkles, Hand, Target, BookOpen, Users } from "lucide-react"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { BibleSection } from "@/components/bible/BibleSection"
 
 interface LearnProps {
   onBack?: () => void
@@ -54,6 +55,7 @@ const topicPrompts: Record<string, string[]> = {
 }
 
 export default function Learn({ onBack }: LearnProps) {
+  const [section, setSection] = useState("discussions")
   const [selectedTopic, setSelectedTopic] = useState("all")
   const [prefillTitle, setPrefillTitle] = useState<string | undefined>()
 
@@ -92,6 +94,23 @@ export default function Learn({ onBack }: LearnProps) {
           </p>
         </div>
 
+        <Tabs value={section} onValueChange={setSection} className="w-full">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
+            <TabsTrigger value="discussions" className="gap-2">
+              <Users className="h-4 w-4" />
+              Discussions
+            </TabsTrigger>
+            <TabsTrigger value="bible" className="gap-2">
+              <BookOpen className="h-4 w-4" />
+              Bible
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="bible">
+            <BibleSection />
+          </TabsContent>
+
+          <TabsContent value="discussions" className="space-y-0">
         <Card className="mb-8 border-primary/20 bg-primary/5">
           <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -157,6 +176,8 @@ export default function Learn({ onBack }: LearnProps) {
           prefillTitle={prefillTitle}
           onPrefillUsed={handlePrefillUsed}
         />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   )

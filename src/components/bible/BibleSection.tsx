@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,9 +10,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Book, ExternalLink, Heart, Plus, Trash2, Share2 } from "lucide-react"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
+import { SignInRequired } from "@/components/auth/SignInRequired"
+import { VerseLibrary } from "@/components/bible/VerseLibrary"
+import type { LibraryVerse } from "@/data/verses"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
+
 
 interface FavoriteVerse {
   id: string
@@ -25,9 +30,12 @@ interface FavoriteVerse {
 
 export function BibleSection() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const [favoriteVerses, setFavoriteVerses] = useState<FavoriteVerse[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [savingReference, setSavingReference] = useState<string | null>(null)
+
   const [newVerse, setNewVerse] = useState({
     reference: "",
     text: "",
@@ -124,12 +132,43 @@ export function BibleSection() {
     fetchFavoriteVerses()
   }
 
+  const handleSaveLibraryVerse = async (verse: LibraryVerse) => {
+    if (!user) {
+      navigate("/auth")
+      return
+    }
+    setSavingReference(verse.reference)
+    const { error } = await supabase.from("favorite_verses").insert({
+      user_id: user.id,
+      verse_reference: verse.reference,
+      verse_text: verse.text,
+      book: verse.book,
+      chapter: verse.chapter,
+      verse: verse.verse,
+    })
+    setSavingReference(null)
+
+    if (error) {
+      console.error("Error saving verse:", error)
+      toast({
+        title: "Error",
+        description: "Failed to save this verse. Please try again.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    toast({ title: "Saved", description: `${verse.reference} added to your verses.` })
+    fetchFavoriteVerses()
+  }
+
   const openBibleCom = () => {
     window.open("https://www.bible.com/bible", "_blank", "noopener,noreferrer")
   }
 
   return (
     <div className="space-y-6">
+
       <Card className="border-0 shadow-divine bg-gradient-spiritual">
         <CardHeader className="text-center">
           <CardTitle className="font-playfair text-3xl text-white flex items-center justify-center gap-3">
@@ -288,6 +327,20 @@ export function BibleSection() {
           </CardContent>
         </Card>
       )}
+
+      {!user && (
+        <SignInRequired
+          title="Sign in to save verses"
+          description="Create a free account to keep your favourite verses on your profile across devices."
+        />
+      )}
+
+      <VerseLibrary
+        savedReferences={favoriteVerses.map((v) => v.verse_reference)}
+        onSave={handleSaveLibraryVerse}
+        saving={savingReference}
+      />
+
 
       <Card>
         <CardHeader>
