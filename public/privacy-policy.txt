@@ -41,7 +41,6 @@ We do not sell personal data. We share information with trusted service provider
 - Lovable Cloud / backend services for hosting and data storage.
 - Google for sign-in authentication and YouTube video content.
 - Podbean for podcast streaming.
-- Mapbox for maps and radio station location features.
 - Analytics and crash reporting providers.
 - Law enforcement or regulators when required by law.
 
