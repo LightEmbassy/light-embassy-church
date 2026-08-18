@@ -759,6 +759,29 @@ export type Database = {
       }
     }
     Functions: {
+      admin_list_quiz_questions: {
+        Args: never
+        Returns: {
+          correct_answer: number
+          created_at: string
+          id: string
+          options: Json
+          order_number: number
+          podcast_title: string
+          podcast_url: string
+          question: string
+        }[]
+      }
+      admin_quiz_stats: {
+        Args: never
+        Returns: {
+          correct_responses: number
+          distinct_participants: number
+          total_completions: number
+          total_questions: number
+          total_responses: number
+        }[]
+      }
       check_and_award_achievements: {
         Args: { p_user_id: string }
         Returns: {
