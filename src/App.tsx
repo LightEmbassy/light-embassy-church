@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import Prayers from "./pages/Prayers";
 import Podcast from "./pages/Podcast";
 import Learn from "./pages/Learn";
+import GodlyLiving from "./pages/GodlyLiving";
 import Messages from "./pages/Messages";
 import Privacy from "./pages/Privacy";
 import DeleteAccount from "./pages/DeleteAccount";
@@ -42,6 +43,7 @@ const App = () => (
               <Route path="/prayers" element={<Prayers />} />
               <Route path="/podcast" element={<Podcast />} />
               <Route path="/learn" element={<Learn />} />
+              <Route path="/learn/godly-living-purpose" element={<GodlyLiving />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/delete-account" element={<DeleteAccount />} />
