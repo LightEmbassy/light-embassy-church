@@ -365,8 +365,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                 size="sm"
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
                 onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </Button>
             )}
           </div>
