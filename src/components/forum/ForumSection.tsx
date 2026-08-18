@@ -452,14 +452,15 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
 
               <div className="mt-6 space-y-4">
                 <h4 className="font-medium text-sm">Add a Reply</h4>
-                
-                {!user && (
-                  <Input
-                    placeholder="Your name"
-                    value={replyGuestName}
-                    onChange={(e) => setReplyGuestName(e.target.value)}
+
+                {!user ? (
+                  <SignInRequired
+                    compact
+                    description="Sign in to reply to this discussion."
                   />
-                )}
+                ) : (
+                <>
+
                 
                 <Textarea
                   placeholder="Write your reply..."
