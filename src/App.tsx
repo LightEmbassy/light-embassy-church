@@ -20,6 +20,7 @@ import Messages from "./pages/Messages";
 import Privacy from "./pages/Privacy";
 import DeleteAccount from "./pages/DeleteAccount";
 import ReleaseNotes from "./pages/ReleaseNotes";
+import FirebaseStatus from "./pages/FirebaseStatus";
 import { AdminRoute } from "./components/auth/AdminRoute";
 import { PushNotificationsBridge } from "./components/native/PushNotificationsBridge";
 
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/delete-account" element={<DeleteAccount />} />
               <Route path="/release-notes" element={<ReleaseNotes />} />
+              <Route path="/firebase-status" element={<FirebaseStatus />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

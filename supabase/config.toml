@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.grade-quiz]
 verify_jwt = false
+
+[functions.firebase-status]
+verify_jwt = false
