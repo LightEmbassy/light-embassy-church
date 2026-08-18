@@ -28,7 +28,7 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
   const [selectedAnswers, setSelectedAnswers] = useState<{ [key: string]: number }>({})
   const [showResults, setShowResults] = useState(false)
   const [score, setScore] = useState(0)
-  const [correctMap, setCorrectMap] = useState<Record<string, number>>({})
+  const [correctMap, setCorrectMap] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const { toast } = useToast()
@@ -101,9 +101,10 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
 
       if (error) throw error
 
-      const map: Record<string, number> = {}
-      for (const r of data.results) map[r.question_id] = r.correct_answer
+      const map: Record<string, boolean> = {}
+      for (const r of data.results) map[r.question_id] = r.is_correct
       setCorrectMap(map)
+
       setScore(data.score)
       setShowResults(true)
 
@@ -185,8 +186,8 @@ export function SignupQuiz({ onComplete }: SignupQuizProps) {
               <h3 className="font-playfair text-xl font-semibold">Your Results:</h3>
               <div className="space-y-2">
                 {questions.map((question, index) => {
-                  const selectedAnswer = selectedAnswers[question.id]
-                  const isCorrect = selectedAnswer === correctMap[question.id]
+                  const isCorrect = correctMap[question.id] === true
+
                   
                   return (
                     <div key={question.id} className="flex items-center justify-between gap-3 p-3 bg-background/50 rounded-lg">
