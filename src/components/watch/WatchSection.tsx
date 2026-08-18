@@ -344,7 +344,10 @@ export function WatchSection({ onBack }: WatchSectionProps) {
           </Button>
         </div>
         <p className="text-muted-foreground">
-          Videos from Light Embassy Church
+          Welcome to our video library. Here you will find sermons, Bible teachings, worship sessions, and
+          testimonies from Light Embassy Church. Every video is crafted to help you grow in faith, understand
+          Scripture, and experience the presence of God. Browse the latest messages, search by topic, or pick up
+          where you left off in your recently watched list.
         </p>
 
         {/* Search Input */}
