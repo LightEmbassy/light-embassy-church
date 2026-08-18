@@ -42,7 +42,7 @@ export default function Quiz({ onBack }: QuizPageProps) {
   const fetchQuestions = async () => {
     try {
       const { data, error } = await supabase
-        .from('quiz_questions')
+        .from('quiz_questions_public')
         .select('id, question, options, order_number, podcast_url, podcast_title')
 
       if (error) throw error
