@@ -102,14 +102,10 @@ export function WatchSection({ onBack }: WatchSectionProps) {
       if (data?.thumbnailUrl) {
         setThumbnailCache(prev => {
           const newCache = { ...prev, [video.id]: data.thumbnailUrl }
-          // Save to localStorage
-          try {
-            localStorage.setItem(THUMBNAIL_CACHE_KEY, JSON.stringify(newCache))
-          } catch (e) {
-            console.error('Error saving thumbnail cache:', e)
-          }
+          persistThumbnailCache(newCache)
           return newCache
         })
+
       }
     } catch (error) {
       console.error('Failed to generate thumbnail:', error)
