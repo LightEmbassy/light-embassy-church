@@ -305,7 +305,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                 <AspectRatio ratio={1} className="w-20">
                   <img
                     src="https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg"
-                    alt="Light Embassy Church Podcast"
+                    alt="Light Embassy Church podcast cover artwork"
                     className="object-cover w-full h-full rounded-lg"
                   />
                 </AspectRatio>
