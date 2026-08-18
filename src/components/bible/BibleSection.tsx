@@ -9,9 +9,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Book, ExternalLink, Heart, Plus, Trash2, Share2 } from "lucide-react"
 import { ShareDialog } from "@/components/sharing/ShareDialog"
+import { SignInRequired } from "@/components/auth/SignInRequired"
+import { VerseLibrary } from "@/components/bible/VerseLibrary"
+import type { LibraryVerse } from "@/data/verses"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
 import { useToast } from "@/hooks/use-toast"
+
 
 interface FavoriteVerse {
   id: string
