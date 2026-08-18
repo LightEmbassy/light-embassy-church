@@ -258,9 +258,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
             
             {/* Play button - centered */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-label={`Play video: ${video.title}`} role="button">
               <div className="bg-white/95 rounded-full p-2 sm:p-3 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
-                <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" />
+                <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" aria-hidden="true" />
               </div>
             </div>
           </AspectRatio>
