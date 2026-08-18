@@ -18,6 +18,7 @@ import Privacy from "./pages/Privacy";
 import DeleteAccount from "./pages/DeleteAccount";
 import ReleaseNotes from "./pages/ReleaseNotes";
 import { AdminRoute } from "./components/auth/AdminRoute";
+import { PushNotificationsBridge } from "./components/native/PushNotificationsBridge";
 
 const queryClient = new QueryClient();
 
