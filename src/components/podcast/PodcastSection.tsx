@@ -239,9 +239,9 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                       e.stopPropagation()
                       downloadEpisode(episode)
                     }}
-                    title="Download episode"
+                    aria-label={`Download episode: ${episode.title}`}
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-4 w-4" aria-hidden="true" />
                   </Button>
                   <ShareDialog
                     content={{
