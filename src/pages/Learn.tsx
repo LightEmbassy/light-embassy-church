@@ -91,6 +91,20 @@ export default function Learn({ onBack }: LearnProps) {
           </p>
         </div>
 
+        <Card className="mb-8 border-primary/20 bg-primary/5">
+          <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">Featured guide: Godly Living and Purpose</h2>
+              <p className="text-sm text-muted-foreground">
+                What it means to be godly, God&apos;s ordered steps, and finding your purpose.
+              </p>
+            </div>
+            <Button asChild className="shrink-0">
+              <Link to="/learn/godly-living-purpose">Read the guide</Link>
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Topic Tabs */}
         <div className="mb-6">
           <Tabs value={selectedTopic} onValueChange={setSelectedTopic} className="w-full">
