@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { MessageSquare, Plus, Eye, Clock, Pin, Search, ArrowLeft, Send, ShieldCheck, Star, TrendingUp } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
+import { SignInRequired } from "@/components/auth/SignInRequired"
 import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 
