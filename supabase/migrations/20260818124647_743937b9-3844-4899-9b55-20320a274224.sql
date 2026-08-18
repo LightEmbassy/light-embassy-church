@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Anyone can view quiz questions" ON public.quiz_questions;
+CREATE POLICY "Admins can view quiz questions" ON public.quiz_questions FOR SELECT USING (has_role(auth.uid(), 'admin'::app_role));
