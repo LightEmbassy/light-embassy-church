@@ -15,7 +15,10 @@ import {
   ExternalLink,
   Calendar,
   Users,
-  ArrowLeft
+  ArrowLeft,
+  Search,
+  X
+
 } from "lucide-react"
 
 interface LocationsSectionProps {
