@@ -239,9 +239,9 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                       e.stopPropagation()
                       downloadEpisode(episode)
                     }}
-                    title="Download episode"
+                    aria-label={`Download episode: ${episode.title}`}
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-4 w-4" aria-hidden="true" />
                   </Button>
                   <ShareDialog
                     content={{
@@ -254,8 +254,9 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                       variant="ghost" 
                       size="sm"
                       onClick={(e) => e.stopPropagation()}
+                      aria-label={`Share episode: ${episode.title}`}
                     >
-                      <Share2 className="h-4 w-4" />
+                      <Share2 className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </ShareDialog>
                 </div>
@@ -304,7 +305,7 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                 <AspectRatio ratio={1} className="w-20">
                   <img
                     src="https://pbcdn1.podbean.com/imglogo/image-logo/16660439/LEC_csvbaz.jpg"
-                    alt="Light Embassy Church Podcast"
+                    alt="Light Embassy Church podcast cover artwork"
                     className="object-cover w-full h-full rounded-lg"
                   />
                 </AspectRatio>
@@ -430,27 +431,29 @@ export function PodcastSection({ onBack }: PodcastSectionProps) {
                   variant="ghost" 
                   size="icon"
                   onClick={togglePlayPause}
+                  aria-label={isPlaying ? "Pause episode" : "Play episode"}
                 >
                   {isPlaying ? (
-                    <Pause className="h-5 w-5" />
+                    <Pause className="h-5 w-5" aria-hidden="true" />
                   ) : (
-                    <Play className="h-5 w-5" />
+                    <Play className="h-5 w-5" aria-hidden="true" />
                   )}
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="icon"
                   onClick={() => downloadEpisode(currentEpisode)}
-                  title="Download episode"
+                  aria-label={`Download episode: ${currentEpisode.title}`}
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className="h-4 w-4" aria-hidden="true" />
                 </Button>
                 <Button 
                   variant="ghost" 
                   size="icon"
                   onClick={closePlayer}
+                  aria-label="Close audio player"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </div>
             </div>

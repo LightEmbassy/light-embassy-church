@@ -258,9 +258,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
             
             {/* Play button - centered */}
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-label={`Play video: ${video.title}`} role="button">
               <div className="bg-white/95 rounded-full p-2 sm:p-3 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
-                <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" />
+                <Play className="h-5 w-5 sm:h-6 sm:w-6 text-primary fill-primary" aria-hidden="true" />
               </div>
             </div>
           </AspectRatio>
@@ -290,8 +290,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                   size="sm"
                   className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground hover:bg-muted flex-shrink-0"
                   onClick={(e) => e.stopPropagation()}
+                  aria-label={`Share video: ${video.title}`}
                 >
-                  <Share2 className="h-3 w-3" />
+                  <Share2 className="h-3 w-3" aria-hidden="true" />
                 </Button>
               </ShareDialog>
             </div>
@@ -343,7 +344,10 @@ export function WatchSection({ onBack }: WatchSectionProps) {
           </Button>
         </div>
         <p className="text-muted-foreground">
-          Videos from Light Embassy Church
+          Welcome to our video library. Here you will find sermons, Bible teachings, worship sessions, and
+          testimonies from Light Embassy Church. Every video is crafted to help you grow in faith, understand
+          Scripture, and experience the presence of God. Browse the latest messages, search by topic, or pick up
+          where you left off in your recently watched list.
         </p>
 
         {/* Search Input */}
@@ -364,8 +368,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                 size="sm"
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
                 onClick={() => setSearchQuery("")}
+                aria-label="Clear search"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </Button>
             )}
           </div>
@@ -401,9 +406,9 @@ export function WatchSection({ onBack }: WatchSectionProps) {
                         }}
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" aria-label={`Play video: ${item.media_title}`} role="button">
                         <div className="bg-white/95 rounded-full p-1.5 backdrop-blur-sm group-hover:scale-110 transition-transform shadow-xl">
-                          <Play className="h-3 w-3 text-primary fill-primary" />
+                          <Play className="h-3 w-3 text-primary fill-primary" aria-hidden="true" />
                         </div>
                       </div>
                     </AspectRatio>
