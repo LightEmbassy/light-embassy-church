@@ -162,8 +162,6 @@ export function QuizManagement() {
     load()
   }
 
-  const completionRate =
-    stats && stats.total_participants_placeholder ? 0 : 0 // placeholder never used
 
   const accuracy =
     stats && stats.total_responses > 0
