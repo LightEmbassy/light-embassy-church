@@ -223,15 +223,16 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
   }
 
   const handleCreateTopic = async () => {
+    if (!user) {
+      toast.error("Please sign in to start a discussion")
+      return
+    }
+
     if (!newTitle.trim() || !newContent.trim()) {
       toast.error("Please fill in all fields")
       return
     }
 
-    if (!user && !guestName.trim()) {
-      toast.error("Please enter your name")
-      return
-    }
 
     if (!validateSpamProtection(captchaAnswer, captcha, humanVerified)) {
       return
