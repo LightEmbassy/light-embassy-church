@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Heart, MessageCircle, Share, Send, LogIn } from "lucide-react"
@@ -19,6 +19,7 @@ interface CommunityPost {
   created_at: string
   profile?: {
     username: string
+    avatar_url?: string | null
   }
 }
 
@@ -326,6 +327,12 @@ export function CommunityFeed() {
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
+                      {post.profile?.avatar_url && (
+                        <AvatarImage
+                          src={post.profile.avatar_url}
+                          alt={`${post.profile?.username || "Community member"} profile photo`}
+                        />
+                      )}
                       <AvatarFallback className="bg-primary text-primary-foreground font-medium">
                         {getInitials(post.profile?.username)}
                       </AvatarFallback>
