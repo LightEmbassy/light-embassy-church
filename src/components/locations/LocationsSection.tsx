@@ -163,29 +163,14 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
           )}
         </div>
 
-        {/* Map Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          <div className="lg:col-span-2">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <InteractiveMap
-                  locations={locations}
-                  userLocation={userLocation}
-                  selectedLocation={selectedLocation}
-                  onLocationSelect={setSelectedLocation}
-                />
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="space-y-4">
-            <LocationsList
-              locations={locations}
-              userLocation={userLocation}
-              selectedLocation={selectedLocation}
-              onLocationSelect={setSelectedLocation}
-            />
-          </div>
+        {/* Locations Section */}
+        <div className="space-y-4 mb-8">
+          <LocationsList
+            locations={locations}
+            userLocation={userLocation}
+            selectedLocation={selectedLocation}
+            onLocationSelect={setSelectedLocation}
+          />
         </div>
 
         {/* Selected Location Details */}
