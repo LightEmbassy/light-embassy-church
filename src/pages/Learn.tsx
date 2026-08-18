@@ -84,7 +84,10 @@ export default function Learn({ onBack }: LearnProps) {
             Discover More
           </h1>
           <p className="text-muted-foreground text-lg">
-            A safe place for questions, discussions, and growing in faith together
+            A welcoming community where you can ask questions, join thoughtful discussions, study the Bible,
+            and grow in faith together. Explore topics like healing, faith, love, purpose, Bible study, and
+            community life. Each section offers conversation starters to help you reflect, share your journey,
+            and learn from others in a safe, moderated environment.
           </p>
         </div>
 
