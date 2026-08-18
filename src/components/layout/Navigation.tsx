@@ -24,6 +24,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { AuthStatusBadge } from '@/components/auth/AuthStatusBadge'
 
 export function Navigation() {
   const { resetWelcome } = useFirstTimeUser()
@@ -127,6 +128,7 @@ export function Navigation() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
