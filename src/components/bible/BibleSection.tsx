@@ -323,6 +323,20 @@ export function BibleSection() {
         </Card>
       )}
 
+      {!user && (
+        <SignInRequired
+          title="Sign in to save verses"
+          description="Create a free account to keep your favourite verses on your profile across devices."
+        />
+      )}
+
+      <VerseLibrary
+        savedReferences={favoriteVerses.map((v) => v.verse_reference)}
+        onSave={handleSaveLibraryVerse}
+        saving={savingReference}
+      />
+
+
       <Card>
         <CardHeader>
           <CardTitle className="font-playfair text-xl text-primary">
