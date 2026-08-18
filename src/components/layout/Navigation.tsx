@@ -72,6 +72,9 @@ export function Navigation() {
           Light Embassy
         </Link>
 
+        <div className="flex items-center gap-2">
+          <AuthStatusBadge />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-9 w-9">
