@@ -326,6 +326,7 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type your message..."
+              aria-label="Message"
               className="min-h-[60px] resize-none"
               disabled={conversation?.status === 'closed'}
             />
@@ -333,6 +334,7 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
               onClick={sendMessage} 
               disabled={!newMessage.trim() || sending || conversation?.status === 'closed'}
               size="sm"
+              aria-label="Send message"
             >
               <Send className="h-4 w-4" />
             </Button>

@@ -63,9 +63,15 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
   }
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
     fetchConversations()
-    setupRealtimeSubscription()
-  }, [statusFilter])
+    const cleanup = setupRealtimeSubscription()
+    return cleanup
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, user?.id])
 
   const setupRealtimeSubscription = () => {
     const channel = supabase
