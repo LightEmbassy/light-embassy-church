@@ -1,0 +1,165 @@
+export interface LibraryVerse {
+  reference: string
+  book: string
+  chapter: number
+  verse: number
+  text: string
+  theme: string
+}
+
+export const verseThemes = [
+  { id: "all", label: "All" },
+  { id: "faith", label: "Faith" },
+  { id: "healing", label: "Healing" },
+  { id: "peace", label: "Peace" },
+  { id: "strength", label: "Strength" },
+  { id: "purpose", label: "Purpose" },
+  { id: "love", label: "Love" },
+] as const
+
+export const verseLibrary: LibraryVerse[] = [
+  {
+    reference: "John 3:16",
+    book: "John",
+    chapter: 3,
+    verse: 16,
+    theme: "love",
+    text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+  },
+  {
+    reference: "Romans 8:28",
+    book: "Romans",
+    chapter: 8,
+    verse: 28,
+    theme: "purpose",
+    text: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+  },
+  {
+    reference: "Jeremiah 29:11",
+    book: "Jeremiah",
+    chapter: 29,
+    verse: 11,
+    theme: "purpose",
+    text: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, plans to give you hope and a future.",
+  },
+  {
+    reference: "Philippians 4:13",
+    book: "Philippians",
+    chapter: 4,
+    verse: 13,
+    theme: "strength",
+    text: "I can do all this through him who gives me strength.",
+  },
+  {
+    reference: "Isaiah 40:31",
+    book: "Isaiah",
+    chapter: 40,
+    verse: 31,
+    theme: "strength",
+    text: "But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.",
+  },
+  {
+    reference: "Isaiah 53:5",
+    book: "Isaiah",
+    chapter: 53,
+    verse: 5,
+    theme: "healing",
+    text: "But he was pierced for our transgressions, he was crushed for our iniquities; the punishment that brought us peace was on him, and by his wounds we are healed.",
+  },
+  {
+    reference: "James 5:15",
+    book: "James",
+    chapter: 5,
+    verse: 15,
+    theme: "healing",
+    text: "And the prayer offered in faith will make the sick person well; the Lord will raise them up.",
+  },
+  {
+    reference: "Psalm 147:3",
+    book: "Psalms",
+    chapter: 147,
+    verse: 3,
+    theme: "healing",
+    text: "He heals the brokenhearted and binds up their wounds.",
+  },
+  {
+    reference: "Philippians 4:6-7",
+    book: "Philippians",
+    chapter: 4,
+    verse: 6,
+    theme: "peace",
+    text: "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
+  },
+  {
+    reference: "John 14:27",
+    book: "John",
+    chapter: 14,
+    verse: 27,
+    theme: "peace",
+    text: "Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.",
+  },
+  {
+    reference: "Psalm 23:1",
+    book: "Psalms",
+    chapter: 23,
+    verse: 1,
+    theme: "peace",
+    text: "The Lord is my shepherd, I lack nothing.",
+  },
+  {
+    reference: "Hebrews 11:1",
+    book: "Hebrews",
+    chapter: 11,
+    verse: 1,
+    theme: "faith",
+    text: "Now faith is confidence in what we hope for and assurance about what we do not see.",
+  },
+  {
+    reference: "Proverbs 3:5-6",
+    book: "Proverbs",
+    chapter: 3,
+    verse: 5,
+    theme: "faith",
+    text: "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
+  },
+  {
+    reference: "2 Corinthians 5:7",
+    book: "2 Corinthians",
+    chapter: 5,
+    verse: 7,
+    theme: "faith",
+    text: "For we live by faith, not by sight.",
+  },
+  {
+    reference: "1 Corinthians 13:4-5",
+    book: "1 Corinthians",
+    chapter: 13,
+    verse: 4,
+    theme: "love",
+    text: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud. It does not dishonor others, it is not self-seeking, it is not easily angered, it keeps no record of wrongs.",
+  },
+  {
+    reference: "1 John 4:19",
+    book: "1 John",
+    chapter: 4,
+    verse: 19,
+    theme: "love",
+    text: "We love because he first loved us.",
+  },
+  {
+    reference: "Joshua 1:9",
+    book: "Joshua",
+    chapter: 1,
+    verse: 9,
+    theme: "strength",
+    text: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.",
+  },
+  {
+    reference: "Ephesians 2:10",
+    book: "Ephesians",
+    chapter: 2,
+    verse: 10,
+    theme: "purpose",
+    text: "For we are God's handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do.",
+  },
+]
