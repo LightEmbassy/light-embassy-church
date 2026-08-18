@@ -38,7 +38,7 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
   const fetchQuestions = async () => {
     try {
       const { data, error } = await supabase
-        .from('quiz_questions')
+        .from('quiz_questions_public')
         .select('id, question, options, podcast_url, podcast_title, order_number')
         .order('order_number')
 

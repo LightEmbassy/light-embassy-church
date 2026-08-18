@@ -611,6 +611,13 @@ export type Database = {
             referencedRelation: "quiz_questions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_quiz_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -717,6 +724,36 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      quiz_questions_public: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          options: Json | null
+          order_number: number | null
+          podcast_title: string | null
+          podcast_url: string | null
+          question: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          options?: Json | null
+          order_number?: number | null
+          podcast_title?: string | null
+          podcast_url?: string | null
+          question?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          options?: Json | null
+          order_number?: number | null
+          podcast_title?: string | null
+          podcast_url?: string | null
+          question?: string | null
         }
         Relationships: []
       }
