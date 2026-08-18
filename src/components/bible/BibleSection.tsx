@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +30,7 @@ interface FavoriteVerse {
 
 export function BibleSection() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const [favoriteVerses, setFavoriteVerses] = useState<FavoriteVerse[]>([])
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
@@ -131,7 +133,10 @@ export function BibleSection() {
   }
 
   const handleSaveLibraryVerse = async (verse: LibraryVerse) => {
-    if (!user) return
+    if (!user) {
+      navigate("/auth")
+      return
+    }
     setSavingReference(verse.reference)
     const { error } = await supabase.from("favorite_verses").insert({
       user_id: user.id,
