@@ -6,7 +6,18 @@ export function HeroSection() {
   const navigate = useNavigate()
   
   return (
-    <div className="relative h-[400px] overflow-hidden rounded-b-3xl bg-gradient-to-br from-primary via-primary/80 to-secondary">
+    <div className="relative h-[400px] overflow-hidden rounded-b-3xl">
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="https://lightembassy.org/wp-content/uploads/2024/09/le-web-header.mp4" type="video/mp4" />
+      </video>
+      
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent" />
       
@@ -53,3 +64,4 @@ export function HeroSection() {
     </div>
   )
 }
+
