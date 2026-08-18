@@ -27,7 +27,7 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({})
   const [showResults, setShowResults] = useState(false)
   const [score, setScore] = useState(0)
-  const [correctMap, setCorrectMap] = useState<Record<string, number>>({})
+  const [correctMap, setCorrectMap] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
   const [quizStarted, setQuizStarted] = useState(false)
 
@@ -93,9 +93,10 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
         body: { responses, save: false, quiz_type: 'podcast' },
       })
       if (error) throw error
-      const map: Record<string, number> = {}
-      for (const r of data.results) map[r.question_id] = r.correct_answer
+      const map: Record<string, boolean> = {}
+      for (const r of data.results) map[r.question_id] = r.is_correct
       setCorrectMap(map)
+
       setScore(data.score)
     } catch (e) {
       console.error('Error grading quiz:', e)
@@ -245,8 +246,7 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
               <div className="space-y-3">
                 <h3 className="font-semibold text-foreground">Your Answers:</h3>
                 {questions.map((question, index) => {
-                  const correctAnswer = correctMap[question.id]
-                  const isCorrect = selectedAnswers[index] === correctAnswer
+                  const isCorrect = correctMap[question.id] === true
                   return (
                     <div key={question.id} className={`p-3 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-950/20' : 'bg-red-50 dark:bg-red-950/20'}`}>
                       <div className="flex items-start gap-2">
@@ -257,11 +257,12 @@ const PodcastQuiz = ({ onBack }: PodcastQuizProps) => {
                         )}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-foreground line-clamp-2">{question.question}</p>
-                          {!isCorrect && correctAnswer !== undefined && (
+                          {!isCorrect && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              Correct: {question.options[correctAnswer]}
+                              Not quite — listen again and retry.
                             </p>
                           )}
+
                           {question.podcast_url && (
                             <a 
                               href={question.podcast_url} 

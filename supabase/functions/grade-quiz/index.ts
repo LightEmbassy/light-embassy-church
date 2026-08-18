@@ -30,6 +30,14 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (body.responses.length > 50) {
+      return new Response(JSON.stringify({ error: "too many responses" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
     // Basic validation
     for (const r of body.responses) {
       if (typeof r.question_id !== "string" || typeof r.selected_answer !== "number") {
@@ -55,16 +63,17 @@ Deno.serve(async (req) => {
     let score = 0;
     const results = body.responses.map((r) => {
       const q = byId.get(r.question_id);
-      const correct_answer = q?.correct_answer ?? -1;
-      const is_correct = r.selected_answer === correct_answer;
+      const is_correct = q ? r.selected_answer === q.correct_answer : false;
       if (is_correct) score++;
+      // NOTE: correct_answer is deliberately never returned to the client,
+      // otherwise the full answer key could be harvested with dummy submissions.
       return {
         question_id: r.question_id,
         selected_answer: r.selected_answer,
-        correct_answer,
         is_correct,
       };
     });
+
 
     // Optional save when an authenticated user is present
     if (body.save) {
