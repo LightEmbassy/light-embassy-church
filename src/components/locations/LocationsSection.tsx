@@ -162,15 +162,67 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
           )}
         </div>
 
+        {/* Search & Filters */}
+        <div className="mb-6 space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by church, city or country"
+              aria-label="Search locations by church, city or country"
+              className="pl-9"
+            />
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Select value={country} onValueChange={setCountry}>
+              <SelectTrigger className="sm:w-56" aria-label="Filter by country">
+                <SelectValue placeholder="All countries" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All countries</SelectItem>
+                {countries.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={serviceType} onValueChange={setServiceType}>
+              <SelectTrigger className="sm:w-56" aria-label="Filter by service type">
+                <SelectValue placeholder="All service types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All service types</SelectItem>
+                {serviceTypes.map((s) => (
+                  <SelectItem key={s} value={s}>{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {hasFilters && (
+              <Button variant="ghost" onClick={clearFilters} className="gap-2">
+                <X className="h-4 w-4" />
+                Clear filters
+              </Button>
+            )}
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredLocations.length} of {locations.length} location{locations.length === 1 ? "" : "s"}
+          </p>
+        </div>
+
         {/* Locations Section */}
         <div className="space-y-4 mb-8">
           <LocationsList
-            locations={locations}
+            locations={filteredLocations}
             userLocation={userLocation}
             selectedLocation={selectedLocation}
             onLocationSelect={setSelectedLocation}
           />
         </div>
+
 
         {/* Selected Location Details */}
         {selectedLocation && (
