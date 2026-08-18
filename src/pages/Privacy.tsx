@@ -130,7 +130,6 @@ export default function Privacy() {
               <li><strong>Lovable Cloud / backend services:</strong> used to host and secure account data, content, and messaging infrastructure.</li>
               <li><strong>Google:</strong> used for sign-in authentication and for serving YouTube video content.</li>
               <li><strong>Podbean:</strong> used to stream and display podcast episodes.</li>
-              <li><strong>Mapbox:</strong> used to display church locations and regional radio stations.</li>
               <li><strong>Analytics and crash reporting providers:</strong> used to understand app usage and fix errors.</li>
               <li><strong>Law enforcement or regulators:</strong> when required by law or to protect our rights and users.</li>
             </ul>
