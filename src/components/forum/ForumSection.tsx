@@ -551,17 +551,14 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
               <DialogTitle>Start a New Discussion</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
-              {!user && (
-                <div>
-                  <Label htmlFor="guest-name">Your Name</Label>
-                  <Input
-                    id="guest-name"
-                    placeholder="Enter your name"
-                    value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
-                  />
-                </div>
-              )}
+              {!user ? (
+                <SignInRequired
+                  compact
+                  description="Sign in to start a new discussion in the community forum."
+                />
+              ) : (
+              <>
+
               
               <div>
                 <Label htmlFor="topic-title">Topic Title</Label>
