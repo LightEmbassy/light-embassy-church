@@ -1,25 +1,12 @@
 import { Button } from "@/components/ui/button"
 import { Play, Heart } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import heroLightEmbassy from "@/assets/hero-light-embassy-new.jpg"
 
 export function HeroSection() {
   const navigate = useNavigate()
   
   return (
-    <div className="relative h-[400px] overflow-hidden rounded-b-3xl">
-      {/* Background Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster={heroLightEmbassy}
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        <source src="https://lightembassy.org/wp-content/uploads/2024/09/le-web-header.mp4" type="video/mp4" />
-      </video>
-      
+    <div className="relative h-[400px] overflow-hidden rounded-b-3xl bg-gradient-to-br from-primary via-primary/80 to-secondary">
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent" />
       
@@ -39,14 +26,9 @@ export function HeroSection() {
           <div className="flex gap-3 pt-2">
             {/* Watch Videos Card Button */}
             <div 
-              className="relative w-32 h-20 rounded-xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              className="relative w-32 h-20 rounded-xl overflow-hidden cursor-pointer group shadow-lg hover:shadow-xl transition-all hover:scale-105 bg-gradient-to-br from-secondary/80 to-primary/80"
               onClick={() => navigate('/watch')}
             >
-              <img 
-                src={heroLightEmbassy}
-                alt="Watch Videos"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 group-hover:from-black/70 transition-all" />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <div className="bg-white/90 rounded-full p-2 mb-1 group-hover:scale-110 transition-transform shadow-md">
