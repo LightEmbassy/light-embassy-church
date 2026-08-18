@@ -625,11 +625,13 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
               
               <Button 
                 onClick={handleCreateTopic} 
-                disabled={submitting || !newTitle.trim() || !newContent.trim() || (!user && !guestName.trim())}
+                disabled={submitting || !newTitle.trim() || !newContent.trim()}
                 className="w-full"
               >
                 {submitting ? "Submitting..." : "Submit Topic"}
               </Button>
+              </>
+              )}
             </div>
           </DialogContent>
         </Dialog>
