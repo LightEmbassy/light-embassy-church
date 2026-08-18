@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
@@ -387,6 +387,7 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
+                  {selectedTopic.profile?.avatar_url && (<AvatarImage src={selectedTopic.profile.avatar_url} alt={`${selectedTopic.profile?.username || "Member"} profile photo`} />)}
                   <AvatarFallback className="bg-primary/10 text-primary">
                     {getInitials(selectedTopic)}
                   </AvatarFallback>
@@ -426,7 +427,8 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
                   {replies.map((reply) => (
                     <div key={reply.id} className="flex gap-3 p-4 bg-muted/50 rounded-lg">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {reply.profile?.avatar_url && (<AvatarImage src={reply.profile.avatar_url} alt={`${reply.profile?.username || "Member"} profile photo`} />)}
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {getInitials(reply)}
                         </AvatarFallback>
                       </Avatar>
@@ -734,7 +736,8 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
                   <CardContent className="p-4">
                     <div className="flex items-start gap-4">
                       <Avatar className="h-10 w-10 shrink-0">
-                        <AvatarFallback className="bg-primary/10 text-primary">
+                        {topic.profile?.avatar_url && (<AvatarImage src={topic.profile.avatar_url} alt={`${topic.profile?.username || "Member"} profile photo`} />)}
+                  <AvatarFallback className="bg-primary/10 text-primary">
                           {getInitials(topic)}
                         </AvatarFallback>
                       </Avatar>
