@@ -12,6 +12,7 @@ import { MessageSquare, Plus, Search, Clock, CheckCircle, AlertCircle, ArrowLeft
 import { formatDistanceToNow } from 'date-fns'
 import { ConversationView } from './ConversationView'
 import { NewConversationDialog } from './NewConversationDialog'
+import { SignInRequired } from '@/components/auth/SignInRequired'
 
 interface Conversation {
   id: string
@@ -163,6 +164,19 @@ export function MessageCenter({ onBack }: MessageCenterProps) {
   const handleNewConversation = () => {
     setNewConversationOpen(false)
     fetchConversations()
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <div className="container mx-auto px-4 py-8 max-w-2xl">
+          <SignInRequired
+            title="Sign in to message our team"
+            description="Messaging is private between you and our pastoral team, so an account is required."
+          />
+        </div>
+      </div>
+    )
   }
 
   if (selectedConversation) {
