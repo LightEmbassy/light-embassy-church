@@ -80,62 +80,47 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
 
   useEffect(() => {
     fetchPrayers()
-    setupRealtimeSubscription()
   }, [selectedCategory, searchQuery])
 
-  const setupRealtimeSubscription = () => {
+  useEffect(() => {
     const channel = supabase
-      .channel('prayer-requests-changes')
+      .channel('prayer-wall-live')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'prayer_requests'
-        },
-        () => {
-          fetchPrayers()
-        }
+        { event: '*', schema: 'public', table: 'prayer_requests' },
+        () => fetchPrayers()
       )
       .subscribe()
 
     return () => {
       supabase.removeChannel(channel)
     }
-  }
+  }, [selectedCategory, searchQuery])
 
   const fetchPrayers = async () => {
     try {
-      // Only select non-sensitive columns - exclude contact_name, contact_email, contact_phone
-      let query = supabase
-        .from('prayer_requests')
-        .select('id, title, description, category, is_anonymous, is_public, request_pastoral_counselling, status, created_at, updated_at, user_id')
-        .order('created_at', { ascending: false })
-
-      if (selectedCategory !== 'all') {
-        query = query.eq('category', selectedCategory as PrayerCategory)
-      }
-
-      if (searchQuery.trim()) {
-        query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
-      }
-
-      const { data: prayerData, error: prayerError } = await query
+      const { data: prayerData, error: prayerError } = await supabase.rpc('list_public_prayers', {
+        _category: selectedCategory,
+        _search: searchQuery.trim(),
+        _limit: 100,
+      })
 
       if (prayerError) throw prayerError
 
-      // Fetch user profiles separately
-      const userIds = prayerData?.map(p => p.user_id) || []
+      const userIds = (prayerData || [])
+        .map((p) => p.user_id)
+        .filter((id): id is string => !!id)
 
-      // Get profiles
-      const { data: profiles } = await supabase
-        .rpc('get_public_profiles', { _user_ids: userIds as string[] })
+      let profiles: { user_id: string; username: string; avatar_url: string | null }[] = []
+      if (userIds.length > 0) {
+        const { data } = await supabase.rpc('get_public_profiles', { _user_ids: userIds })
+        profiles = data || []
+      }
 
-      // Combine the data
-      const prayersWithData = prayerData?.map(prayer => ({
+      const prayersWithData = (prayerData || []).map((prayer) => ({
         ...prayer,
-        profiles: profiles?.find(p => p.user_id === prayer.user_id) || null
-      })) || []
+        profiles: profiles.find((p) => p.user_id === prayer.user_id) || null,
+      }))
 
       setPrayers(prayersWithData as unknown as PrayerRequest[])
     } catch (error) {
@@ -184,7 +169,16 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
       {/* Search and Filter Section */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <h2 className="text-2xl font-bold">Community Prayer Wall</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">Community Prayer Wall</h2>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              </span>
+              Live
+            </span>
+          </div>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Filter by category" />
@@ -215,7 +209,7 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
       {prayers.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-muted-foreground">
-            No prayer requests found. Be the first to share a prayer request!
+            No approved prayer requests yet. Submit one — it appears here as soon as our team approves it.
           </CardContent>
         </Card>
       ) : (

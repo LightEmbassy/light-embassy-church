@@ -392,7 +392,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string
-          user_id: string
+          user_id: string | null
           wants_contact: boolean
         }
         Insert: {
@@ -409,7 +409,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           wants_contact?: boolean
         }
         Update: {
@@ -426,7 +426,7 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           wants_contact?: boolean
         }
         Relationships: []
@@ -804,6 +804,19 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      list_public_prayers: {
+        Args: { _category?: string; _limit?: number; _search?: string }
+        Returns: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_anonymous: boolean
+          request_pastoral_counselling: boolean
+          title: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       achievement_type:

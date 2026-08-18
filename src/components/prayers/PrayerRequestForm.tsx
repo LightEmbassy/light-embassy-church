@@ -74,8 +74,8 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
     try {
-      const userId = user?.id || '00000000-0000-0000-0000-000000000000'
-      
+      const userId = user?.id ?? null
+
       const { error } = await supabase
         .from('prayer_requests')
         .insert({
