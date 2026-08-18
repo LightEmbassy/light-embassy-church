@@ -65,6 +65,42 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
     // Add more locations as they become available
   ])
 
+  const [query, setQuery] = useState("")
+  const [country, setCountry] = useState("all")
+  const [serviceType, setServiceType] = useState("all")
+
+  const countries = useMemo(
+    () => Array.from(new Set(locations.map((l) => l.country))).sort(),
+    [locations]
+  )
+
+  const serviceTypes = useMemo(
+    () => Array.from(new Set(locations.flatMap((l) => l.services.map((s) => s.name)))).sort(),
+    [locations]
+  )
+
+  const filteredLocations = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return locations.filter((l) => {
+      const matchesQuery =
+        !q ||
+        [l.name, l.city, l.country, l.address].some((f) => f.toLowerCase().includes(q)) ||
+        l.services.some((s) => s.name.toLowerCase().includes(q))
+      const matchesCountry = country === "all" || l.country === country
+      const matchesService =
+        serviceType === "all" || l.services.some((s) => s.name === serviceType)
+      return matchesQuery && matchesCountry && matchesService
+    })
+  }, [locations, query, country, serviceType])
+
+  const hasFilters = query !== "" || country !== "all" || serviceType !== "all"
+
+  const clearFilters = () => {
+    setQuery("")
+    setCountry("all")
+    setServiceType("all")
+  }
+
   const requestLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
