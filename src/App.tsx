@@ -10,6 +10,7 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Watch from "./pages/Watch";
 import NotFound from "./pages/NotFound";
 import Prayers from "./pages/Prayers";
@@ -39,6 +40,7 @@ const App = () => (
             <RouteSeo />
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<Index />} />
               <Route path="/watch" element={<Watch />} />
               <Route path="/prayers" element={<Prayers />} />
