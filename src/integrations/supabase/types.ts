@@ -676,39 +676,6 @@ export type Database = {
       }
     }
     Views: {
-      prayer_wall_public: {
-        Row: {
-          category: string | null
-          created_at: string | null
-          description: string | null
-          id: string | null
-          is_anonymous: boolean | null
-          request_pastoral_counselling: boolean | null
-          title: string | null
-          user_id: string | null
-        }
-        Insert: {
-          category?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          is_anonymous?: boolean | null
-          request_pastoral_counselling?: boolean | null
-          title?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          category?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          is_anonymous?: boolean | null
-          request_pastoral_counselling?: boolean | null
-          title?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       public_conversations: {
         Row: {
           created_at: string | null
@@ -837,6 +804,19 @@ export type Database = {
         Returns: boolean
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      list_public_prayers: {
+        Args: { _category?: string; _limit?: number; _search?: string }
+        Returns: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_anonymous: boolean
+          request_pastoral_counselling: boolean
+          title: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       achievement_type:
