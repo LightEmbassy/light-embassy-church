@@ -124,12 +124,40 @@ export function BibleSection() {
     fetchFavoriteVerses()
   }
 
+  const handleSaveLibraryVerse = async (verse: LibraryVerse) => {
+    if (!user) return
+    setSavingReference(verse.reference)
+    const { error } = await supabase.from("favorite_verses").insert({
+      user_id: user.id,
+      verse_reference: verse.reference,
+      verse_text: verse.text,
+      book: verse.book,
+      chapter: verse.chapter,
+      verse: verse.verse,
+    })
+    setSavingReference(null)
+
+    if (error) {
+      console.error("Error saving verse:", error)
+      toast({
+        title: "Error",
+        description: "Failed to save this verse. Please try again.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    toast({ title: "Saved", description: `${verse.reference} added to your verses.` })
+    fetchFavoriteVerses()
+  }
+
   const openBibleCom = () => {
     window.open("https://www.bible.com/bible", "_blank", "noopener,noreferrer")
   }
 
   return (
     <div className="space-y-6">
+
       <Card className="border-0 shadow-divine bg-gradient-spiritual">
         <CardHeader className="text-center">
           <CardTitle className="font-playfair text-3xl text-white flex items-center justify-center gap-3">
