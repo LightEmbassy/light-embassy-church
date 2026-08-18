@@ -392,7 +392,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string
-          user_id: string
+          user_id: string | null
           wants_contact: boolean
         }
         Insert: {
@@ -409,7 +409,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
           wants_contact?: boolean
         }
         Update: {
@@ -426,7 +426,7 @@ export type Database = {
           status?: string
           title?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
           wants_contact?: boolean
         }
         Relationships: []
@@ -676,6 +676,39 @@ export type Database = {
       }
     }
     Views: {
+      prayer_wall_public: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          is_anonymous: boolean | null
+          request_pastoral_counselling: boolean | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          request_pastoral_counselling?: boolean | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          is_anonymous?: boolean | null
+          request_pastoral_counselling?: boolean | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       public_conversations: {
         Row: {
           created_at: string | null
