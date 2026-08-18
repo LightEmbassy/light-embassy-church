@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { MessageSquare, Plus, Eye, Clock, Pin, Search, ArrowLeft, Send, ShieldCheck, Star, TrendingUp } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/contexts/AuthContext"
+import { SignInRequired } from "@/components/auth/SignInRequired"
 import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 
@@ -223,15 +224,16 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
   }
 
   const handleCreateTopic = async () => {
+    if (!user) {
+      toast.error("Please sign in to start a discussion")
+      return
+    }
+
     if (!newTitle.trim() || !newContent.trim()) {
       toast.error("Please fill in all fields")
       return
     }
 
-    if (!user && !guestName.trim()) {
-      toast.error("Please enter your name")
-      return
-    }
 
     if (!validateSpamProtection(captchaAnswer, captcha, humanVerified)) {
       return
@@ -273,15 +275,16 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
   }
 
   const handleSubmitReply = async () => {
+    if (!user) {
+      toast.error("Please sign in to reply")
+      return
+    }
+
     if (!newReply.trim() || !selectedTopic) {
       toast.error("Please enter a reply")
       return
     }
 
-    if (!user && !replyGuestName.trim()) {
-      toast.error("Please enter your name")
-      return
-    }
 
     if (!validateSpamProtection(replyCaptchaAnswer, replyCaptcha, replyHumanVerified)) {
       return
@@ -450,14 +453,15 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
 
               <div className="mt-6 space-y-4">
                 <h4 className="font-medium text-sm">Add a Reply</h4>
-                
-                {!user && (
-                  <Input
-                    placeholder="Your name"
-                    value={replyGuestName}
-                    onChange={(e) => setReplyGuestName(e.target.value)}
+
+                {!user ? (
+                  <SignInRequired
+                    compact
+                    description="Sign in to reply to this discussion."
                   />
-                )}
+                ) : (
+                <>
+
                 
                 <Textarea
                   placeholder="Write your reply..."
@@ -506,12 +510,14 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
 
                 <Button 
                   onClick={handleSubmitReply} 
-                  disabled={submitting || !newReply.trim() || (!user && !replyGuestName.trim())}
+                  disabled={submitting || !newReply.trim()}
                   className="gap-2"
                 >
                   <Send className="h-4 w-4" />
                   Submit Reply
                 </Button>
+                </>
+                )}
               </div>
             </div>
           </CardContent>
@@ -545,17 +551,14 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
               <DialogTitle>Start a New Discussion</DialogTitle>
             </DialogHeader>
             <div className="space-y-4 mt-4">
-              {!user && (
-                <div>
-                  <Label htmlFor="guest-name">Your Name</Label>
-                  <Input
-                    id="guest-name"
-                    placeholder="Enter your name"
-                    value={guestName}
-                    onChange={(e) => setGuestName(e.target.value)}
-                  />
-                </div>
-              )}
+              {!user ? (
+                <SignInRequired
+                  compact
+                  description="Sign in to start a new discussion in the community forum."
+                />
+              ) : (
+              <>
+
               
               <div>
                 <Label htmlFor="topic-title">Topic Title</Label>
@@ -622,11 +625,13 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
               
               <Button 
                 onClick={handleCreateTopic} 
-                disabled={submitting || !newTitle.trim() || !newContent.trim() || (!user && !guestName.trim())}
+                disabled={submitting || !newTitle.trim() || !newContent.trim()}
                 className="w-full"
               >
                 {submitting ? "Submitting..." : "Submit Topic"}
               </Button>
+              </>
+              )}
             </div>
           </DialogContent>
         </Dialog>

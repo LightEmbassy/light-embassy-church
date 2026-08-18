@@ -24,6 +24,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
+import { AuthStatusBadge } from '@/components/auth/AuthStatusBadge'
 
 export function Navigation() {
   const { resetWelcome } = useFirstTimeUser()
@@ -71,6 +72,9 @@ export function Navigation() {
         <Link to="/" className="font-playfair text-lg sm:text-xl font-bold text-foreground">
           Light Embassy
         </Link>
+
+        <div className="flex items-center gap-2">
+          <AuthStatusBadge />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -124,6 +128,7 @@ export function Navigation() {
             )}
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
 
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
