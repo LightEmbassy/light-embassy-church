@@ -105,9 +105,7 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
       // Get user profiles separately
       const userIds = [conversationData.user_id, conversationData.staff_id].filter(Boolean)
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, username')
-        .in('user_id', userIds)
+        .rpc('get_public_profiles', { _user_ids: userIds as string[] })
 
       const conversationWithProfiles = {
         ...conversationData,
@@ -139,9 +137,7 @@ export function ConversationView({ conversationId, onBack }: ConversationViewPro
       // Get sender profiles separately
       const senderIds = messageData?.map(m => m.sender_id) || []
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, username')
-        .in('user_id', senderIds)
+        .rpc('get_public_profiles', { _user_ids: senderIds as string[] })
 
       const messagesWithProfiles = messageData?.map(message => ({
         ...message,

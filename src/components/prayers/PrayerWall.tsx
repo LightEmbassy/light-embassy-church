@@ -129,9 +129,7 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
 
       // Get profiles
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, username')
-        .in('user_id', userIds)
+        .rpc('get_public_profiles', { _user_ids: userIds as string[] })
 
       // Combine the data
       const prayersWithData = prayerData?.map(prayer => ({

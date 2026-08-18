@@ -136,9 +136,7 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
         let profiles: any[] = []
         if (userIds.length > 0) {
           const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('user_id, username, avatar_url')
-            .in('user_id', userIds)
+            .rpc('get_public_profiles', { _user_ids: userIds as string[] })
           profiles = profilesData || []
         }
 
@@ -176,9 +174,7 @@ export function ForumSection({ selectedTopic: topicFilter = "all", prefillTitle,
         let profiles: any[] = []
         if (userIds.length > 0) {
           const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('user_id, username, avatar_url')
-            .in('user_id', userIds)
+            .rpc('get_public_profiles', { _user_ids: userIds as string[] })
           profiles = profilesData || []
         }
 

@@ -100,9 +100,7 @@ export function CommunityFeed() {
       // Fetch profiles separately
       const userIds = [...new Set(postsData.map(p => p.user_id))]
       const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, username')
-        .in('user_id', userIds)
+        .rpc('get_public_profiles', { _user_ids: userIds as string[] })
 
       const postsWithProfiles: CommunityPost[] = postsData.map(post => ({
         ...post,

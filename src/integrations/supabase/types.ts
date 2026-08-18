@@ -728,6 +728,14 @@ export type Database = {
           new_achievement: Database["public"]["Enums"]["achievement_type"]
         }[]
       }
+      get_public_profiles: {
+        Args: { _user_ids: string[] }
+        Returns: {
+          avatar_url: string
+          user_id: string
+          username: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
