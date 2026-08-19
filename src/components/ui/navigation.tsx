@@ -12,7 +12,6 @@ export function Navigation({ activeTab, onTabChange, className }: NavigationProp
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'watch', label: 'Watch', icon: Play },
-    { id: 'learn', label: 'Learn', icon: BookOpen },
     { id: 'prayers', label: 'Prayers', icon: Heart },
     { id: 'podcast', label: 'Podcast', icon: Headphones },
     { id: 'chat', label: 'Chat', icon: MessageSquare },

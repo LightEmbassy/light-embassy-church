@@ -39,7 +39,7 @@ export default function GodlyLiving() {
     <div className="min-h-screen bg-background pb-24">
       <div className="mx-auto max-w-3xl px-4 py-8">
         <Button asChild variant="ghost" size="sm" className="mb-6 -ml-2">
-          <Link to="/learn" aria-label="Back to Learn section">
+          <Link to="/chat" aria-label="Back to Chat section">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Learn
           </Link>
@@ -94,7 +94,7 @@ export default function GodlyLiving() {
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Button asChild>
-              <Link to="/learn">Discuss in the community</Link>
+              <Link to="/chat">Discuss in the community</Link>
             </Button>
             <Button asChild variant="outline">
               <Link to="/podcast">Listen to the podcast</Link>
