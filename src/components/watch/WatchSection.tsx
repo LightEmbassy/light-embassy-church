@@ -52,11 +52,27 @@ export function WatchSection({ onBack }: WatchSectionProps) {
     )
   }, [videos, searchQuery])
 
+  const PAGE_SIZE = 15
+  const [page, setPage] = useState(1)
+  const totalPages = Math.max(1, Math.ceil(filteredVideos.length / PAGE_SIZE))
+  const pagedVideos = useMemo(
+    () => filteredVideos.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filteredVideos, page]
+  )
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery])
+
+  useEffect(() => {
+    if (page > totalPages) setPage(1)
+  }, [page, totalPages])
+
   const fetchVideos = async () => {
     try {
       setLoading(true)
       const { data, error } = await supabase.functions.invoke('fetch-youtube-videos', {
-        body: { maxResults: 20 }
+        body: { maxResults: 90 }
       })
 
       if (error) {
@@ -368,11 +384,52 @@ export function WatchSection({ onBack }: WatchSectionProps) {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
-            {filteredVideos.map((video) => (
-              <VideoCard key={video.id} video={video} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+              {pagedVideos.map((video) => (
+                <VideoCard key={video.id} video={video} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page === 1}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  aria-label="Previous page"
+                >
+                  Prev
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                  <Button
+                    key={n}
+                    variant={n === page ? "default" : "outline"}
+                    size="sm"
+                    className="w-9 px-0"
+                    onClick={() => setPage(n)}
+                    aria-label={`Page ${n}`}
+                    aria-current={n === page ? "page" : undefined}
+                  >
+                    {n}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page === totalPages}
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  aria-label="Next page"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+            <p className="mt-3 text-center text-xs text-muted-foreground">
+              Showing {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, filteredVideos.length)} of {filteredVideos.length} videos
+            </p>
+          </>
         )}
       </div>
 
