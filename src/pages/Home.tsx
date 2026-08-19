@@ -33,7 +33,6 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <GetAppBanner />
       <PromotionalBanner onNavigate={onNavigate} />
       <HeroSection />
       <SignupBanner />
