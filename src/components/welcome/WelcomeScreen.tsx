@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Play, Headphones, Heart, MessageCircle, MapPin, HelpCircle, ChevronRight, Sparkles } from 'lucide-react'
+import { Play, Headphones, Heart, MessageCircle, MapPin, HelpCircle, ChevronRight, Sparkles, ShieldOff } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface WelcomeScreenProps {
@@ -56,6 +57,12 @@ const features = [
 
 export function WelcomeScreen({ onComplete, onNavigate }: WelcomeScreenProps) {
   const [currentStep, setCurrentStep] = useState(0)
+  const navigate = useNavigate()
+
+  const handleRegister = () => {
+    onComplete()
+    navigate('/auth')
+  }
 
   const handleGetStarted = () => {
     if (currentStep < 2) {
@@ -192,6 +199,15 @@ export function WelcomeScreen({ onComplete, onNavigate }: WelcomeScreenProps) {
             </Button>
           )}
           
+          <Button
+            size="sm"
+            onClick={handleRegister}
+            className="w-full sm:w-auto bg-[hsl(var(--sacred-gold))] text-primary-foreground hover:opacity-90 font-semibold"
+          >
+            <ShieldOff className="w-4 h-4 mr-2" />
+            Register to remove ads
+          </Button>
+
           <button 
             onClick={onComplete}
             className="text-white/70 hover:text-white text-sm sm:text-base transition-colors py-2"

@@ -10,6 +10,7 @@ import { WelcomeScreen } from "@/components/welcome/WelcomeScreen"
 import { IntroVideo } from "@/components/welcome/IntroVideo"
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser"
 import { useIntroVideo } from "@/hooks/useIntroVideo"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface HomeProps {
   onNavigate?: (tab: string) => void
@@ -18,17 +19,21 @@ interface HomeProps {
 export default function Home({ onNavigate }: HomeProps) {
   const { isFirstTime, isLoading, markWelcomeSeen } = useFirstTimeUser()
   const { hasSeen: hasSeenIntro, markSeen: markIntroSeen } = useIntroVideo()
+  const { user, loading: authLoading } = useAuth()
 
-  if (isLoading || hasSeenIntro === null) {
+  if (authLoading || isLoading || hasSeenIntro === null) {
     return null
   }
 
-  if (!hasSeenIntro) {
-    return <IntroVideo onComplete={markIntroSeen} />
-  }
+  // Registered users skip the splash entirely; guests see it every session.
+  if (!user) {
+    if (!hasSeenIntro) {
+      return <IntroVideo onComplete={markIntroSeen} />
+    }
 
-  if (isFirstTime) {
-    return <WelcomeScreen onComplete={markWelcomeSeen} onNavigate={onNavigate} />
+    if (isFirstTime) {
+      return <WelcomeScreen onComplete={markWelcomeSeen} onNavigate={onNavigate} />
+    }
   }
 
   return (

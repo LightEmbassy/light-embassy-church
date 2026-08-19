@@ -7,18 +7,18 @@ export function useFirstTimeUser() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem(WELCOME_SEEN_KEY)
+    const hasSeenWelcome = sessionStorage.getItem(WELCOME_SEEN_KEY)
     setIsFirstTime(!hasSeenWelcome)
     setIsLoading(false)
   }, [])
 
   const markWelcomeSeen = () => {
-    localStorage.setItem(WELCOME_SEEN_KEY, 'true')
+    sessionStorage.setItem(WELCOME_SEEN_KEY, 'true')
     setIsFirstTime(false)
   }
 
   const resetWelcome = () => {
-    localStorage.removeItem(WELCOME_SEEN_KEY)
+    sessionStorage.removeItem(WELCOME_SEEN_KEY)
     setIsFirstTime(true)
   }
 
