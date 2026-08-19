@@ -418,27 +418,7 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
         )}
 
         {/* Quick Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Users className="h-8 w-8 text-primary mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">Join Our Community</h3>
-              <p className="text-sm text-muted-foreground">
-                Experience powerful worship, Bible study, and fellowship
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6 text-center">
-              <Calendar className="h-8 w-8 text-primary mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">Weekly Services</h3>
-              <p className="text-sm text-muted-foreground">
-                Multiple services throughout the week for spiritual growth
-              </p>
-            </CardContent>
-          </Card>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Card>
             <CardContent className="p-6 text-center">
               <MapPin className="h-8 w-8 text-primary mx-auto mb-4" />
