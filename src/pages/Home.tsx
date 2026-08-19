@@ -10,6 +10,7 @@ import { WelcomeScreen } from "@/components/welcome/WelcomeScreen"
 import { IntroVideo } from "@/components/welcome/IntroVideo"
 import { useFirstTimeUser } from "@/hooks/useFirstTimeUser"
 import { useIntroVideo } from "@/hooks/useIntroVideo"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface HomeProps {
   onNavigate?: (tab: string) => void
