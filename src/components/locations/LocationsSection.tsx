@@ -448,11 +448,25 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
             <CardContent className="p-6 text-center">
               <MapPin className="h-8 w-8 text-primary mx-auto mb-4" />
               <h3 className="font-semibold mb-2">Find Your Location</h3>
-              <p className="text-sm text-muted-foreground">
-                Use our map to find the nearest Light Embassy Church
+              <p className="text-sm text-muted-foreground mb-4">
+                Share your location to see how far each Light Embassy Church is from you
               </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={requestLocation}
+                disabled={locating}
+              >
+                {locating ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Navigation className="h-4 w-4 mr-2" />
+                )}
+                {locating ? "Locating..." : userLocation ? "Update location" : "Use my location"}
+              </Button>
             </CardContent>
           </Card>
+
         </div>
       </div>
     </div>
