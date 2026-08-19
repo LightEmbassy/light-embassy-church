@@ -17,7 +17,10 @@ import {
   Users,
   ArrowLeft,
   Search,
+  Loader2,
   X
+
+
 
 } from "lucide-react"
 
@@ -27,8 +30,11 @@ interface LocationsSectionProps {
 
 export function LocationsSection({ onBack }: LocationsSectionProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
+  const [locating, setLocating] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+  const [distances, setDistances] = useState<Record<string, number>>({})
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
-  const [locations] = useState<Location[]>([
+  const [baseLocations] = useState<Location[]>([
     {
       id: "lund-sweden",
       name: "Light Embassy Church",
@@ -69,6 +75,27 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
   const [country, setCountry] = useState("all")
   const [serviceType, setServiceType] = useState("all")
 
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 6371 // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180
+    const dLon = (lon2 - lon1) * Math.PI / 180
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+    return R * c
+  }
+
+  const locations = useMemo<Location[]>(
+    () =>
+      baseLocations.map((l) => ({
+        ...l,
+        distance: distances[l.id],
+      })),
+    [baseLocations, distances]
+  )
+
   const countries = useMemo(
     () => Array.from(new Set(locations.map((l) => l.country))).sort(),
     [locations]
@@ -102,62 +129,68 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
   }
 
   const requestLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const coords: [number, number] = [
-            position.coords.longitude,
-            position.coords.latitude
-          ]
-          setUserLocation(coords)
-          calculateDistances(coords)
-        },
-        (error) => {
-          console.error("Error getting location:", error)
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000
-        }
-      )
+    if (!("geolocation" in navigator)) {
+      setLocationError("Location isn't supported by this browser.")
+      return
     }
-  }
 
-  const calculateDistances = (userCoords: [number, number]) => {
-    // Calculate distances using Haversine formula
-    locations.forEach(location => {
-      const distance = calculateDistance(
-        userCoords[1], userCoords[0],
-        location.coordinates[1], location.coordinates[0]
-      )
-      location.distance = distance
-    })
-  }
+    if (typeof window !== "undefined" && !window.isSecureContext) {
+      setLocationError("Location needs a secure (https) connection.")
+      return
+    }
 
-  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
-    const R = 6371 // Earth's radius in kilometers
-    const dLat = (lat2 - lat1) * Math.PI / 180
-    const dLon = (lon2 - lon1) * Math.PI / 180
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-    return R * c
+    setLocating(true)
+    setLocationError(null)
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords: [number, number] = [
+          position.coords.longitude,
+          position.coords.latitude,
+        ]
+        setUserLocation(coords)
+        setDistances(
+          Object.fromEntries(
+            baseLocations.map((l) => [
+              l.id,
+              calculateDistance(coords[1], coords[0], l.coordinates[1], l.coordinates[0]),
+            ])
+          )
+        )
+        setLocating(false)
+      },
+      (error) => {
+        console.error("Error getting location:", error)
+        setLocating(false)
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationError(
+            "Location permission was blocked. Enable location access for this site in your browser settings, then try again."
+          )
+        } else if (error.code === error.TIMEOUT) {
+          setLocationError("Finding your location took too long. Please try again.")
+        } else {
+          setLocationError("We couldn't determine your location. Please try again.")
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 300000,
+      }
+    )
   }
 
   const openInMaps = (location: Location) => {
     const lat = location.coordinates[1]
     const lng = location.coordinates[0]
-    
+
     // Try to open in native app first, fallback to web
     const mapsUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15`
     const appleUrl = `maps://maps.google.com/maps?q=${lat},${lng}&z=15`
-    
+
     // Check if on iOS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-    
+
     if (isIOS) {
       window.location.href = appleUrl
       // Fallback to Google Maps if Apple Maps doesn't open
@@ -170,9 +203,18 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
   }
 
   useEffect(() => {
-    // Auto-request location on component mount
-    requestLocation()
+    // Only auto-request when permission was already granted, so the
+    // prompt isn't silently dismissed on load.
+    if (typeof navigator === "undefined" || !navigator.permissions?.query) return
+    navigator.permissions
+      .query({ name: "geolocation" as PermissionName })
+      .then((status) => {
+        if (status.state === "granted") requestLocation()
+      })
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
 
   return (
     <div className="min-h-screen bg-background pb-20 pt-16">
@@ -196,12 +238,33 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
             Discover Light Embassy Church locations and services near you
           </p>
           
-          {!userLocation && (
-            <Button onClick={requestLocation} className="mb-6">
-              <Navigation className="h-4 w-4 mr-2" />
-              Find Nearby Locations
+          <div className="mb-6 flex flex-col items-center gap-3">
+            <Button onClick={requestLocation} disabled={locating}>
+              {locating ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Navigation className="h-4 w-4 mr-2" />
+              )}
+              {locating
+                ? "Finding your location..."
+                : userLocation
+                  ? "Update my location"
+                  : "Find Nearby Locations"}
             </Button>
-          )}
+
+            {userLocation && !locationError && (
+              <p className="text-sm text-muted-foreground">
+                Location found — distances shown below.
+              </p>
+            )}
+
+            {locationError && (
+              <p className="text-sm text-destructive max-w-md" role="alert">
+                {locationError}
+              </p>
+            )}
+          </div>
+
         </div>
 
         {/* Search & Filters */}
@@ -385,11 +448,25 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
             <CardContent className="p-6 text-center">
               <MapPin className="h-8 w-8 text-primary mx-auto mb-4" />
               <h3 className="font-semibold mb-2">Find Your Location</h3>
-              <p className="text-sm text-muted-foreground">
-                Use our map to find the nearest Light Embassy Church
+              <p className="text-sm text-muted-foreground mb-4">
+                Share your location to see how far each Light Embassy Church is from you
               </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={requestLocation}
+                disabled={locating}
+              >
+                {locating ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Navigation className="h-4 w-4 mr-2" />
+                )}
+                {locating ? "Locating..." : userLocation ? "Update location" : "Use my location"}
+              </Button>
             </CardContent>
           </Card>
+
         </div>
       </div>
     </div>
