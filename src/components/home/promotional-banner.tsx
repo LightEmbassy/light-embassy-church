@@ -53,7 +53,7 @@ const promoBanners: PromoBanner[] = [
     title: "Dig Deeper into God's Word",
     description: "Explore our Bible studies and discover your divine destiny through spiritual understanding",
     action: "Read More",
-    actionUrl: "/learn",
+    actionUrl: "/chat",
     icon: BookOpen,
     gradient: "bg-gradient-to-r from-orange-500/10 to-red-500/10",
     badge: "Bible Study"

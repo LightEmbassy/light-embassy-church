@@ -4,7 +4,6 @@ import { Navigation } from "@/components/ui/navigation"
 import { useNavigation } from "@/contexts/NavigationContext"
 import Home from "./Home"
 import Watch from "./Watch"
-import Learn from "./Learn"
 import Prayers from "./Prayers"
 import Messages from "./Messages"
 import Podcast from "./Podcast"
@@ -32,7 +31,7 @@ const Index = () => {
       case 'watch':
         return <Watch onBack={goBack} />
       case 'learn':
-        return <Learn onBack={goBack} />
+        return <Chat onBack={goBack} />
       case 'prayers':
         return <Prayers onBack={goBack} />
       case 'podcast':

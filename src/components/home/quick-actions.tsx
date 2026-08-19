@@ -29,7 +29,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
       description: "Community forum & discussions",
       color: "bg-gradient-divine",
       textColor: "text-primary",
-      tab: "learn",
+      tab: "chat",
       hasImageBg: true,
       bgImage: discoverBg
     },

@@ -26,11 +26,6 @@ const ROUTE_META: Record<string, Meta> = {
     description:
       "Listen to Light Embassy Church podcast episodes anywhere. Stream or download teaching, testimony and encouragement for your daily walk with God.",
   },
-  "/learn": {
-    title: "Learn & Bible Study — Light Embassy",
-    description:
-      "Grow through Bible study tools, guided reading, quizzes and discipleship resources designed to help you understand Scripture and apply it daily.",
-  },
   "/learn/godly-living-purpose": {
     title: "Godly Living & Purpose — Light Embassy",
     description:
@@ -57,9 +52,9 @@ const ROUTE_META: Record<string, Meta> = {
       "Track your streaks, milestones and badges as you watch, listen, pray and study with the Light Embassy community each week.",
   },
   "/chat": {
-    title: "Light Guide Assistant — Light Embassy",
+    title: "Chat, Discussions & Bible Study — Light Embassy",
     description:
-      "Ask the Light Guide assistant about services, Bible questions, prayer and everything happening across the Light Embassy Church community.",
+      "Ask the Light Guide assistant, join community discussions and study Scripture together in one place at Light Embassy Church.",
   },
   "/privacy": {
     title: "Privacy Policy — Light Embassy",

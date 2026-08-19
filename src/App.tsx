@@ -15,7 +15,7 @@ import Watch from "./pages/Watch";
 import NotFound from "./pages/NotFound";
 import Prayers from "./pages/Prayers";
 import Podcast from "./pages/Podcast";
-import Learn from "./pages/Learn";
+import Chat from "./pages/Chat";
 import GodlyLiving from "./pages/GodlyLiving";
 import Messages from "./pages/Messages";
 import Privacy from "./pages/Privacy";
@@ -45,7 +45,8 @@ const App = () => (
               <Route path="/watch" element={<Watch />} />
               <Route path="/prayers" element={<Prayers />} />
               <Route path="/podcast" element={<Podcast />} />
-              <Route path="/learn" element={<Learn />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/learn" element={<Navigate to="/chat" replace />} />
               <Route path="/learn/godly-living-purpose" element={<GodlyLiving />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/privacy" element={<Privacy />} />
