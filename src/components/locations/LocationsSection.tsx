@@ -27,8 +27,11 @@ interface LocationsSectionProps {
 
 export function LocationsSection({ onBack }: LocationsSectionProps) {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null)
+  const [locating, setLocating] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+  const [distances, setDistances] = useState<Record<string, number>>({})
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
-  const [locations] = useState<Location[]>([
+  const [baseLocations] = useState<Location[]>([
     {
       id: "lund-sweden",
       name: "Light Embassy Church",
