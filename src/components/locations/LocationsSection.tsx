@@ -235,12 +235,33 @@ export function LocationsSection({ onBack }: LocationsSectionProps) {
             Discover Light Embassy Church locations and services near you
           </p>
           
-          {!userLocation && (
-            <Button onClick={requestLocation} className="mb-6">
-              <Navigation className="h-4 w-4 mr-2" />
-              Find Nearby Locations
+          <div className="mb-6 flex flex-col items-center gap-3">
+            <Button onClick={requestLocation} disabled={locating}>
+              {locating ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Navigation className="h-4 w-4 mr-2" />
+              )}
+              {locating
+                ? "Finding your location..."
+                : userLocation
+                  ? "Update my location"
+                  : "Find Nearby Locations"}
             </Button>
-          )}
+
+            {userLocation && !locationError && (
+              <p className="text-sm text-muted-foreground">
+                Location found — distances shown below.
+              </p>
+            )}
+
+            {locationError && (
+              <p className="text-sm text-destructive max-w-md" role="alert">
+                {locationError}
+              </p>
+            )}
+          </div>
+
         </div>
 
         {/* Search & Filters */}
