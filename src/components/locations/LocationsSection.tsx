@@ -13,15 +13,10 @@ import {
   Clock, 
   Phone, 
   ExternalLink,
-  Calendar,
-  Users,
   ArrowLeft,
   Search,
   Loader2,
   X
-
-
-
 } from "lucide-react"
 
 interface LocationsSectionProps {
