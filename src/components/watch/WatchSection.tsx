@@ -33,102 +33,15 @@ interface WatchSectionProps {
   onBack?: () => void
 }
 
-const THUMBNAIL_CACHE_KEY = 'video_thumbnails_cache'
-const MAX_CACHED_THUMBNAILS = 6
-
-// AI thumbnails are base64 data URLs, so persist only a small, bounded slice
-// of them and degrade gracefully when localStorage is full.
-function persistThumbnailCache(cache: Record<string, string>) {
-  const entries = Object.entries(cache)
-  for (let keep = Math.min(MAX_CACHED_THUMBNAILS, entries.length); keep > 0; keep = Math.floor(keep / 2)) {
-    try {
-      const slice = Object.fromEntries(entries.slice(-keep))
-      localStorage.setItem(THUMBNAIL_CACHE_KEY, JSON.stringify(slice))
-      return
-    } catch {
-      // quota exceeded — retry with fewer entries
-    }
-  }
-  try {
-    localStorage.removeItem(THUMBNAIL_CACHE_KEY)
-  } catch {
-    // ignore
-  }
-}
-
-
 export function WatchSection({ onBack }: WatchSectionProps) {
   const [playingVideo, setPlayingVideo] = useState<VideoItem | null>(null)
   const [videos, setVideos] = useState<VideoItem[]>([])
   const [recentlyWatched, setRecentlyWatched] = useState<RecentlyWatchedItem[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [thumbnailCache, setThumbnailCache] = useState<Record<string, string>>({})
-  const [generatingThumbnails, setGeneratingThumbnails] = useState<Set<string>>(new Set())
   const { toast } = useToast()
   const { trackMedia } = useMediaHistory()
   const { user } = useAuth()
-
-  // Load cached thumbnails from localStorage
-  useEffect(() => {
-    try {
-      const cached = localStorage.getItem(THUMBNAIL_CACHE_KEY)
-      if (cached) {
-        setThumbnailCache(JSON.parse(cached))
-      }
-    } catch (e) {
-      console.error('Error loading thumbnail cache:', e)
-    }
-  }, [])
-
-  // Generate AI thumbnail for a video
-  const generateThumbnail = useCallback(async (video: VideoItem) => {
-    if (thumbnailCache[video.id] || generatingThumbnails.has(video.id)) {
-      return
-    }
-
-    setGeneratingThumbnails(prev => new Set(prev).add(video.id))
-
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-video-thumbnail', {
-        body: { videoTitle: video.title, videoId: video.id }
-      })
-
-      if (error) {
-        console.error('Error generating thumbnail:', error)
-        return
-      }
-
-      if (data?.thumbnailUrl) {
-        setThumbnailCache(prev => {
-          const newCache = { ...prev, [video.id]: data.thumbnailUrl }
-          persistThumbnailCache(newCache)
-          return newCache
-        })
-
-      }
-    } catch (error) {
-      console.error('Failed to generate thumbnail:', error)
-    } finally {
-      setGeneratingThumbnails(prev => {
-        const next = new Set(prev)
-        next.delete(video.id)
-        return next
-      })
-    }
-  }, [thumbnailCache, generatingThumbnails])
-
-  // Generate thumbnails for all videos
-  useEffect(() => {
-    if (videos.length > 0) {
-      // Generate thumbnails for all videos
-      videos.forEach(video => {
-        if (!thumbnailCache[video.id]) {
-          generateThumbnail(video)
-        }
-      })
-    }
-  }, [videos, thumbnailCache, generateThumbnail])
 
   const filteredVideos = useMemo(() => {
     if (!searchQuery.trim()) return videos
@@ -233,18 +146,10 @@ export function WatchSection({ onBack }: WatchSectionProps) {
 
   // Get thumbnail for a recently watched video
   const getHistoryThumbnail = (mediaId: string) => {
-    // Check if we have an AI-generated thumbnail
-    if (thumbnailCache[mediaId]) {
-      return thumbnailCache[mediaId]
-    }
-    // Fall back to YouTube thumbnail
-    return `https://i.ytimg.com/vi/${mediaId}/mqdefault.jpg`
+    return `https://i.ytimg.com/vi/${mediaId}/hqdefault.jpg`
   }
 
   const VideoCard = ({ video }: { video: VideoItem }) => {
-    const aiThumbnail = thumbnailCache[video.id]
-    const isGenerating = generatingThumbnails.has(video.id)
-    
     return (
       <Card 
         className="group cursor-pointer hover:shadow-divine transition-divine overflow-hidden"
@@ -253,25 +158,20 @@ export function WatchSection({ onBack }: WatchSectionProps) {
         <CardContent className="p-0">
           {/* Thumbnail */}
           <AspectRatio ratio={16 / 9} className="relative bg-muted">
-            {isGenerating ? (
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse flex items-center justify-center">
-                <div className="text-xs text-muted-foreground">Generating...</div>
-              </div>
-            ) : (
-              <img
-                src={aiThumbnail || video.thumbnail}
-                alt={video.title}
-                className="object-cover w-full h-full"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes('ytimg.com')) {
-                    target.src = `https://i.ytimg.com/vi/${video.embedId}/mqdefault.jpg`;
-                  } else if (target.src.includes('mqdefault')) {
-                    target.src = `https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`;
-                  }
-                }}
-              />
-            )}
+            <img
+              src={`https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`}
+              alt={video.title}
+              loading="lazy"
+              className="object-cover w-full h-full"
+              onError={(e) => {
+                const target = e.currentTarget
+                if (target.src.includes('hqdefault')) {
+                  target.src = `https://i.ytimg.com/vi/${video.embedId}/mqdefault.jpg`
+                } else if (target.src.includes('mqdefault')) {
+                  target.src = video.thumbnail
+                }
+              }}
+            />
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
             
