@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Church, Home, Play, BookOpen, Heart, Calendar, User, MessageSquare, Headphones } from "lucide-react"
+import { Church, Home, Play, Heart, Calendar, User, MessageSquare, Headphones } from "lucide-react"
 
 interface NavigationProps {
   activeTab: string
