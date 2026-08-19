@@ -158,25 +158,20 @@ export function WatchSection({ onBack }: WatchSectionProps) {
         <CardContent className="p-0">
           {/* Thumbnail */}
           <AspectRatio ratio={16 / 9} className="relative bg-muted">
-            {isGenerating ? (
-              <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 animate-pulse flex items-center justify-center">
-                <div className="text-xs text-muted-foreground">Generating...</div>
-              </div>
-            ) : (
-              <img
-                src={aiThumbnail || video.thumbnail}
-                alt={video.title}
-                className="object-cover w-full h-full"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes('ytimg.com')) {
-                    target.src = `https://i.ytimg.com/vi/${video.embedId}/mqdefault.jpg`;
-                  } else if (target.src.includes('mqdefault')) {
-                    target.src = `https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`;
-                  }
-                }}
-              />
-            )}
+            <img
+              src={`https://i.ytimg.com/vi/${video.embedId}/hqdefault.jpg`}
+              alt={video.title}
+              loading="lazy"
+              className="object-cover w-full h-full"
+              onError={(e) => {
+                const target = e.currentTarget
+                if (target.src.includes('hqdefault')) {
+                  target.src = `https://i.ytimg.com/vi/${video.embedId}/mqdefault.jpg`
+                } else if (target.src.includes('mqdefault')) {
+                  target.src = video.thumbnail
+                }
+              }}
+            />
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
             
