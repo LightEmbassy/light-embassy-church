@@ -99,23 +99,82 @@ async function parseYouTubeRSS(channelId: string, maxResults: number): Promise<V
   }
 }
 
+// Fetch via YouTube Data API (supports many more videos than the 15-item RSS feed)
+async function fetchViaApi(channelId: string, maxResults: number, apiKey: string): Promise<VideoItem[]> {
+  const chRes = await fetch(
+    `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=${channelId}&key=${apiKey}`
+  );
+  if (!chRes.ok) {
+    console.error(`Channel lookup failed: ${chRes.status} ${await chRes.text()}`);
+    return [];
+  }
+  const chJson = await chRes.json();
+  const uploads = chJson?.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+  if (!uploads) return [];
+
+  const videos: VideoItem[] = [];
+  let pageToken = '';
+
+  while (videos.length < maxResults) {
+    const pageSize = Math.min(50, maxResults - videos.length);
+    const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploads}&maxResults=${pageSize}${pageToken ? `&pageToken=${pageToken}` : ''}&key=${apiKey}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`playlistItems failed: ${res.status} ${await res.text()}`);
+      break;
+    }
+    const json = await res.json();
+    for (const item of json.items ?? []) {
+      const videoId = item?.snippet?.resourceId?.videoId;
+      if (!videoId) continue;
+      videos.push({
+        id: videoId,
+        title: decodeHTMLEntities(item.snippet.title ?? ''),
+        description: decodeHTMLEntities(item.snippet.description ?? '').substring(0, 200),
+        thumbnail: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+        publishedAt: formatDate(item.snippet.publishedAt),
+        embedId: videoId,
+      });
+    }
+    pageToken = json.nextPageToken ?? '';
+    if (!pageToken) break;
+  }
+
+  console.log(`Fetched ${videos.length} videos via API`);
+  return videos;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { maxResults = 15 } = await req.json().catch(() => ({}));
-    
+    const { maxResults = 60 } = await req.json().catch(() => ({}));
+
     console.log(`Fetching YouTube videos from channel, maxResults: ${maxResults}`);
-    
-    const videos = await parseYouTubeRSS(CHANNEL_ID, maxResults);
-    
+
+    const apiKey = Deno.env.get('YOUTUBE_API_KEY') ?? Deno.env.get('GOOGLE_API_KEY');
+    let videos: VideoItem[] = [];
+
+    if (apiKey) {
+      try {
+        videos = await fetchViaApi(CHANNEL_ID, maxResults, apiKey);
+      } catch (e) {
+        console.error('API fetch failed, falling back to RSS:', e);
+      }
+    }
+
+    if (videos.length === 0) {
+      videos = await parseYouTubeRSS(CHANNEL_ID, maxResults);
+    }
+
     console.log(`Returning ${videos.length} videos`);
 
     return new Response(JSON.stringify({ videos }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+
   } catch (error) {
     console.error('Error in fetch-youtube-videos:', error);
     return new Response(
