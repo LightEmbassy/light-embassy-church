@@ -5,6 +5,8 @@ import * as z from 'zod'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { SignInRequired } from '@/components/auth/SignInRequired'
+import { useToast } from '@/hooks/use-toast'
+
 import {
   Form,
   FormControl,
@@ -52,6 +54,8 @@ const categoryLabels = {
 
 export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
   const { user } = useAuth()
+  const { toast } = useToast()
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
@@ -102,11 +106,16 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
       form.reset()
     } catch (error) {
       console.error('Error submitting prayer request:', error)
-      setIsSubmitted(true)
+      toast({
+        title: 'Prayer not submitted',
+        description: 'We could not save your prayer request. Please check your connection and try again.',
+        variant: 'destructive',
+      })
     } finally {
       setIsSubmitting(false)
     }
   }
+
 
   const handleSubmitAnother = () => {
     setIsSubmitted(false)
