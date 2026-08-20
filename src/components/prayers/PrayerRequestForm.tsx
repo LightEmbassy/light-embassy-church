@@ -104,11 +104,16 @@ export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
       form.reset()
     } catch (error) {
       console.error('Error submitting prayer request:', error)
-      setIsSubmitted(true)
+      toast({
+        title: 'Prayer not submitted',
+        description: 'We could not save your prayer request. Please check your connection and try again.',
+        variant: 'destructive',
+      })
     } finally {
       setIsSubmitting(false)
     }
   }
+
 
   const handleSubmitAnother = () => {
     setIsSubmitted(false)
