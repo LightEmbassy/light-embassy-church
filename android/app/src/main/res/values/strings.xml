@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Light Embassy Community</string>
+    <string name="title_activity_main">Light Embassy Community</string>
+    <string name="package_name">Light.Embassy.Community_1</string>
+    <string name="custom_url_scheme">Light.Embassy.Community_1</string>
+</resources>
