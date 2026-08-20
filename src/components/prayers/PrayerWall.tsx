@@ -136,13 +136,43 @@ export function PrayerWall({ onEdit }: PrayerWallProps) {
   }
 
   const handleDeletePrayer = async () => {
-    // Disabled in public mode
-    toast({
-      title: 'Not available',
-      description: 'Authentication required for this action.',
-      variant: 'destructive',
-    })
+    if (!prayerToDelete) return
+
+    if (!user) {
+      toast({
+        title: 'Sign in required',
+        description: 'Please sign in to delete your prayer request.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    try {
+      const { error } = await supabase
+        .from('prayer_requests')
+        .delete()
+        .eq('id', prayerToDelete)
+        .eq('user_id', user.id)
+
+      if (error) throw error
+
+      setPrayers((prev) => prev.filter((p) => p.id !== prayerToDelete))
+      toast({
+        title: 'Prayer deleted',
+        description: 'Your prayer request has been removed.',
+      })
+    } catch (error) {
+      console.error('Error deleting prayer:', error)
+      toast({
+        title: 'Could not delete',
+        description: 'Something went wrong deleting your prayer request. Please try again.',
+        variant: 'destructive',
+      })
+    } finally {
+      setPrayerToDelete(null)
+    }
   }
+
 
   if (loading) {
     return (
