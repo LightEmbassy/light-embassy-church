@@ -54,6 +54,8 @@ const categoryLabels = {
 
 export function PrayerRequestForm({ onSuccess }: PrayerRequestFormProps) {
   const { user } = useAuth()
+  const { toast } = useToast()
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
