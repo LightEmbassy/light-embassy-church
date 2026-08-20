@@ -5,6 +5,8 @@ import * as z from 'zod'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { SignInRequired } from '@/components/auth/SignInRequired'
+import { useToast } from '@/hooks/use-toast'
+
 import {
   Form,
   FormControl,
